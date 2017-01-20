@@ -5,8 +5,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -44,6 +44,11 @@ public class ClipDashboard extends Application {
         Button btnRead = new Button("Read");
         Button btnWrite = new Button("Write");
         Button btnClear = new Button("Clear");
+        CheckBox chkStoreOnFocus = new CheckBox("Store clip on receive focus");
+        chkStoreOnFocus.setAllowIndeterminate(false);
+        chkStoreOnFocus.setSelected(true);
+        Tooltip tipStoreOnFocus = new Tooltip("Will automatically read the clipboard and store string when window receives the focus");
+        chkStoreOnFocus.setTooltip(tipStoreOnFocus);
 
         log = new TextArea();
         vbox.setVgrow(log, Priority.ALWAYS);
@@ -53,10 +58,11 @@ public class ClipDashboard extends Application {
         hbox.getChildren().add(btnRead);
         hbox.getChildren().add(btnWrite);
         hbox.getChildren().add(btnClear);
+        vbox.getChildren().add(chkStoreOnFocus);
         vbox.getChildren().add(log);
 
         btnRead.setOnAction((e) -> {
-            readClipboard();
+            storeClipboard(readClipboard());
         });
 
         btnWrite.setOnAction((e) -> {
@@ -86,25 +92,31 @@ public class ClipDashboard extends Application {
             @Override
             public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) {
                 if (ov.getValue()) {
-                    log.insertText(0, "got focus\n");
-                    readClipboard();
+                    if (chkStoreOnFocus.isSelected()) {
+                        log.insertText(0, "got focus\n");
+                        storeClipboard(readClipboard());
+                    }
                 }
             }
         });
 
-        readClipboard();
+        storeClipboard(readClipboard()); // read and store first clip when app first opens
         MyAppFramework.dump(vbox);
     }
 
-    private void readClipboard() {
+    private String readClipboard() {
+        String msg = "";
         try {
-            String msg;
             msg = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
-            log.insertText(0, String.format("Read %d chars from clipboard\n", msg.length()));
-            clips.add(msg);
-            items.scrollTo(msg);
         } catch(UnsupportedFlavorException|IOException exc) {
             log.insertText(0, "Read clipboard FAILED: " + exc.getClass().getName() + " " + exc);
         }
+        return msg;
+    }
+
+    private void storeClipboard(String clip) {
+        log.insertText(0, String.format("Read %d chars from clipboard\n", clip.length()));
+        clips.add(clip);
+        items.scrollTo(clip);
     }
 }
