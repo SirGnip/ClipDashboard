@@ -26,8 +26,8 @@
 - command line joystick test
 - JavaFX joystick demo test app
 - java clipboard toolbox UI
-    - get JavaFX going
-    - when app opens, read clipboard and put it in an edit (have some visual on the UI to show that it queried the clipboard)
+    - x get JavaFX going
+    - x when app opens, read clipboard and put it in a buffer (have some visual on the UI to show that it queried the clipboard)
     - able to split, join, prepend, append, replace, sort, filter, columns, graph, clipboard stack, etc.
     - variable substitution?
     - push and retrieve from other buffers

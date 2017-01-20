@@ -1,4 +1,6 @@
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -21,14 +23,18 @@ import java.io.IOException;
 
 public class ClipDashboard extends Application {
 
+    private ListView items;
+    private ObservableList<String> clips;
+    private TextArea log;
+
     @Override
     public void start(Stage primaryStage) {
         VBox vbox = new VBox();
         vbox.setPadding(new Insets(10));
 
-        ObservableList<String> clips = FXCollections.observableArrayList (
+        clips = FXCollections.observableArrayList (
                 "abc", "def");
-        ListView items = new ListView(clips);
+        items = new ListView(clips);
         items.setMinHeight(250);
         items.setMaxHeight(250);
 
@@ -39,7 +45,7 @@ public class ClipDashboard extends Application {
         Button btnWrite = new Button("Write");
         Button btnClear = new Button("Clear");
 
-        TextArea log = new TextArea();
+        log = new TextArea();
         vbox.setVgrow(log, Priority.ALWAYS);
 
         vbox.getChildren().add(items);
@@ -50,15 +56,7 @@ public class ClipDashboard extends Application {
         vbox.getChildren().add(log);
 
         btnRead.setOnAction((e) -> {
-            try {
-                String msg;
-                msg = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
-                log.insertText(0, String.format("Read %d chars from clipboard\n", msg.length()));
-                clips.add(msg);
-                items.scrollTo(msg);
-            } catch(UnsupportedFlavorException|IOException exc) {
-                log.insertText(0, "Read clipboard FAILED: " + exc.getClass().getName() + " " + exc);
-            }
+            readClipboard();
         });
 
         btnWrite.setOnAction((e) -> {
@@ -84,6 +82,29 @@ public class ClipDashboard extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
+        primaryStage.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) {
+                if (ov.getValue()) {
+                    log.insertText(0, "got focus\n");
+                    readClipboard();
+                }
+            }
+        });
+
+        readClipboard();
         MyAppFramework.dump(vbox);
+    }
+
+    private void readClipboard() {
+        try {
+            String msg;
+            msg = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
+            log.insertText(0, String.format("Read %d chars from clipboard\n", msg.length()));
+            clips.add(msg);
+            items.scrollTo(msg);
+        } catch(UnsupportedFlavorException|IOException exc) {
+            log.insertText(0, "Read clipboard FAILED: " + exc.getClass().getName() + " " + exc);
+        }
     }
 }
