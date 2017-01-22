@@ -41,12 +41,12 @@ public class ClipDashboard extends Application {
         HBox hbox = new HBox();
         hbox.setPadding(new Insets(5));
 
-        Button btnRead = new Button("Read");
-        Button btnWrite = new Button("Write");
+        Button btnStore = new Button("Store");
+        Button btnRetrieve = new Button("Retrieve");
         Button btnClear = new Button("Clear");
         CheckBox chkStoreOnFocus = new CheckBox("Store clip on receive focus");
         chkStoreOnFocus.setAllowIndeterminate(false);
-        chkStoreOnFocus.setSelected(true);
+        chkStoreOnFocus.setSelected(false);
         Tooltip tipStoreOnFocus = new Tooltip("Will automatically read the clipboard and store string when window receives the focus");
         chkStoreOnFocus.setTooltip(tipStoreOnFocus);
 
@@ -55,24 +55,22 @@ public class ClipDashboard extends Application {
 
         vbox.getChildren().add(items);
         vbox.getChildren().add(hbox);
-        hbox.getChildren().add(btnRead);
-        hbox.getChildren().add(btnWrite);
-        hbox.getChildren().add(btnClear);
+        hbox.getChildren().addAll(btnStore, btnRetrieve, btnClear);
         vbox.getChildren().add(chkStoreOnFocus);
         vbox.getChildren().add(log);
 
-        btnRead.setOnAction((e) -> {
+        btnStore.setOnAction((e) -> {
             storeClipboard(readClipboard());
         });
 
-        btnWrite.setOnAction((e) -> {
+        btnRetrieve.setOnAction((e) -> {
             if (items.getSelectionModel().isEmpty()) {
                 log.insertText(0, "No item selected\n");
                 return;
             }
             Object selected = items.getSelectionModel().getSelectedItem();
             String msg = ((String) selected);
-            log.insertText(0, String.format("Writing %d chars to the clipboard\n", msg.length()));
+            log.insertText(0, String.format("Retrieving %d chars to the clipboard\n", msg.length()));
             StringSelection selection = new StringSelection(msg);
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             clipboard.setContents(selection, selection);
