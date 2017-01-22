@@ -5,7 +5,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
@@ -14,6 +13,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -112,7 +112,7 @@ public class ClipDashboard extends Application {
         MyAppFramework.dump(vbox);
     }
 
-    private void initMenu(VBox root) {
+    private void initMenu(Pane root) {
         MenuBar menuBar = new MenuBar();
         root.getChildren().add(menuBar);
 
