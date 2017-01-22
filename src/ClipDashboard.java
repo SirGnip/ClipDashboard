@@ -1,12 +1,17 @@
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -30,7 +35,9 @@ public class ClipDashboard extends Application {
     @Override
     public void start(Stage primaryStage) {
         VBox vbox = new VBox();
-        vbox.setPadding(new Insets(10));
+        vbox.setSpacing(5);
+
+        initMenu(vbox);
 
         clips = FXCollections.observableArrayList (
                 "abc", "def");
@@ -103,6 +110,23 @@ public class ClipDashboard extends Application {
         }
 
         MyAppFramework.dump(vbox);
+    }
+
+    private void initMenu(VBox root) {
+        MenuBar menuBar = new MenuBar();
+        root.getChildren().add(menuBar);
+
+        Menu miscMenu = new Menu("Misc");
+        menuBar.getMenus().add(miscMenu);
+
+        MenuItem stuffItem = new MenuItem("stuff");
+        miscMenu.getItems().add(stuffItem);
+        miscMenu.getItems().add(new SeparatorMenuItem());
+        MenuItem exitItem = new MenuItem("Exit");
+        exitItem.setOnAction((e) -> {
+            Platform.exit();
+        });
+        miscMenu.getItems().add(exitItem);
     }
 
     private String readClipboard() {
