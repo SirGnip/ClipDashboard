@@ -100,7 +100,10 @@ public class ClipDashboard extends Application {
             }
         });
 
-        storeClipboard(readClipboard()); // read and store first clip when app first opens
+        if (chkStoreOnFocus.isSelected()) {
+            storeClipboard(readClipboard()); // read and store first clip when app first opens
+        }
+
         MyAppFramework.dump(vbox);
     }
 
@@ -116,7 +119,7 @@ public class ClipDashboard extends Application {
 
     private void storeClipboard(String clip) {
         log.insertText(0, String.format("Read %d chars from clipboard\n", clip.length()));
-        clips.add(clip);
+        clips.add(0, clip);
         items.scrollTo(clip);
     }
 }
