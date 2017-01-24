@@ -77,7 +77,7 @@ public class ClipDashboard extends Application {
             }
             Object selected = items.getSelectionModel().getSelectedItem();
             String msg = ((String) selected);
-            log.insertText(0, String.format("Retrieving %d chars to the clipboard\n", msg.length()));
+            log.insertText(0, String.format("Retrieving %d chars and storing to the clipboard\n", msg.length()));
             StringSelection selection = new StringSelection(msg);
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             clipboard.setContents(selection, selection);
@@ -140,7 +140,7 @@ public class ClipDashboard extends Application {
     }
 
     private void storeClipboard(String clip) {
-        log.insertText(0, String.format("Read %d chars from clipboard\n", clip.length()));
+        log.insertText(0, String.format("Storing %d chars from clipboard\n", clip.length()));
         clips.add(0, clip);
         items.scrollTo(clip);
     }
