@@ -12,6 +12,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -44,6 +45,7 @@ public class ClipDashboard extends Application {
         items = new ListView(clips);
         items.setMinHeight(250);
         items.setMaxHeight(250);
+        items.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         HBox hbox = new HBox();
         hbox.setPadding(new Insets(5));
@@ -57,6 +59,42 @@ public class ClipDashboard extends Application {
         Tooltip tipStoreOnFocus = new Tooltip("Will automatically read the clipboard and store string when window receives the focus");
         chkStoreOnFocus.setTooltip(tipStoreOnFocus);
 
+        TabPane modificationTabPane = new TabPane();
+        modificationTabPane.setMinHeight(120);
+        Tab tab1 = new Tab("Clip operations");
+        HBox tabHBox = new HBox();
+        Button btnClipPrepend = new Button("prepend");
+        TextField txtClipInput = new TextField("<txt>");
+        btnClipPrepend.setOnAction((e) -> {
+            log.insertText(0, "Prepend: " + txtClipInput.getText() + "\n");
+            ObservableList<Integer> indices = items.getSelectionModel().getSelectedIndices();
+            for (Integer idx : indices) { // Can't use for loop with function that returns a generic? http://stackoverflow.com/questions/6271960/how-to-iterate-over-a-wildcard-generic
+                log.insertText(0, idx.toString() + "\n");
+                clips.set(idx, txtClipInput.getText() + clips.get(idx));
+            }
+        });
+        Button btnClipAppend = new Button("append");
+        btnClipAppend.setOnAction((e) -> {
+            log.insertText(0, "Append: " + txtClipInput.getText() + "\n");
+            ObservableList<Integer> indices = items.getSelectionModel().getSelectedIndices();
+            for (Integer idx : indices) {
+                log.insertText(0, idx.toString() + "\n");
+                clips.set(idx, clips.get(idx) + txtClipInput.getText());
+            }
+        });
+
+        tabHBox.getChildren().add(btnClipPrepend);
+        tabHBox.getChildren().add(btnClipAppend);
+        tabHBox.getChildren().add(txtClipInput);
+
+        tab1.setContent(tabHBox);
+
+        tab1.setClosable(false);
+        modificationTabPane.getTabs().add(tab1);
+        Tab tab2 = new Tab("Line operations");
+        tab2.setClosable(false);
+        modificationTabPane.getTabs().add(tab2);
+
         log = new TextArea();
         vbox.setVgrow(log, Priority.ALWAYS);
 
@@ -64,6 +102,7 @@ public class ClipDashboard extends Application {
         vbox.getChildren().add(hbox);
         hbox.getChildren().addAll(btnStore, btnRetrieve, btnClear);
         vbox.getChildren().add(chkStoreOnFocus);
+        vbox.getChildren().add(modificationTabPane);
         vbox.getChildren().add(log);
 
         btnStore.setOnAction((e) -> {
