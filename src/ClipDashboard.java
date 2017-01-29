@@ -50,8 +50,9 @@ public class ClipDashboard extends Application {
         HBox hbox = new HBox();
         hbox.setPadding(new Insets(5));
 
-        Button btnStore = new Button("Store");
         Button btnRetrieve = new Button("Retrieve");
+        btnRetrieve.setMaxWidth(Double.MAX_VALUE);
+        Button btnStore = new Button("Store");
         Button btnClear = new Button("Clear");
         CheckBox chkStoreOnFocus = new CheckBox("Store clip on receive focus");
         chkStoreOnFocus.setAllowIndeterminate(false);
@@ -99,8 +100,9 @@ public class ClipDashboard extends Application {
         vbox.setVgrow(log, Priority.ALWAYS);
 
         vbox.getChildren().add(items);
+        vbox.getChildren().add(btnRetrieve);
         vbox.getChildren().add(hbox);
-        hbox.getChildren().addAll(btnStore, btnRetrieve, btnClear);
+        hbox.getChildren().addAll(btnStore, btnClear);
         vbox.getChildren().add(chkStoreOnFocus);
         vbox.getChildren().add(modificationTabPane);
         vbox.getChildren().add(log);
