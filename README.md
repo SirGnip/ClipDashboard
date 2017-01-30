@@ -52,10 +52,17 @@ clipboard buffers
     - variable substitution
         - be able to independently set values for aaa=somestring bbb=other and substitute those into a sequence of clips 
 (if clip contains "this is ${aaa} for ${bbb}". 
-    - open url aftre substituting current clipboard into a url (ex: http://docs.oracle.com/javase/8/docs/api/javax/swing/SpinnerDateModel.htm
+    - open url after substituting current clipboard into a url (ex: http://docs.oracle.com/javase/8/docs/api/javax/swing/SpinnerDateModel.htm
 l (any way to search for docs given just a class/interface name?)
-
-
+    - buffer
+        - append/prepend system clipboard to selected buffers (if I want to incrementally build up a long clipboard buffer entry)
+            - maybe CONFIGURABLE action on "store"?
+                - append new clip to buffer?
+                - prepend/append/replace selected clips in buffer with text in system clipboard?
+        - replace
+        - insert after selected (don't want to do "before selected" because then I could never insert anything at the end of the list. The combinaton of "after selected" and "store at head" lets me put stuff anywhere
+        - reorder
+        - variable substitution that can reference other buffers (by index? indexes can change easily. Some tagging mechanism by color? icon? assigned number? initial text?)
 
 # modification
 - what is input? output?
