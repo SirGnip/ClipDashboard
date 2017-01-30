@@ -34,6 +34,7 @@ public class ClipDashboard extends Application {
     private ObservableList<String> clips;
     private TextArea log;
     private Label statusBar;
+    private CheckMenuItem chkStoreOnFocus;
 
     @Override
     public void start(Stage primaryStage) {
@@ -66,11 +67,6 @@ public class ClipDashboard extends Application {
         Button btnAppend = new Button("Append");
         Button btnReplace = new Button("Replace");
         Button btnDelete = new Button("Del");
-        CheckBox chkStoreOnFocus = new CheckBox("Store clip on receive focus");
-        chkStoreOnFocus.setAllowIndeterminate(false);
-        chkStoreOnFocus.setSelected(false);
-        Tooltip tipStoreOnFocus = new Tooltip("Will automatically read the clipboard and store string when window receives the focus");
-        chkStoreOnFocus.setTooltip(tipStoreOnFocus);
 
         TabPane modificationTabPane = new TabPane();
         modificationTabPane.setMinHeight(120);
@@ -116,7 +112,7 @@ public class ClipDashboard extends Application {
         vbox.getChildren().add(btnRetrieve);
         vbox.getChildren().add(hbox);
         hbox.getChildren().addAll(btnStore, btnPrepend, btnAppend, btnReplace, btnDelete);
-        vbox.getChildren().add(chkStoreOnFocus);
+//        vbox.getChildren().add(chkStoreOnFocus);
         vbox.getChildren().add(modificationTabPane);
         vbox.getChildren().add(log);
         vbox.getChildren().add(statusBar);
@@ -195,17 +191,28 @@ public class ClipDashboard extends Application {
         MenuBar menuBar = new MenuBar();
         root.getChildren().add(menuBar);
 
-        Menu miscMenu = new Menu("Misc");
-        menuBar.getMenus().add(miscMenu);
+        // File Menu
+        Menu fileMenu = new Menu("File");
+        menuBar.getMenus().add(fileMenu);
 
         MenuItem stuffItem = new MenuItem("stuff");
-        miscMenu.getItems().add(stuffItem);
-        miscMenu.getItems().add(new SeparatorMenuItem());
+        fileMenu.getItems().add(stuffItem);
+        fileMenu.getItems().add(new SeparatorMenuItem());
         MenuItem exitItem = new MenuItem("Exit");
         exitItem.setOnAction((e) -> {
             Platform.exit();
         });
-        miscMenu.getItems().add(exitItem);
+
+        // Buffer Menu
+        Menu bufferMenu = new Menu("Buffer");
+
+        chkStoreOnFocus = new CheckMenuItem("Store clipboard to buffer when app gets focus");
+        chkStoreOnFocus.setSelected(false);
+        bufferMenu.getItems().add(chkStoreOnFocus);
+
+        // MenuBar
+        menuBar.getMenus().add(bufferMenu);
+        fileMenu.getItems().add(exitItem);
     }
 
     private void retrieveClipFromBuffer() {
