@@ -62,6 +62,9 @@ public class ClipDashboard extends Application {
         Button btnRetrieve = new Button("Retrieve");
         btnRetrieve.setMaxWidth(Double.MAX_VALUE);
         Button btnStore = new Button("Store");
+        Button btnPrepend = new Button("Prepend");
+        Button btnAppend = new Button("Append");
+        Button btnReplace = new Button("Replace");
         Button btnDelete = new Button("Del");
         CheckBox chkStoreOnFocus = new CheckBox("Store clip on receive focus");
         chkStoreOnFocus.setAllowIndeterminate(false);
@@ -93,6 +96,7 @@ public class ClipDashboard extends Application {
             }
         });
 
+
         tabHBox.getChildren().add(btnClipPrepend);
         tabHBox.getChildren().add(btnClipAppend);
         tabHBox.getChildren().add(txtClipInput);
@@ -111,7 +115,7 @@ public class ClipDashboard extends Application {
         vbox.getChildren().add(items);
         vbox.getChildren().add(btnRetrieve);
         vbox.getChildren().add(hbox);
-        hbox.getChildren().addAll(btnStore, btnDelete);
+        hbox.getChildren().addAll(btnStore, btnPrepend, btnAppend, btnReplace, btnDelete);
         vbox.getChildren().add(chkStoreOnFocus);
         vbox.getChildren().add(modificationTabPane);
         vbox.getChildren().add(log);
@@ -119,6 +123,33 @@ public class ClipDashboard extends Application {
 
         btnStore.setOnAction((e) -> {
             appendToClipBuffers(readSysClipboard());
+        });
+
+        btnPrepend.setOnAction((e) -> {
+            String clipboard = readSysClipboard();
+            ObservableList<Integer> indices = items.getSelectionModel().getSelectedIndices();
+            statusBar.setText("Prepend " + clipboard.length() + " characters to " + indices.size() + " buffer(s)");
+            for (Integer i : indices) {
+                clips.set(i, clipboard + clips.get(i));
+            }
+        });
+
+        btnAppend.setOnAction((e) -> {
+            String clipboard = readSysClipboard();
+            ObservableList<Integer> indices = items.getSelectionModel().getSelectedIndices();
+            statusBar.setText("Append " + clipboard.length() + " characters to " + indices.size() + " buffer(s)");
+            for (Integer i : indices) {
+                clips.set(i, clips.get(i) + clipboard);
+            }
+        });
+
+        btnReplace.setOnAction((e) -> {
+            String clipboard = readSysClipboard();
+            ObservableList<Integer> indices = items.getSelectionModel().getSelectedIndices();
+            statusBar.setText("Replace " + indices.size() + " buffer(s) with " + clipboard.length() + " characters");
+            for (Integer i : indices) {
+                clips.set(i, clipboard);
+            }
         });
 
         btnRetrieve.setOnAction((e) -> {

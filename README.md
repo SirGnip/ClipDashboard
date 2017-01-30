@@ -55,11 +55,8 @@ clipboard buffers
     - open url after substituting current clipboard into a url (ex: http://docs.oracle.com/javase/8/docs/api/javax/swing/SpinnerDateModel.htm
 l (any way to search for docs given just a class/interface name?)
     - buffer
-        - append/prepend system clipboard to selected buffers (if I want to incrementally build up a long clipboard buffer entry)
-            - maybe CONFIGURABLE action on "store"?
-                - append new clip to buffer?
-                - prepend/append/replace selected clips in buffer with text in system clipboard?
-        - replace
+        - x append/prepend system clipboard to selected buffers (if I want to incrementally build up a long clipboard buffer entry)
+        - x replace
         - insert after selected (don't want to do "before selected" because then I could never insert anything at the end of the list. The combinaton of "after selected" and "store at head" lets me put stuff anywhere
         - reorder
         - variable substitution that can reference other buffers (by index? indexes can change easily. Some tagging mechanism by color? icon? assigned number? initial text?)
@@ -104,3 +101,12 @@ Visualizing focus ideas as when the ListView control as a whole looses focus, th
 - have another control (anothre ListView) next to it in parallel that highlights the current cycle row somehow?
 - add a status bar at the bottom of the screen and have it show the buffer ID with the focus and preview of it
 - just not worry about having a nice visualization for cycling for now
+
+# Brainstorm
+
+- some kind of preview of system clipboard (have it poll the systme clipboard while UI is open)
+- Feature that would provide a full screen view of the current system clipboard. Maybe just a "open in Notepad" would be sufficient.
+- diff two buffers. Diff a buffer with system clipboard.
+- maybe have a generic "store" button that has different behavior based on some mode/configuration?
+    - append new clip to buffer?
+    - prepend/append/replace selected clips in buffer with text in system clipboard?
