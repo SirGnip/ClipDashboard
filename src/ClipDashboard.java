@@ -8,6 +8,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -26,6 +27,8 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class ClipDashboard extends Application {
 
@@ -58,7 +61,7 @@ public class ClipDashboard extends Application {
         Button btnRetrieve = new Button("Retrieve");
         btnRetrieve.setMaxWidth(Double.MAX_VALUE);
         Button btnStore = new Button("Store");
-        Button btnClear = new Button("Clear");
+        Button btnDelete = new Button("Del");
         CheckBox chkStoreOnFocus = new CheckBox("Store clip on receive focus");
         chkStoreOnFocus.setAllowIndeterminate(false);
         chkStoreOnFocus.setSelected(false);
@@ -107,7 +110,7 @@ public class ClipDashboard extends Application {
         vbox.getChildren().add(items);
         vbox.getChildren().add(btnRetrieve);
         vbox.getChildren().add(hbox);
-        hbox.getChildren().addAll(btnStore, btnClear);
+        hbox.getChildren().addAll(btnStore, btnDelete);
         vbox.getChildren().add(chkStoreOnFocus);
         vbox.getChildren().add(modificationTabPane);
         vbox.getChildren().add(log);
@@ -120,10 +123,16 @@ public class ClipDashboard extends Application {
             retrieveClipFromBuffer();
         });
 
-        btnClear.setOnAction((e) -> {
-            clips.clear();
-            log.insertText(0, "Clear\n");
+        btnDelete.setOnAction((e) -> {
+            ObservableList<Integer> idxs = items.getSelectionModel().getSelectedIndices();
+            int startingSize = idxs.size();
+            // delete items in reverse index order to not offset indexes while iterating
+            for (int i = idxs.size()-1; i >= 0; i--) {
+                clips.remove((int) idxs.get(i));
+            }
+            log.insertText(0, "Deleted " + startingSize + " selected clip buffer(s)\n");
         });
+
 
         Scene scene = new Scene(vbox, 500, 600);
         primaryStage.setTitle("ClipDashboard");
