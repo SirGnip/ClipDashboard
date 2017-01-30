@@ -46,6 +46,11 @@ public class ClipDashboard extends Application {
         items.setMinHeight(250);
         items.setMaxHeight(250);
         items.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        items.setOnMouseClicked((e) -> {
+            if (e.getClickCount() == 2) {
+                retrieveClipFromBuffer();
+            }
+        });
 
         HBox hbox = new HBox();
         hbox.setPadding(new Insets(5));
@@ -108,20 +113,11 @@ public class ClipDashboard extends Application {
         vbox.getChildren().add(log);
 
         btnStore.setOnAction((e) -> {
-            storeClipboard(readClipboard());
+            appendToClipBuffers(readSysClipboard());
         });
 
         btnRetrieve.setOnAction((e) -> {
-            if (items.getSelectionModel().isEmpty()) {
-                log.insertText(0, "No item selected\n");
-                return;
-            }
-            Object selected = items.getSelectionModel().getSelectedItem();
-            String msg = ((String) selected);
-            log.insertText(0, String.format("Retrieving %d chars and storing to the clipboard\n", msg.length()));
-            StringSelection selection = new StringSelection(msg);
-            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            clipboard.setContents(selection, selection);
+            retrieveClipFromBuffer();
         });
 
         btnClear.setOnAction((e) -> {
@@ -140,14 +136,14 @@ public class ClipDashboard extends Application {
                 if (ov.getValue()) {
                     if (chkStoreOnFocus.isSelected()) {
                         log.insertText(0, "got focus\n");
-                        storeClipboard(readClipboard());
+                        appendToClipBuffers(readSysClipboard());
                     }
                 }
             }
         });
 
         if (chkStoreOnFocus.isSelected()) {
-            storeClipboard(readClipboard()); // read and store first clip when app first opens
+            appendToClipBuffers(readSysClipboard()); // read and store first clip when app first opens
         }
 
         MyAppFramework.dump(vbox);
@@ -170,7 +166,18 @@ public class ClipDashboard extends Application {
         miscMenu.getItems().add(exitItem);
     }
 
-    private String readClipboard() {
+    private void retrieveClipFromBuffer() {
+        if (items.getSelectionModel().isEmpty()) {
+            log.insertText(0, "No item selected\n");
+            return;
+        }
+        Object selected = items.getSelectionModel().getSelectedItem();
+        String msg = ((String) selected);
+        log.insertText(0, String.format("Retrieving %d chars and storing to the clipboard\n", msg.length()));
+        storeToSysClipboard(msg);
+    }
+
+    private String readSysClipboard() {
         String msg = "";
         try {
             msg = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
@@ -180,7 +187,13 @@ public class ClipDashboard extends Application {
         return msg;
     }
 
-    private void storeClipboard(String clip) {
+    private void storeToSysClipboard(String s) {
+        StringSelection selection = new StringSelection(s);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(selection, null);
+    }
+
+    private void appendToClipBuffers(String clip) {
         log.insertText(0, String.format("Storing %d chars from clipboard\n", clip.length()));
         clips.add(0, clip);
         items.scrollTo(clip);
