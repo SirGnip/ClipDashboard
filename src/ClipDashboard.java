@@ -27,24 +27,25 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 
 public class ClipDashboard extends Application {
 
     private ListView items;
     private ObservableList<String> clips;
     private TextArea log;
+    private Label statusBar;
 
     @Override
     public void start(Stage primaryStage) {
         VBox vbox = new VBox();
         vbox.setSpacing(5);
 
+        statusBar = new Label();
+
         initMenu(vbox);
 
         clips = FXCollections.observableArrayList (
-                "abc", "def");
+                "abc", "def", "ghijklmnop", "q", "rstuv", "wxyz");
         items = new ListView(clips);
         items.setMinHeight(250);
         items.setMaxHeight(250);
@@ -75,8 +76,8 @@ public class ClipDashboard extends Application {
         Button btnClipPrepend = new Button("prepend");
         TextField txtClipInput = new TextField("<txt>");
         btnClipPrepend.setOnAction((e) -> {
-            log.insertText(0, "Prepend: " + txtClipInput.getText() + "\n");
             ObservableList<Integer> indices = items.getSelectionModel().getSelectedIndices();
+            statusBar.setText("Prepend to " + indices.size() + " buffer(s): " + txtClipInput.getText());
             for (Integer idx : indices) { // Can't use for loop with function that returns a generic? http://stackoverflow.com/questions/6271960/how-to-iterate-over-a-wildcard-generic
                 log.insertText(0, idx.toString() + "\n");
                 clips.set(idx, txtClipInput.getText() + clips.get(idx));
@@ -84,8 +85,8 @@ public class ClipDashboard extends Application {
         });
         Button btnClipAppend = new Button("append");
         btnClipAppend.setOnAction((e) -> {
-            log.insertText(0, "Append: " + txtClipInput.getText() + "\n");
             ObservableList<Integer> indices = items.getSelectionModel().getSelectedIndices();
+            statusBar.setText("Append to " + indices.size() + " buffer(s): " + txtClipInput.getText());
             for (Integer idx : indices) {
                 log.insertText(0, idx.toString() + "\n");
                 clips.set(idx, clips.get(idx) + txtClipInput.getText());
@@ -114,6 +115,7 @@ public class ClipDashboard extends Application {
         vbox.getChildren().add(chkStoreOnFocus);
         vbox.getChildren().add(modificationTabPane);
         vbox.getChildren().add(log);
+        vbox.getChildren().add(statusBar);
 
         btnStore.setOnAction((e) -> {
             appendToClipBuffers(readSysClipboard());
@@ -130,11 +132,11 @@ public class ClipDashboard extends Application {
             for (int i = idxs.size()-1; i >= 0; i--) {
                 clips.remove((int) idxs.get(i));
             }
-            log.insertText(0, "Deleted " + startingSize + " selected clip buffer(s)\n");
+            statusBar.setText("Deleted " + startingSize + " selected clip buffer(s)\n");
         });
 
 
-        Scene scene = new Scene(vbox, 500, 600);
+        Scene scene = new Scene(vbox, 500, 700);
         primaryStage.setTitle("ClipDashboard");
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -177,12 +179,12 @@ public class ClipDashboard extends Application {
 
     private void retrieveClipFromBuffer() {
         if (items.getSelectionModel().isEmpty()) {
-            log.insertText(0, "No item selected\n");
+            statusBar.setText("No item selected");
             return;
         }
         Object selected = items.getSelectionModel().getSelectedItem();
         String msg = ((String) selected);
-        log.insertText(0, String.format("Retrieving %d chars and storing to the clipboard\n", msg.length()));
+        statusBar.setText(String.format("Retrieving %d chars from buffer and storing to the clipboard\n", msg.length()));
         storeToSysClipboard(msg);
     }
 
@@ -203,7 +205,7 @@ public class ClipDashboard extends Application {
     }
 
     private void appendToClipBuffers(String clip) {
-        log.insertText(0, String.format("Storing %d chars from clipboard\n", clip.length()));
+        statusBar.setText(String.format("Storing %d chars to a buffer from clipboard\n", clip.length()));
         clips.add(0, clip);
         items.scrollTo(clip);
     }

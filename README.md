@@ -2,8 +2,8 @@
 
 Iteration #1 - minimal features so I use it instead of Python one
 
-- make Receive bigger so it is easy to click
-- double click to receive item double clicked
+- x make Receive bigger so it is easy to click
+- double click to receive item
 - two store modes:
     - by append and by replace (what does this look like with multiselect?)
     - separete buttons? right click button to change mode? checkbox somehwere? toggle in Settings menu item?)
