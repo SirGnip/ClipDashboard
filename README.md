@@ -1,33 +1,40 @@
-# To Do
-- x create project directory to work with
-- x hello world in java via command line toolchain
-- x build simple project in intellij
-- x command line parsing
-    - x positional args
-    - x arbitrary number of positional args
-    - x optional args
-- x read Java tutorial and document in my cheat sheet and matrix
-    - skim my cheat sheet to get context
-- core language features
-    - config file (properties file?)
-- x hello world in intellij ( can i also build via cmd line?)
-- x move these notes into java project space
-- x minimal JavaFX app (copy snippet into cheat sheet.)
-- screen-saverish demo-ish JavaFX app
-    - play with tesselation, actors with random movement, alpha blending, initial kineticville tinkering
-- JavaFX interacting with clipboard
-- Java demoscene demo (demonstrating a few different effects with music, possibly a simple story/theme to tie it all together)
+# roadmap
 
-# Roadmap
+Iteration #1 - minimal features so I use it instead of Python one
 
-- clipboard modification CLI tool (get, set, append, split)
-    - use cli library. try to do something real for a bit
-    - should only do this for a couple days
-- command line joystick test
-- JavaFX joystick demo test app
+- make Receive bigger so it is easy to click
+- double click to receive item double clicked
+- two store modes:
+    - by append and by replace (what does this look like with multiselect?)
+    - separete buttons? right click button to change mode? checkbox somehwere? toggle in Settings menu item?)
+- delete selected
+- add menus
+	- file
+	    - exit
+	- clip
+		- deleted selected
+- truncate text display for very long items or ones with embedded cr's?
+		
+# use cases
+
+- create clips
+    - read form clipboard, file, url, list of files
+- manipulating list of clips
+    - append, replace, remove, reorder, sort, clear, filter, export to disk
+- mutating clip contents
+    - prepend, append, join, split, filter, sort, count, variable substitute, numbering
+    - able to apply mutations to individual clips or to all selected clips?
+- retrieving clips
+    - single
+    - multiple selected
+        - cycle through all/selected?
+        - join w/ provided delimiter
+- destination of receive
+    - clipboard, file, post to url, substitute into shell command?
+    
+uncategorized
+    
 - java clipboard toolbox UI
-    - x get JavaFX going
-    - x when app opens, read clipboard and put it in a buffer (have some visual on the UI to show that it queried the clipboard)
     - able to split, join, prepend, append, replace, sort, filter, columns, graph, clipboard stack, etc.
     - variable substitution?
     - push and retrieve from other buffers
@@ -48,3 +55,45 @@ clipboard buffers
     - open url aftre substituting current clipboard into a url (ex: http://docs.oracle.com/javase/8/docs/api/javax/swing/SpinnerDateModel.htm
 l (any way to search for docs given just a class/interface name?)
 
+
+
+# modification
+- what is input? output?
+
+- clip operations (modifies selected clip)
+    - prepend, append
+        - in: string 
+        - output: selected clip
+- line operations (treats selected clip as a list of lines with each line being one item)
+    - sort lines (tokenizes by lines)
+        - in: selected clip
+        - out: selected clip
+    - filter lines (tokenize by lines)
+
+# clipboard todo
+- maybe list out core use cases (broad, but not exhaustive)
+    - list bare-bones features to replace my python implmenetation so i will actually start using it
+    - then list ist *must* have features (the core, fun features like append, split, join, sort filter)
+    - have a second list for "maybe" (like ability to control truncation of )
+
+- double click on item does a "retrieve" of that item into clipboard
+    - what about multi-select?
+- with multi-select, maybe retrieve becomes multi-select aware, where it merges the multiple lines together with a given token (empty, space, carriage return, tab, comma)
+    - how do i reconcile this with doing a multi-select to be used in a cyclical retrieve?  THe assumption would be that a cyclical retrieve would be bounded by what is selected? Maybe two modes (merge and cycle) of retrieve? When in cycle mode, how does UI track what clip is current?
+     
+
+# Feature details
+
+### Cycling through clipboard buffer
+ 
+Visualizing focus ideas as when the ListView control as a whole looses focus, the individual cell focus (thin border) is not shown. So, what are other ways I can visualize the current cell while cycling?  Here are brainstorms:
+
+- force the control focus to always be on the ListView, which shows the selected items and draws a border around the item with focus.
+- create global css file for UI that still shows the focused cell item even if the ListView doesn't have the focus.  When the ListView doesn't have the focus, it uses gray instead of blue and no border around focused item (probably because three is no focus on the ListView!). This snippet is a starting point, but doesn't do what I want.
+    - `items.setStyle("-fx-selection-bar: red; -fx-selection-bar-non-focused: blue; -fx-selection-bar-text: black");`
+
+- do some manual animation on the cell to highlight it
+- add some text to the data model if it has focus
+- have another control (anothre ListView) next to it in parallel that highlights the current cycle row somehow?
+- add a status bar at the bottom of the screen and have it show the buffer ID with the focus and preview of it
+- just not worry about having a nice visualization for cycling for now
