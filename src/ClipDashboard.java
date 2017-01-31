@@ -71,24 +71,33 @@ public class ClipDashboard extends Application {
 
         // String operation tab
         Tab tab1 = new Tab("String operations");
-        HBox tabHBox = new HBox();
+        tab1.setClosable(false);
+        modificationTabPane.getTabs().add(tab1);
+
+        VBox strTabVBox = new VBox();
+        strTabVBox.setSpacing(5);
+
+        HBox noArgStrOpsHBox = new HBox();
         Button btnClipLTrim = new Button("L");
         Button btnClipTrim = new Button("trim");
         Button btnClipRTrim = new Button("R");
         Button btnLower = new Button("lower");
         Button btnUpper = new Button("upper");
-        Button btnClipPrepend = new Button("prepend");
-        Button btnClipAppend = new Button("append");
         Button btnClipReplace = new Button("replace");
-        TextField txtClipArg1 = new TextField(",");
-        txtClipArg1.setPrefWidth(80);
         TextField txtClipArg2 = new TextField("\\n");
         txtClipArg2.setPrefWidth(80);
+        noArgStrOpsHBox.getChildren().addAll(btnClipLTrim, btnClipTrim, btnClipRTrim, btnLower, btnUpper);
 
-        tabHBox.getChildren().addAll(btnClipLTrim, btnClipTrim, btnClipRTrim, btnLower, btnUpper, btnClipPrepend, btnClipAppend, btnClipReplace, txtClipArg1, txtClipArg2);
-        tab1.setContent(tabHBox);
-        tab1.setClosable(false);
-        modificationTabPane.getTabs().add(tab1);
+        HBox argsStrOpsHBox = new HBox();
+        Button btnClipPrepend = new Button("prepend");
+        Button btnClipAppend = new Button("append");
+        TextField txtClipArg1 = new TextField(",");
+        txtClipArg1.setPrefWidth(80);
+        argsStrOpsHBox.getChildren().addAll(btnClipPrepend, btnClipAppend, btnClipReplace, txtClipArg1, txtClipArg2);
+
+        strTabVBox.getChildren().addAll(noArgStrOpsHBox, argsStrOpsHBox);
+        tab1.setContent(strTabVBox);
+
         btnClipLTrim.setOnAction((e) -> {
             statusBar.setText("Left-trimmed current clipboard contents");
             SysClipboard.write(StringUtil.ltrim(SysClipboard.read()));
@@ -102,11 +111,11 @@ public class ClipDashboard extends Application {
             SysClipboard.write(StringUtil.rtrim(SysClipboard.read()));
         });
         btnLower.setOnAction((e) -> {
-            statusBar.setText("Lower-casing current clipboard contents");
+            statusBar.setText("Lower-cased current clipboard contents");
             SysClipboard.write(SysClipboard.read().toLowerCase());
         });
         btnUpper.setOnAction((e) -> {
-            statusBar.setText("Upper-casing current clipboard contents");
+            statusBar.setText("Upper-cased current clipboard contents");
             SysClipboard.write(SysClipboard.read().toUpperCase());
         });
         btnClipPrepend.setOnAction((e) -> {
@@ -128,16 +137,24 @@ public class ClipDashboard extends Application {
             SysClipboard.write(SysClipboard.read().replace(trg, repl));
         });
 
+        // List operations tab
         // NOTE: List operations assume each "item" of the "list" is a line of text, each separated from the other by carriage returns.
         Tab tab2 = new Tab("List operations");
         tab2.setClosable(false);
         modificationTabPane.getTabs().add(tab2);
-        HBox strTabHBox = new HBox();
+
+        VBox listTabVBox = new VBox();
+        listTabVBox.setSpacing(5);
+
+        HBox noArgListOpsHBox = new HBox();
         Button btnListLTrim = new Button("L");
         Button btnListTrim = new Button("trim");
         Button btnListRTrim = new Button("R");
-        strTabHBox.getChildren().addAll(btnListLTrim, btnListTrim, btnListRTrim);
-        tab2.setContent(strTabHBox);
+
+        noArgListOpsHBox.getChildren().addAll(btnListLTrim, btnListTrim, btnListRTrim);
+        listTabVBox.getChildren().addAll(noArgListOpsHBox);
+
+        tab2.setContent(listTabVBox);
         btnListLTrim.setOnAction((e) -> {
             String[] array = SysClipboard.read().split("\n");
             List<String> list = Arrays.asList(array);
@@ -165,7 +182,6 @@ public class ClipDashboard extends Application {
             }
             SysClipboard.write(String.join("\n", list));
         });
-
 
         // Log
         log = new TextArea();

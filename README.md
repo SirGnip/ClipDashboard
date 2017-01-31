@@ -3,7 +3,7 @@
 Iteration #1 - minimal features so I use it instead of Python one
 
 - x make Receive bigger so it is easy to click
-- double click to receive item
+- x double click to receive item
 - two store modes:
     - by append and by replace (what does this look like with multiselect?)
     - separete buttons? right click button to change mode? checkbox somehwere? toggle in Settings menu item?)
@@ -110,3 +110,14 @@ Visualizing focus ideas as when the ListView control as a whole looses focus, th
 - maybe have a generic "store" button that has different behavior based on some mode/configuration?
     - append new clip to buffer?
     - prepend/append/replace selected clips in buffer with text in system clipboard?
+
+
+# Bugs
+
+- If you put list-based text into the clipboard (ex: "\n\n\n a \n b \n c \n\n\n") and do a "list trim", it seems to remove the trailing blank rows (but not the initial))... I'm expecting those trailing \n should result in blank rows, even after a trim.  The trimming shouldn't remove lines, only the whitespace from the lines.
+
+              
+    
+    
+        
+
