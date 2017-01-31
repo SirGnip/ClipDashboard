@@ -83,16 +83,16 @@ public class ClipDashboard extends Application {
         Button btnClipRTrim = new Button("R");
         Button btnLower = new Button("lower");
         Button btnUpper = new Button("upper");
-        Button btnClipReplace = new Button("replace");
-        TextField txtClipArg2 = new TextField("\\n");
-        txtClipArg2.setPrefWidth(80);
         noArgStrOpsHBox.getChildren().addAll(btnClipLTrim, btnClipTrim, btnClipRTrim, btnLower, btnUpper);
 
         HBox argsStrOpsHBox = new HBox();
         Button btnClipPrepend = new Button("prepend");
         Button btnClipAppend = new Button("append");
+        Button btnClipReplace = new Button("replace");
         TextField txtClipArg1 = new TextField(",");
         txtClipArg1.setPrefWidth(80);
+        TextField txtClipArg2 = new TextField("\\n");
+        txtClipArg2.setPrefWidth(80);
         argsStrOpsHBox.getChildren().addAll(btnClipPrepend, btnClipAppend, btnClipReplace, txtClipArg1, txtClipArg2);
 
         strTabVBox.getChildren().addAll(noArgStrOpsHBox, argsStrOpsHBox);
@@ -150,9 +150,16 @@ public class ClipDashboard extends Application {
         Button btnListLTrim = new Button("L");
         Button btnListTrim = new Button("trim");
         Button btnListRTrim = new Button("R");
-
         noArgListOpsHBox.getChildren().addAll(btnListLTrim, btnListTrim, btnListRTrim);
-        listTabVBox.getChildren().addAll(noArgListOpsHBox);
+
+        HBox argsListOpsHBox = new HBox();
+        Button btnListPrepend = new Button("prepend");
+        Button btnListAppend = new Button("append");
+        TextField txtListArg1 = new TextField("_");
+        txtListArg1.setPrefWidth(80);
+        argsListOpsHBox.getChildren().addAll(btnListPrepend, btnListAppend, txtListArg1);
+
+        listTabVBox.getChildren().addAll(noArgListOpsHBox, argsListOpsHBox);
 
         tab2.setContent(listTabVBox);
         btnListLTrim.setOnAction((e) -> {
@@ -179,6 +186,26 @@ public class ClipDashboard extends Application {
             statusBar.setText("Right-trimmed " + list.size() + " lines in current clipboard");
             for (int i = 0; i < list.size(); ++i) {
                 list.set(i, StringUtil.rtrim(list.get(i)));
+            }
+            SysClipboard.write(String.join("\n", list));
+        });
+        btnListPrepend.setOnAction((e) -> {
+            String[] array = SysClipboard.read().split("\n");
+            List<String> list = Arrays.asList(array);
+            String arg = txtListArg1.getText();
+            statusBar.setText("Prepended " + arg.length() + " character(s) to " + list.size() + " lines in current clipboard");
+            for (int i = 0; i < list.size(); ++i) {
+                list.set(i, arg + list.get(i));
+            }
+            SysClipboard.write(String.join("\n", list));
+        });
+        btnListAppend.setOnAction((e) -> {
+            String[] array = SysClipboard.read().split("\n");
+            List<String> list = Arrays.asList(array);
+            String arg = txtListArg1.getText();
+            statusBar.setText("Appended " + arg.length() + " character(s) to " + list.size() + " lines in current clipboard");
+            for (int i = 0; i < list.size(); ++i) {
+                list.set(i, list.get(i) + arg);
             }
             SysClipboard.write(String.join("\n", list));
         });
