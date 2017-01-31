@@ -60,6 +60,7 @@ public class ClipDashboard extends Application {
         HBox hbox = new HBox();
         hbox.setPadding(new Insets(5));
 
+        Label lblBuffers = new Label("Buffers: ");
         Button btnRetrieve = new Button("Retrieve");
         btnRetrieve.setMaxWidth(Double.MAX_VALUE);
         Button btnStore = new Button("Store");
@@ -68,40 +69,70 @@ public class ClipDashboard extends Application {
         Button btnReplace = new Button("Replace");
         Button btnDelete = new Button("Del");
 
+        Label lblClipboard = new Label("Clipboard: ");
+
         TabPane modificationTabPane = new TabPane();
         modificationTabPane.setMinHeight(120);
-        Tab tab1 = new Tab("Clip operations");
+        Tab tab1 = new Tab("String operations");
         HBox tabHBox = new HBox();
+        Button btnClipLTrim = new Button("L");
+        Button btnClipTrim = new Button("trim");
+        Button btnClipRTrim = new Button("R");
+        Button btnLower = new Button("lower");
+        Button btnUpper = new Button("upper");
         Button btnClipPrepend = new Button("prepend");
-        TextField txtClipInput = new TextField("<txt>");
-        btnClipPrepend.setOnAction((e) -> {
-            ObservableList<Integer> indices = items.getSelectionModel().getSelectedIndices();
-            statusBar.setText("Prepend to " + indices.size() + " buffer(s): " + txtClipInput.getText());
-            for (Integer idx : indices) { // Can't use for loop with function that returns a generic? http://stackoverflow.com/questions/6271960/how-to-iterate-over-a-wildcard-generic
-                log.insertText(0, idx.toString() + "\n");
-                clips.set(idx, txtClipInput.getText() + clips.get(idx));
-            }
-        });
         Button btnClipAppend = new Button("append");
-        btnClipAppend.setOnAction((e) -> {
-            ObservableList<Integer> indices = items.getSelectionModel().getSelectedIndices();
-            statusBar.setText("Append to " + indices.size() + " buffer(s): " + txtClipInput.getText());
-            for (Integer idx : indices) {
-                log.insertText(0, idx.toString() + "\n");
-                clips.set(idx, clips.get(idx) + txtClipInput.getText());
-            }
-        });
+        Button btnClipReplace = new Button("replace");
+        TextField txtClipArg1 = new TextField(",");
+        txtClipArg1.setPrefWidth(80);
+        TextField txtClipArg2 = new TextField("\\n");
+        txtClipArg2.setPrefWidth(80);
 
-
-        tabHBox.getChildren().add(btnClipPrepend);
-        tabHBox.getChildren().add(btnClipAppend);
-        tabHBox.getChildren().add(txtClipInput);
-
+        tabHBox.getChildren().addAll(btnClipLTrim, btnClipTrim, btnClipRTrim, btnLower, btnUpper, btnClipPrepend, btnClipAppend, btnClipReplace, txtClipArg1, txtClipArg2);
         tab1.setContent(tabHBox);
-
         tab1.setClosable(false);
         modificationTabPane.getTabs().add(tab1);
-        Tab tab2 = new Tab("Line operations");
+        btnClipLTrim.setOnAction((e) -> {
+            statusBar.setText("Left-trimmed current clipboard contents");
+            storeToSysClipboard(ltrim(readSysClipboard()));
+        });
+        btnClipTrim.setOnAction((e) -> {
+            statusBar.setText("Trimmed current clipboard contents");
+            storeToSysClipboard(readSysClipboard().trim());
+        });
+        btnClipRTrim.setOnAction((e) -> {
+            statusBar.setText("Right-trimmed current clipboard contents");
+            storeToSysClipboard(rtrim(readSysClipboard()));
+        });
+        btnLower.setOnAction((e) -> {
+            statusBar.setText("Lower-casing current clipboard contents");
+            storeToSysClipboard(readSysClipboard().toLowerCase());
+        });
+        btnUpper.setOnAction((e) -> {
+            statusBar.setText("Upper-casing current clipboard contents");
+            storeToSysClipboard(readSysClipboard().toUpperCase());
+        });
+        btnClipPrepend.setOnAction((e) -> {
+            String arg = txtClipArg1.getText();
+            statusBar.setText("Prepended " + arg.length() + " character to current clipboard");
+            storeToSysClipboard(arg + readSysClipboard());
+        });
+        btnClipAppend.setOnAction((e) -> {
+            String arg = txtClipArg1.getText();
+            statusBar.setText("Appended " + arg.length() + " character to current clipboard");
+            storeToSysClipboard(readSysClipboard() + arg);
+        });
+        btnClipReplace.setOnAction((e) -> {
+            String trg = txtClipArg1.getText();
+            String repl = txtClipArg2.getText();
+            trg = trg.replace("\\n", "\n");
+            repl = repl.replace("\\n", "\n");
+            statusBar.setText("Replaced '" + trg + "' with '" + repl + "' in current clipboard");
+            storeToSysClipboard(readSysClipboard().replace(trg, repl));
+        });
+
+        // NOTE: List operations assume each "item" of the "list" is a line of text, each separated from the other by carriage returns.
+        Tab tab2 = new Tab("List operations");
         tab2.setClosable(false);
         modificationTabPane.getTabs().add(tab2);
 
@@ -111,8 +142,8 @@ public class ClipDashboard extends Application {
         vbox.getChildren().add(items);
         vbox.getChildren().add(btnRetrieve);
         vbox.getChildren().add(hbox);
-        hbox.getChildren().addAll(btnStore, btnPrepend, btnAppend, btnReplace, btnDelete);
-//        vbox.getChildren().add(chkStoreOnFocus);
+        hbox.getChildren().addAll(lblBuffers, btnStore, btnPrepend, btnAppend, btnReplace, btnDelete);
+        vbox.getChildren().add(new Label("System Clipboard:"));
         vbox.getChildren().add(modificationTabPane);
         vbox.getChildren().add(log);
         vbox.getChildren().add(statusBar);
@@ -125,7 +156,7 @@ public class ClipDashboard extends Application {
             String clipboard = readSysClipboard();
             ObservableList<Integer> indices = items.getSelectionModel().getSelectedIndices();
             statusBar.setText("Prepend " + clipboard.length() + " characters to " + indices.size() + " buffer(s)");
-            for (Integer i : indices) {
+            for (Integer i : indices) { // Can't use for loop with function that returns a generic? http://stackoverflow.com/questions/6271960/how-to-iterate-over-a-wildcard-generic
                 clips.set(i, clipboard + clips.get(i));
             }
         });
@@ -163,7 +194,7 @@ public class ClipDashboard extends Application {
         });
 
 
-        Scene scene = new Scene(vbox, 500, 700);
+        Scene scene = new Scene(vbox, 600, 700);
         primaryStage.setTitle("ClipDashboard");
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -246,5 +277,21 @@ public class ClipDashboard extends Application {
         statusBar.setText(String.format("Storing %d chars to a buffer from clipboard\n", clip.length()));
         clips.add(0, clip);
         items.scrollTo(clip);
+    }
+
+    // Reference: http://stackoverflow.com/a/15567181
+    private static String ltrim(String s) {
+        int i = 0;
+        while (i < s.length() && Character.isWhitespace(s.charAt(i))) {
+            i++;
+        }
+        return s.substring(i);
+    }
+    private static String rtrim(String s) {
+        int i = s.length()-1;
+        while (i >= 0 && Character.isWhitespace(s.charAt(i))) {
+            i--;
+        }
+        return s.substring(0,i+1);
     }
 }
