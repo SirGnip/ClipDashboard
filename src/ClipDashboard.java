@@ -21,6 +21,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import com.juxtaflux.*;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class ClipDashboard extends Application {
 
     private ListView items;
@@ -50,9 +53,9 @@ public class ClipDashboard extends Application {
             }
         });
 
+        // Buffer operations
         HBox hbox = new HBox();
         hbox.setPadding(new Insets(5));
-
         Label lblBuffers = new Label("Buffers: ");
         Button btnRetrieve = new Button("Retrieve");
         btnRetrieve.setMaxWidth(Double.MAX_VALUE);
@@ -62,10 +65,11 @@ public class ClipDashboard extends Application {
         Button btnReplace = new Button("Replace");
         Button btnDelete = new Button("Del");
 
-        Label lblClipboard = new Label("Clipboard: ");
-
+        // String/List tabs
         TabPane modificationTabPane = new TabPane();
         modificationTabPane.setMinHeight(120);
+
+        // String operation tab
         Tab tab1 = new Tab("String operations");
         HBox tabHBox = new HBox();
         Button btnClipLTrim = new Button("L");
@@ -128,7 +132,42 @@ public class ClipDashboard extends Application {
         Tab tab2 = new Tab("List operations");
         tab2.setClosable(false);
         modificationTabPane.getTabs().add(tab2);
+        HBox strTabHBox = new HBox();
+        Button btnListLTrim = new Button("L");
+        Button btnListTrim = new Button("trim");
+        Button btnListRTrim = new Button("R");
+        strTabHBox.getChildren().addAll(btnListLTrim, btnListTrim, btnListRTrim);
+        tab2.setContent(strTabHBox);
+        btnListLTrim.setOnAction((e) -> {
+            String[] array = SysClipboard.read().split("\n");
+            List<String> list = Arrays.asList(array);
+            statusBar.setText("Left-trimmed " + list.size() + " lines in current clipboard");
+            for (int i = 0; i < list.size(); ++i) {
+                list.set(i, StringUtil.ltrim(list.get(i)));
+            }
+            SysClipboard.write(String.join("\n", list));
+        });
+        btnListTrim.setOnAction((e) -> {
+            String[] array = SysClipboard.read().split("\n");
+            List<String> list = Arrays.asList(array);
+            statusBar.setText("Trimmed " + list.size() + " lines in current clipboard");
+            for (int i = 0; i < list.size(); ++i) {
+                list.set(i, list.get(i).trim());
+            }
+            SysClipboard.write(String.join("\n", list));
+        });
+        btnListRTrim.setOnAction((e) -> {
+            String[] array = SysClipboard.read().split("\n");
+            List<String> list = Arrays.asList(array);
+            statusBar.setText("Right-trimmed " + list.size() + " lines in current clipboard");
+            for (int i = 0; i < list.size(); ++i) {
+                list.set(i, StringUtil.rtrim(list.get(i)));
+            }
+            SysClipboard.write(String.join("\n", list));
+        });
 
+
+        // Log
         log = new TextArea();
         vbox.setVgrow(log, Priority.ALWAYS);
 
