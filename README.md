@@ -20,7 +20,7 @@ Iteration #1 - minimal features so I use it instead of Python one
 - create clips
     - read form clipboard, file, url, list of files
 - manipulating list of clips
-    - append, replace, remove, reorder, sort, clear, filter, export to disk
+    - append, replace, remove, reorder, sort, clear, filter, remove empty lines (special case of filter), remove duplicates, export to disk
 - mutating clip contents
     - prepend, append, join, split, filter, sort, count, variable substitute, numbering
     - able to apply mutations to individual clips or to all selected clips?

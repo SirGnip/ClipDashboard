@@ -21,13 +21,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import com.juxtaflux.*;
 
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.IOException;
-
 public class ClipDashboard extends Application {
 
     private ListView items;
@@ -94,33 +87,33 @@ public class ClipDashboard extends Application {
         modificationTabPane.getTabs().add(tab1);
         btnClipLTrim.setOnAction((e) -> {
             statusBar.setText("Left-trimmed current clipboard contents");
-            storeToSysClipboard(ltrim(readSysClipboard()));
+            SysClipboard.write(StringUtil.ltrim(SysClipboard.read()));
         });
         btnClipTrim.setOnAction((e) -> {
             statusBar.setText("Trimmed current clipboard contents");
-            storeToSysClipboard(readSysClipboard().trim());
+            SysClipboard.write(SysClipboard.read().trim());
         });
         btnClipRTrim.setOnAction((e) -> {
             statusBar.setText("Right-trimmed current clipboard contents");
-            storeToSysClipboard(rtrim(readSysClipboard()));
+            SysClipboard.write(StringUtil.rtrim(SysClipboard.read()));
         });
         btnLower.setOnAction((e) -> {
             statusBar.setText("Lower-casing current clipboard contents");
-            storeToSysClipboard(readSysClipboard().toLowerCase());
+            SysClipboard.write(SysClipboard.read().toLowerCase());
         });
         btnUpper.setOnAction((e) -> {
             statusBar.setText("Upper-casing current clipboard contents");
-            storeToSysClipboard(readSysClipboard().toUpperCase());
+            SysClipboard.write(SysClipboard.read().toUpperCase());
         });
         btnClipPrepend.setOnAction((e) -> {
             String arg = txtClipArg1.getText();
             statusBar.setText("Prepended " + arg.length() + " character to current clipboard");
-            storeToSysClipboard(arg + readSysClipboard());
+            SysClipboard.write(arg + SysClipboard.read());
         });
         btnClipAppend.setOnAction((e) -> {
             String arg = txtClipArg1.getText();
             statusBar.setText("Appended " + arg.length() + " character to current clipboard");
-            storeToSysClipboard(readSysClipboard() + arg);
+            SysClipboard.write(SysClipboard.read() + arg);
         });
         btnClipReplace.setOnAction((e) -> {
             String trg = txtClipArg1.getText();
@@ -128,7 +121,7 @@ public class ClipDashboard extends Application {
             trg = trg.replace("\\n", "\n");
             repl = repl.replace("\\n", "\n");
             statusBar.setText("Replaced '" + trg + "' with '" + repl + "' in current clipboard");
-            storeToSysClipboard(readSysClipboard().replace(trg, repl));
+            SysClipboard.write(SysClipboard.read().replace(trg, repl));
         });
 
         // NOTE: List operations assume each "item" of the "list" is a line of text, each separated from the other by carriage returns.
@@ -149,11 +142,11 @@ public class ClipDashboard extends Application {
         vbox.getChildren().add(statusBar);
 
         btnStore.setOnAction((e) -> {
-            appendToClipBuffers(readSysClipboard());
+            appendToClipBuffers(SysClipboard.read());
         });
 
         btnPrepend.setOnAction((e) -> {
-            String clipboard = readSysClipboard();
+            String clipboard = SysClipboard.read();
             ObservableList<Integer> indices = items.getSelectionModel().getSelectedIndices();
             statusBar.setText("Prepend " + clipboard.length() + " characters to " + indices.size() + " buffer(s)");
             for (Integer i : indices) { // Can't use for loop with function that returns a generic? http://stackoverflow.com/questions/6271960/how-to-iterate-over-a-wildcard-generic
@@ -162,7 +155,7 @@ public class ClipDashboard extends Application {
         });
 
         btnAppend.setOnAction((e) -> {
-            String clipboard = readSysClipboard();
+            String clipboard = SysClipboard.read();
             ObservableList<Integer> indices = items.getSelectionModel().getSelectedIndices();
             statusBar.setText("Append " + clipboard.length() + " characters to " + indices.size() + " buffer(s)");
             for (Integer i : indices) {
@@ -171,7 +164,7 @@ public class ClipDashboard extends Application {
         });
 
         btnReplace.setOnAction((e) -> {
-            String clipboard = readSysClipboard();
+            String clipboard = SysClipboard.read();
             ObservableList<Integer> indices = items.getSelectionModel().getSelectedIndices();
             statusBar.setText("Replace " + indices.size() + " buffer(s) with " + clipboard.length() + " characters");
             for (Integer i : indices) {
@@ -205,14 +198,14 @@ public class ClipDashboard extends Application {
                 if (ov.getValue()) {
                     if (chkStoreOnFocus.isSelected()) {
                         log.insertText(0, "got focus\n");
-                        appendToClipBuffers(readSysClipboard());
+                        appendToClipBuffers(SysClipboard.read());
                     }
                 }
             }
         });
 
         if (chkStoreOnFocus.isSelected()) {
-            appendToClipBuffers(readSysClipboard()); // read and store first clip when app first opens
+            appendToClipBuffers(SysClipboard.read()); // read and store first clip when app first opens
         }
 
         MyAppFramework.dump(vbox);
@@ -254,44 +247,12 @@ public class ClipDashboard extends Application {
         Object selected = items.getSelectionModel().getSelectedItem();
         String msg = ((String) selected);
         statusBar.setText(String.format("Retrieving %d chars from buffer and storing to the clipboard\n", msg.length()));
-        storeToSysClipboard(msg);
-    }
-
-    private String readSysClipboard() {
-        String msg = "";
-        try {
-            msg = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
-        } catch(UnsupportedFlavorException|IOException exc) {
-            log.insertText(0, "Read clipboard FAILED: " + exc.getClass().getName() + " " + exc);
-        }
-        return msg;
-    }
-
-    private void storeToSysClipboard(String s) {
-        StringSelection selection = new StringSelection(s);
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        clipboard.setContents(selection, null);
+        SysClipboard.write(msg);
     }
 
     private void appendToClipBuffers(String clip) {
         statusBar.setText(String.format("Storing %d chars to a buffer from clipboard\n", clip.length()));
         clips.add(0, clip);
         items.scrollTo(clip);
-    }
-
-    // Reference: http://stackoverflow.com/a/15567181
-    private static String ltrim(String s) {
-        int i = 0;
-        while (i < s.length() && Character.isWhitespace(s.charAt(i))) {
-            i++;
-        }
-        return s.substring(i);
-    }
-    private static String rtrim(String s) {
-        int i = s.length()-1;
-        while (i >= 0 && Character.isWhitespace(s.charAt(i))) {
-            i--;
-        }
-        return s.substring(0,i+1);
     }
 }
