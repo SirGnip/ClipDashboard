@@ -1,5 +1,10 @@
 /** General string manipulation static functions */
 public class StringUtil {
+    public static String replaceSpecialChars(String s) {
+        s = s.replace("\\n", "\n");
+        s = s.replace("\\t", "\t");
+        return s;
+    }
     // Reference: http://stackoverflow.com/a/15567181
     public static String ltrim(String s) {
         int i = 0;

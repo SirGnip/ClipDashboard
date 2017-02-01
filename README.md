@@ -7,11 +7,11 @@ Iteration #1 - minimal features so I use it instead of Python one
 - two store modes:
     - by append and by replace (what does this look like with multiselect?)
     - separete buttons? right click button to change mode? checkbox somehwere? toggle in Settings menu item?)
-- delete selected
-- add menus
-	- file
+- x delete selected
+- x add menus
+	- x file
 	    - exit
-	- clip
+	- x clip
 		- deleted selected
 - truncate text display for very long items or ones with embedded cr's?
 		
@@ -19,18 +19,21 @@ Iteration #1 - minimal features so I use it instead of Python one
 
 - create clips
     - read form clipboard, file, url, list of files
-- manipulating list of clips
-    - append, replace, remove, reorder, sort, clear, filter, remove empty lines (special case of filter), remove duplicates, export to disk
+- managing and mutating clip buffer
+    - x append, x replace, x remove, reorder, sort, x clear, filter, remove empty lines (special case of filter), remove duplicates/uniqueify, export to disk
+    - x able to apply mutations to individual clips or to all selected clips?
 - mutating clip contents
-    - prepend, append, join, split, filter, sort, count, variable substitute, numbering
-    - able to apply mutations to individual clips or to all selected clips?
+    - string
+        - x trim, x lower, x upper, x prepend, x append, x split, variable substitute
+    - list
+        - x prepend, x append, x join, filter, sort, count, numbering
 - retrieving clips
-    - single
+    - x single
     - multiple selected
         - cycle through all/selected?
         - join w/ provided delimiter
 - destination of receive
-    - clipboard, file, post to url, substitute into shell command?
+    - x clipboard, file, post to url, substitute into shell command?
     
 uncategorized
     

@@ -7,19 +7,9 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import com.juxtaflux.*;
+import com.juxtaflux.MyAppFramework;
 
 import java.util.Arrays;
 import java.util.List;
@@ -88,12 +78,13 @@ public class ClipDashboard extends Application {
         HBox argsStrOpsHBox = new HBox();
         Button btnClipPrepend = new Button("prepend");
         Button btnClipAppend = new Button("append");
+        Button btnClipSplit = new Button("split");
         Button btnClipReplace = new Button("replace");
         TextField txtClipArg1 = new TextField(",");
         txtClipArg1.setPrefWidth(80);
         TextField txtClipArg2 = new TextField("\\n");
         txtClipArg2.setPrefWidth(80);
-        argsStrOpsHBox.getChildren().addAll(btnClipPrepend, btnClipAppend, btnClipReplace, txtClipArg1, txtClipArg2);
+        argsStrOpsHBox.getChildren().addAll(btnClipPrepend, btnClipAppend, btnClipSplit, btnClipReplace, txtClipArg1, txtClipArg2);
 
         strTabVBox.getChildren().addAll(noArgStrOpsHBox, argsStrOpsHBox);
         tab1.setContent(strTabVBox);
@@ -128,11 +119,20 @@ public class ClipDashboard extends Application {
             statusBar.setText("Appended " + arg.length() + " character to current clipboard");
             SysClipboard.write(SysClipboard.read() + arg);
         });
+        btnClipSplit.setOnAction((e) -> {
+            String arg = txtClipArg1.getText();
+            String clipboard = SysClipboard.read();
+            int origSize = clipboard.length();
+            clipboard = clipboard.replace(arg, "\n");
+            String[] array = clipboard.split("\n");
+            statusBar.setText("Split " + origSize + " character(s) using '" + arg + "' into " + array.length + " line(s) in current clipboard");
+            SysClipboard.write(clipboard);
+        });
         btnClipReplace.setOnAction((e) -> {
             String trg = txtClipArg1.getText();
             String repl = txtClipArg2.getText();
-            trg = trg.replace("\\n", "\n");
-            repl = repl.replace("\\n", "\n");
+            trg = StringUtil.replaceSpecialChars(trg);
+            repl = StringUtil.replaceSpecialChars(repl);
             statusBar.setText("Replaced '" + trg + "' with '" + repl + "' in current clipboard");
             SysClipboard.write(SysClipboard.read().replace(trg, repl));
         });
@@ -155,9 +155,10 @@ public class ClipDashboard extends Application {
         HBox argsListOpsHBox = new HBox();
         Button btnListPrepend = new Button("prepend");
         Button btnListAppend = new Button("append");
+        Button btnListJoin = new Button("join");
         TextField txtListArg1 = new TextField("_");
         txtListArg1.setPrefWidth(80);
-        argsListOpsHBox.getChildren().addAll(btnListPrepend, btnListAppend, txtListArg1);
+        argsListOpsHBox.getChildren().addAll(btnListPrepend, btnListAppend, btnListJoin, txtListArg1);
 
         listTabVBox.getChildren().addAll(noArgListOpsHBox, argsListOpsHBox);
 
@@ -208,6 +209,12 @@ public class ClipDashboard extends Application {
                 list.set(i, list.get(i) + arg);
             }
             SysClipboard.write(String.join("\n", list));
+        });
+        btnListJoin.setOnAction((e) -> {
+            String clipboard = SysClipboard.read();
+            String arg = txtListArg1.getText();
+            statusBar.setText("Joined " + clipboard.split("\n").length + " lines with '" + arg + "' in current clipboard");
+            SysClipboard.write(clipboard.replace("\n", arg));
         });
 
         // Log
