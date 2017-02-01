@@ -68,59 +68,59 @@ public class ClipDashboard extends Application {
         strTabVBox.setSpacing(5);
 
         HBox noArgStrOpsHBox = new HBox();
-        Button btnClipLTrim = new Button("L");
-        Button btnClipTrim = new Button("trim");
-        Button btnClipRTrim = new Button("R");
-        Button btnLower = new Button("lower");
-        Button btnUpper = new Button("upper");
-        noArgStrOpsHBox.getChildren().addAll(btnClipLTrim, btnClipTrim, btnClipRTrim, btnLower, btnUpper);
+        Button btnStrLTrim = new Button("L");
+        Button btnStrTrim = new Button("trim");
+        Button btnStrRTrim = new Button("R");
+        Button btnStrLower = new Button("lower");
+        Button btnStrUpper = new Button("upper");
+        noArgStrOpsHBox.getChildren().addAll(btnStrLTrim, btnStrTrim, btnStrRTrim, btnStrLower, btnStrUpper);
 
         HBox argsStrOpsHBox = new HBox();
-        Button btnClipPrepend = new Button("prepend");
-        Button btnClipAppend = new Button("append");
-        Button btnClipSplit = new Button("split");
-        Button btnClipReplace = new Button("replace");
-        TextField txtClipArg1 = new TextField(",");
-        txtClipArg1.setPrefWidth(80);
-        TextField txtClipArg2 = new TextField("\\n");
-        txtClipArg2.setPrefWidth(80);
-        argsStrOpsHBox.getChildren().addAll(btnClipPrepend, btnClipAppend, btnClipSplit, btnClipReplace, txtClipArg1, txtClipArg2);
+        Button btnStrPrepend = new Button("prepend");
+        Button btnStrAppend = new Button("append");
+        Button btnStrSplit = new Button("split");
+        Button btnStrReplace = new Button("replace");
+        TextField txtStrArg1 = new TextField(",");
+        txtStrArg1.setPrefWidth(80);
+        TextField txtStrArg2 = new TextField("\\n");
+        txtStrArg2.setPrefWidth(80);
+        argsStrOpsHBox.getChildren().addAll(btnStrPrepend, btnStrAppend, btnStrSplit, btnStrReplace, txtStrArg1, txtStrArg2);
 
         strTabVBox.getChildren().addAll(noArgStrOpsHBox, argsStrOpsHBox);
         tab1.setContent(strTabVBox);
 
-        btnClipLTrim.setOnAction((e) -> {
+        btnStrLTrim.setOnAction((e) -> {
             statusBar.setText("Left-trimmed current clipboard contents");
             SysClipboard.write(StringUtil.ltrim(SysClipboard.read()));
         });
-        btnClipTrim.setOnAction((e) -> {
+        btnStrTrim.setOnAction((e) -> {
             statusBar.setText("Trimmed current clipboard contents");
             SysClipboard.write(SysClipboard.read().trim());
         });
-        btnClipRTrim.setOnAction((e) -> {
+        btnStrRTrim.setOnAction((e) -> {
             statusBar.setText("Right-trimmed current clipboard contents");
             SysClipboard.write(StringUtil.rtrim(SysClipboard.read()));
         });
-        btnLower.setOnAction((e) -> {
+        btnStrLower.setOnAction((e) -> {
             statusBar.setText("Lower-cased current clipboard contents");
             SysClipboard.write(SysClipboard.read().toLowerCase());
         });
-        btnUpper.setOnAction((e) -> {
+        btnStrUpper.setOnAction((e) -> {
             statusBar.setText("Upper-cased current clipboard contents");
             SysClipboard.write(SysClipboard.read().toUpperCase());
         });
-        btnClipPrepend.setOnAction((e) -> {
-            String arg = txtClipArg1.getText();
+        btnStrPrepend.setOnAction((e) -> {
+            String arg = txtStrArg1.getText();
             statusBar.setText("Prepended " + arg.length() + " character to current clipboard");
             SysClipboard.write(arg + SysClipboard.read());
         });
-        btnClipAppend.setOnAction((e) -> {
-            String arg = txtClipArg1.getText();
+        btnStrAppend.setOnAction((e) -> {
+            String arg = txtStrArg1.getText();
             statusBar.setText("Appended " + arg.length() + " character to current clipboard");
             SysClipboard.write(SysClipboard.read() + arg);
         });
-        btnClipSplit.setOnAction((e) -> {
-            String arg = txtClipArg1.getText();
+        btnStrSplit.setOnAction((e) -> {
+            String arg = txtStrArg1.getText();
             String clipboard = SysClipboard.read();
             int origSize = clipboard.length();
             clipboard = clipboard.replace(arg, "\n");
@@ -128,9 +128,9 @@ public class ClipDashboard extends Application {
             statusBar.setText("Split " + origSize + " character(s) using '" + arg + "' into " + array.length + " line(s) in current clipboard");
             SysClipboard.write(clipboard);
         });
-        btnClipReplace.setOnAction((e) -> {
-            String trg = txtClipArg1.getText();
-            String repl = txtClipArg2.getText();
+        btnStrReplace.setOnAction((e) -> {
+            String trg = txtStrArg1.getText();
+            String repl = txtStrArg2.getText();
             trg = StringUtil.replaceSpecialChars(trg);
             repl = StringUtil.replaceSpecialChars(repl);
             statusBar.setText("Replaced '" + trg + "' with '" + repl + "' in current clipboard");
