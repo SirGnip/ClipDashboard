@@ -150,7 +150,8 @@ public class ClipDashboard extends Application {
         Button btnListLTrim = new Button("L");
         Button btnListTrim = new Button("trim");
         Button btnListRTrim = new Button("R");
-        noArgListOpsHBox.getChildren().addAll(btnListLTrim, btnListTrim, btnListRTrim);
+        Button btnListStats = new Button("stats");
+        noArgListOpsHBox.getChildren().addAll(btnListLTrim, btnListTrim, btnListRTrim, btnListStats);
 
         HBox argsListOpsHBox = new HBox();
         Button btnListPrepend = new Button("prepend");
@@ -189,6 +190,28 @@ public class ClipDashboard extends Application {
                 list.set(i, StringUtil.rtrim(list.get(i)));
             }
             SysClipboard.write(String.join("\n", list));
+        });
+        btnListStats.setOnAction((e) -> {
+            String clipboard = SysClipboard.read();
+            String[] array = clipboard.split("\n");
+            List<String> list = Arrays.asList(array);
+            String[] words = clipboard.split("\\s+");
+
+            Integer minLineLen = Integer.MAX_VALUE;
+            Integer maxLineLen = 0;
+            Integer totalLineLen = 0;
+            for (String line : list) {
+                Integer lineLength = line.length();
+                minLineLen = Math.min(minLineLen, lineLength);
+                maxLineLen = Math.max(maxLineLen, lineLength);
+                totalLineLen += lineLength;
+            }
+            String msg = String.format(
+                    "List stats: lines=%d chars=%d words=%d min/max/avgLineLength=%d / %d / %.1f",
+                    list.size(), clipboard.length(), words.length,
+                    minLineLen, maxLineLen, (float) totalLineLen/list.size()
+                    );
+            statusBar.setText(msg);
         });
         btnListPrepend.setOnAction((e) -> {
             String[] array = SysClipboard.read().split("\n");

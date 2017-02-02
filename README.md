@@ -4,15 +4,15 @@ Iteration #1 - minimal features so I use it instead of Python one
 
 - x make Receive bigger so it is easy to click
 - x double click to receive item
-- two store modes:
-    - by append and by replace (what does this look like with multiselect?)
-    - separete buttons? right click button to change mode? checkbox somehwere? toggle in Settings menu item?)
+- x two store modes:
+    - x by append and by replace (what does this look like with multiselect?)
+    - x separete buttons? right click button to change mode? checkbox somehwere? toggle in Settings menu item?)
 - x delete selected
 - x add menus
-	- x file
-	    - exit
-	- x clip
-		- deleted selected
+    - x file
+        - x exit
+    - x clip
+        - x deleted selected
 - truncate text display for very long items or ones with embedded cr's?
 		
 # use cases
@@ -113,6 +113,9 @@ Visualizing focus ideas as when the ListView control as a whole looses focus, th
 - maybe have a generic "store" button that has different behavior based on some mode/configuration?
     - append new clip to buffer?
     - prepend/append/replace selected clips in buffer with text in system clipboard?
+- clear the status bar x seconds after the event happens. This means that if you are retriving the same string over and over, you don't see any change on the status bar "Retrieving 10 chars..." and you don't get a visual indication an event has happened.  But if the status disappars, it is more visually obvious when something changes.
+    - bonus: made it fade out
+    - bonus: maybe don't remove status messages, but have new status bar entries flash or pulse to show they are new?
 
 
 # Bugs
