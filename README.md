@@ -26,7 +26,7 @@ Iteration #1 - minimal features so I use it instead of Python one
     - string
         - x trim, x lower, x upper, x prepend, x append, x split, variable substitute
     - list
-        - x prepend, x append, x join, filter, reverse, sort, x count, numbering (prepend and append) with start # and step # w/ tooltip explaining use of args
+        - x prepend, x append, x join, filter, x reverse, x sort, x count, numbering (prepend and append) with start # and step # w/ tooltip explaining use of args
 - retrieving clips
     - x single
     - multiple selected
@@ -117,8 +117,15 @@ Visualizing focus ideas as when the ListView control as a whole looses focus, th
     - bonus: made it fade out
     - bonus: maybe don't remove status messages, but have new status bar entries flash or pulse to show they are new?
 - look at my enso plugins or java.util.Collections for ideas of other string actions
-
-
+- sorting based on a substring (tokenizing line for a table-like sort, substring, etc.))
+- numeric sort
+- list of values
+    - min, max, average, sum, stddev
+    - visualization
+        - line/bar charts (maybe start with text based ASCII art visualizations to start and move to actual graphics later). Remember you can easily copy a list of numbers into Excel.
+        - histograms
+    - calculator of sorts where i can define a function (x*2)+x and feed a list of numbers through it
+    
 # Bugs
 
 - If you put list-based text into the clipboard (ex: "\n\n\n a \n b \n c \n\n\n") and do a "list trim", it seems to remove the trailing blank rows (but not the initial))... I'm expecting those trailing \n should result in blank rows, even after a trim.  The trimming shouldn't remove lines, only the whitespace from the lines.
