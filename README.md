@@ -26,7 +26,7 @@ Iteration #1 - minimal features so I use it instead of Python one
     - string
         - x trim, x lower, x upper, x prepend, x append, x split, variable substitute
     - list
-        - x prepend, x append, x join, filter, sort, count, numbering
+        - x prepend, x append, x join, filter, reverse, sort, x count, numbering (prepend and append) with start # and step # w/ tooltip explaining use of args
 - retrieving clips
     - x single
     - multiple selected
@@ -116,6 +116,7 @@ Visualizing focus ideas as when the ListView control as a whole looses focus, th
 - clear the status bar x seconds after the event happens. This means that if you are retriving the same string over and over, you don't see any change on the status bar "Retrieving 10 chars..." and you don't get a visual indication an event has happened.  But if the status disappars, it is more visually obvious when something changes.
     - bonus: made it fade out
     - bonus: maybe don't remove status messages, but have new status bar entries flash or pulse to show they are new?
+- look at my enso plugins or java.util.Collections for ideas of other string actions
 
 
 # Bugs

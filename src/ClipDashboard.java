@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import com.juxtaflux.MyAppFramework;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class ClipDashboard extends Application {
@@ -150,8 +151,10 @@ public class ClipDashboard extends Application {
         Button btnListLTrim = new Button("L");
         Button btnListTrim = new Button("trim");
         Button btnListRTrim = new Button("R");
+        Button btnListSort = new Button("sort");
+        Button btnListReverse = new Button("reverse");
         Button btnListStats = new Button("stats");
-        noArgListOpsHBox.getChildren().addAll(btnListLTrim, btnListTrim, btnListRTrim, btnListStats);
+        noArgListOpsHBox.getChildren().addAll(btnListLTrim, btnListTrim, btnListRTrim, btnListSort, btnListReverse, btnListStats);
 
         HBox argsListOpsHBox = new HBox();
         Button btnListPrepend = new Button("prepend");
@@ -191,6 +194,21 @@ public class ClipDashboard extends Application {
             }
             SysClipboard.write(String.join("\n", list));
         });
+        btnListSort.setOnAction((e) -> {
+            String[] array = SysClipboard.read().split("\n");
+            List<String> list = Arrays.asList(array);
+            statusBar.setText("Sorted " + list.size() + " lines in current clipboard");
+            Collections.sort(list);
+            SysClipboard.write(String.join("\n", list));
+        });
+        btnListReverse.setOnAction((e) -> {
+            String[] array = SysClipboard.read().split("\n");
+            List<String> list = Arrays.asList(array);
+            statusBar.setText("Reversed " + list.size() + " lines in current clipboard");
+            Collections.reverse(list);
+            SysClipboard.write(String.join("\n", list));
+        });
+
         btnListStats.setOnAction((e) -> {
             String clipboard = SysClipboard.read();
             String[] array = clipboard.split("\n");
