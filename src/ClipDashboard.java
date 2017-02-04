@@ -40,8 +40,9 @@ public class ClipDashboard extends Application {
         items.setMaxHeight(250);
         items.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         items.setOnMouseClicked((e) -> {
+            // double click on ListView
             if (e.getClickCount() == 2) {
-                retrieveClipFromBuffer();
+                retrieveClipFromBufferAndShowStatus();
             }
         });
 
@@ -51,6 +52,13 @@ public class ClipDashboard extends Application {
         Label lblBuffers = new Label("Buffers: ");
         Button btnRetrieve = new Button("Retrieve");
         btnRetrieve.setMaxWidth(Double.MAX_VALUE);
+        btnRetrieve.setTooltip(
+                new Tooltip(
+                        "Retrieve contents of selected buffer and store to clipboard.\n" +
+                        "If multiple buffers are selected, cycle through each buffer in turn.\n" +
+                        "Double clicking a buffer is a shortcut for \"Retrieve\".\n" +
+                        "(See \"Join\" to store all selected buffers in clipboard)"
+                ));
         Button btnStore = new Button("Store");
         Button btnPrepend = new Button("Prepend");
         Button btnAppend = new Button("Append");
@@ -364,7 +372,66 @@ public class ClipDashboard extends Application {
         });
 
         btnRetrieve.setOnAction((e) -> {
-            retrieveClipFromBuffer();
+            // Cycle through selected buffers
+
+            // Give list control focus so we can see current focus, but focus makes no visual difference to items that are selected.
+            // items.requestFocus();
+
+            Integer focusIdx = items.getFocusModel().getFocusedIndex();
+            List<Integer> selIdxs = items.getSelectionModel().getSelectedIndices();
+            Integer lastSelIdx = selIdxs.get(selIdxs.size() - 1);
+
+            // Check for no selected items
+            if (selIdxs.size() == 0) {
+                statusBar.setText("No item selected");
+                return;
+            }
+
+            // Advance focus to next selected item if focused item not already selected
+            Integer ordinalOfSelected = -1; // first? second?
+            if (focusIdx > lastSelIdx) {
+                focusIdx = selIdxs.get(0);
+                items.getFocusModel().focus(focusIdx);
+                ordinalOfSelected = 0 + 1;
+            } else {
+                for (int i = 0; i < selIdxs.size(); ++i) {
+                    if (selIdxs.get(i) >= focusIdx) {
+                        focusIdx = selIdxs.get(i);
+                        items.getFocusModel().focus(focusIdx);
+                        ordinalOfSelected = i + 1;
+                        break;
+                    }
+                }
+            }
+
+            // Set clipboard
+            String clip = retrieveClipFromBuffer();
+            System.out.println(clip);
+            if (selIdxs.size() > 1) {
+                String msg = String.format("Retrieving %d chars from buffer (#%d of %d) and storing to the clipboard",
+                        clip.length(),
+                        ordinalOfSelected,
+                        selIdxs.size()
+                        );
+                statusBar.setText(msg);
+            } else {
+                statusBar.setText("Retrieving " + clip.length() + " chars from buffer and storing to the clipboard");
+            }
+
+            // Advance focus to next selected item
+            if (focusIdx >= lastSelIdx) {
+                focusIdx = selIdxs.get(0);
+                items.getFocusModel().focus(focusIdx);
+            } else {
+                for (Integer selIdx : selIdxs) {
+                    if (selIdx > focusIdx) {
+                        focusIdx = selIdx;
+                        items.getFocusModel().focus(focusIdx);
+                        System.out.println("new focus " + focusIdx);
+                        break;
+                    }
+                }
+            }
         });
 
         btnDelete.setOnAction((e) -> {
@@ -376,7 +443,6 @@ public class ClipDashboard extends Application {
             }
             statusBar.setText("Deleted " + startingSize + " selected clip buffer(s)\n");
         });
-
 
         Scene scene = new Scene(vbox, 600, 700);
         primaryStage.setTitle("ClipDashboard");
@@ -430,15 +496,21 @@ public class ClipDashboard extends Application {
         fileMenu.getItems().add(exitItem);
     }
 
-    private void retrieveClipFromBuffer() {
-        if (items.getSelectionModel().isEmpty()) {
+    private String retrieveClipFromBufferAndShowStatus() {
+        if (items.getFocusModel().getFocusedItem() == null) {
             statusBar.setText("No item selected");
-            return;
+            return "";
         }
-        Object selected = items.getSelectionModel().getSelectedItem();
-        String msg = ((String) selected);
+        String msg = retrieveClipFromBuffer();
         statusBar.setText(String.format("Retrieving %d chars from buffer and storing to the clipboard\n", msg.length()));
+        return msg;
+    }
+
+    private String retrieveClipFromBuffer() {
+        Object selected = items.getFocusModel().getFocusedItem();
+        String msg = ((String) selected);
         SysClipboard.write(msg);
+        return msg;
     }
 
     private void appendToClipBuffers(String clip) {
