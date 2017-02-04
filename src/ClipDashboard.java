@@ -64,6 +64,7 @@ public class ClipDashboard extends Application {
         Button btnAppend = new Button("Append");
         Button btnReplace = new Button("Replace");
         Button btnDelete = new Button("Del");
+        Button btnJoin = new Button("Join");
 
         // String/List tabs
         TabPane modificationTabPane = new TabPane();
@@ -334,7 +335,7 @@ public class ClipDashboard extends Application {
         vbox.getChildren().add(items);
         vbox.getChildren().add(btnRetrieve);
         vbox.getChildren().add(hbox);
-        hbox.getChildren().addAll(lblBuffers, btnStore, btnPrepend, btnAppend, btnReplace, btnDelete);
+        hbox.getChildren().addAll(lblBuffers, btnStore, btnPrepend, btnAppend, btnReplace, btnDelete, btnJoin);
         vbox.getChildren().add(new Label("System Clipboard:"));
         vbox.getChildren().add(modificationTabPane);
         vbox.getChildren().add(log);
@@ -442,6 +443,17 @@ public class ClipDashboard extends Application {
                 clips.remove((int) idxs.get(i));
             }
             statusBar.setText("Deleted " + startingSize + " selected clip buffer(s)\n");
+        });
+
+        btnJoin.setOnAction((e) -> {
+            ObservableList<String> selectedBuffers = items.getSelectionModel().getSelectedItems();
+            String clip = String.join("\n", selectedBuffers);
+            String msg = String.format("Joining the %d selected buffers and storing %d chars to the clipboard",
+                    selectedBuffers.size(),
+                    clip.length()
+            );
+            SysClipboard.write(clip);
+            statusBar.setText(msg);
         });
 
         Scene scene = new Scene(vbox, 600, 700);
