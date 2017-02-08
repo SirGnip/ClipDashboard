@@ -11,6 +11,8 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import com.juxtaflux.MyAppFramework;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -65,6 +67,7 @@ public class ClipDashboard extends Application {
         Button btnReplace = new Button("Replace");
         Button btnDelete = new Button("Del");
         Button btnJoin = new Button("Join");
+        Button btnDiff = new Button("Diff");
 
         // String/List tabs
         TabPane modificationTabPane = new TabPane();
@@ -335,7 +338,7 @@ public class ClipDashboard extends Application {
         vbox.getChildren().add(items);
         vbox.getChildren().add(btnRetrieve);
         vbox.getChildren().add(hbox);
-        hbox.getChildren().addAll(lblBuffers, btnStore, btnPrepend, btnAppend, btnReplace, btnDelete, btnJoin);
+        hbox.getChildren().addAll(lblBuffers, btnStore, btnPrepend, btnAppend, btnReplace, btnDelete, btnJoin, btnDiff);
         vbox.getChildren().add(new Label("System Clipboard:"));
         vbox.getChildren().add(modificationTabPane);
         vbox.getChildren().add(log);
@@ -454,6 +457,26 @@ public class ClipDashboard extends Application {
             );
             SysClipboard.write(clip);
             statusBar.setText(msg);
+        });
+
+        btnDiff.setOnAction((e) -> {
+            ObservableList<String> selectedBuffers = items.getSelectionModel().getSelectedItems();
+            if (selectedBuffers.size() != 2) {
+                statusBar.setText("ERROR: Need two buffers selected to do a diff");
+            } else {
+                try {
+                    Path fileA = Files.createTempFile("ClipDashboard_buffA_", ".txt");
+                    Path fileB = Files.createTempFile("ClipDashboard_buffB_", ".txt");
+                    // NOTE: Files.write() writes the file with linux-style line endings. Or, maybe it just writes whatever
+                    // the String is and doesn't treat "\n" as "\r\n" on Windows.
+                    Files.write(fileA, selectedBuffers.get(0).getBytes());
+                    Files.write(fileB, selectedBuffers.get(1).getBytes());
+                    Process proc = new ProcessBuilder("C:\\Program Files (x86)\\Meld\\Meld.exe", fileA.toString(), fileB.toString()).start();
+                    statusBar.setText("Diffing the two selected buffers");
+                } catch(Exception exc) {
+                    statusBar.setText("ERROR: Can't launch diff tool");
+                }
+            }
         });
 
         Scene scene = new Scene(vbox, 600, 700);
