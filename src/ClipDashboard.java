@@ -68,6 +68,8 @@ public class ClipDashboard extends Application {
         Button btnDelete = new Button("Del");
         Button btnJoin = new Button("Join");
         Button btnDiff = new Button("Diff");
+        Button btnUp = new Button("^");
+        Button btnDown = new Button("v");
 
         // String/List tabs
         TabPane modificationTabPane = new TabPane();
@@ -338,7 +340,7 @@ public class ClipDashboard extends Application {
         vbox.getChildren().add(items);
         vbox.getChildren().add(btnRetrieve);
         vbox.getChildren().add(hbox);
-        hbox.getChildren().addAll(lblBuffers, btnStore, btnPrepend, btnAppend, btnReplace, btnDelete, btnJoin, btnDiff);
+        hbox.getChildren().addAll(lblBuffers, btnStore, btnPrepend, btnAppend, btnReplace, btnDelete, btnJoin, btnDiff, btnUp, btnDown);
         vbox.getChildren().add(new Label("System Clipboard:"));
         vbox.getChildren().add(modificationTabPane);
         vbox.getChildren().add(log);
@@ -457,6 +459,7 @@ public class ClipDashboard extends Application {
             );
             SysClipboard.write(clip);
             statusBar.setText(msg);
+            items.getFocusModel().focus(1);
         });
 
         btnDiff.setOnAction((e) -> {
@@ -476,6 +479,23 @@ public class ClipDashboard extends Application {
                 } catch(Exception exc) {
                     statusBar.setText("ERROR: Can't launch diff tool");
                 }
+            }
+        });
+
+        btnUp.setOnAction((e) -> {
+            ObservableList<Integer> selectedIdxs = items.getSelectionModel().getSelectedIndices();
+            ArrayList<Integer> copy = new ArrayList(selectedIdxs);
+            for (int i : copy) {
+                swapBuffers(i, i-1);
+            }
+        });
+
+        btnDown.setOnAction((e) -> {
+            ObservableList<Integer> selectedIdxs = items.getSelectionModel().getSelectedIndices();
+            List<Integer> other = new ArrayList(selectedIdxs);
+            Collections.reverse(other);  // reverse is not supported by ObservableList
+            for (int i : other) {
+                swapBuffers(i, i+1);
             }
         });
 
@@ -552,5 +572,33 @@ public class ClipDashboard extends Application {
         statusBar.setText(String.format("Storing %d chars to a buffer from clipboard\n", clip.length()));
         clips.add(0, clip);
         items.scrollTo(clip);
+    }
+
+    private void swapBuffers(int idx1, int idx2) {
+        // NOTE: this function does not attempt to do anything sane with focus. It seems that focus can cause issues
+        // with extra rows getting selected as I move them around. I think this may have something to do with the focus?
+        // I'm just guessing.
+        String tmpString1 = clips.get(idx1);
+        boolean tmpSelectState1 = items.getSelectionModel().isSelected(idx1);
+        String tmpString2 = clips.get(idx2);
+        boolean tmpSelectState2 = items.getSelectionModel().isSelected(idx2);
+
+        // NOTE: if you chnage the code below to set idx1 value and then change its selection, then do the same for idx2,
+        // moving with multiple items selected will often cause additional rows to get selected as you move. The order
+        // of the code below seems to avoid this problem for some reason.
+        clips.set(idx1, tmpString2);
+        clips.set(idx2, tmpString1);
+
+        if (tmpSelectState2) {
+            items.getSelectionModel().select(idx1);
+        } else {
+            items.getSelectionModel().clearSelection(idx1);
+        }
+
+        if (tmpSelectState1) {
+            items.getSelectionModel().select(idx2);
+        } else {
+            items.getSelectionModel().clearSelection(idx2);
+        }
     }
 }
