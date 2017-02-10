@@ -8,6 +8,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import com.juxtaflux.MyAppFramework;
 
@@ -18,12 +19,23 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+class StatusBar extends Label {
+    public void show(String msg) {
+        this.setTextFill(Color.BLACK);
+        this.setText(msg);
+    }
+    public void showErr(String msg) {
+        this.setTextFill(Color.RED);
+        this.setText("ERROR: " + msg);
+    }
+}
+
 public class ClipDashboard extends Application {
 
     private ListView items;
     private ObservableList<String> clips;
     private TextArea log;
-    private Label statusBar;
+    private StatusBar statusBar;
     private CheckMenuItem chkStoreOnFocus;
 
     @Override
@@ -31,7 +43,7 @@ public class ClipDashboard extends Application {
         VBox vbox = new VBox();
         vbox.setSpacing(5);
 
-        statusBar = new Label();
+        statusBar = new StatusBar();
 
         initMenu(vbox);
 
@@ -106,33 +118,33 @@ public class ClipDashboard extends Application {
         tab1.setContent(strTabVBox);
 
         btnStrLTrim.setOnAction((e) -> {
-            statusBar.setText("Left-trimmed current clipboard contents");
+            statusBar.show("Left-trimmed current clipboard contents");
             SysClipboard.write(StringUtil.ltrim(SysClipboard.read()));
         });
         btnStrTrim.setOnAction((e) -> {
-            statusBar.setText("Trimmed current clipboard contents");
+            statusBar.show("Trimmed current clipboard contents");
             SysClipboard.write(SysClipboard.read().trim());
         });
         btnStrRTrim.setOnAction((e) -> {
-            statusBar.setText("Right-trimmed current clipboard contents");
+            statusBar.show("Right-trimmed current clipboard contents");
             SysClipboard.write(StringUtil.rtrim(SysClipboard.read()));
         });
         btnStrLower.setOnAction((e) -> {
-            statusBar.setText("Lower-cased current clipboard contents");
+            statusBar.show("Lower-cased current clipboard contents");
             SysClipboard.write(SysClipboard.read().toLowerCase());
         });
         btnStrUpper.setOnAction((e) -> {
-            statusBar.setText("Upper-cased current clipboard contents");
+            statusBar.show("Upper-cased current clipboard contents");
             SysClipboard.write(SysClipboard.read().toUpperCase());
         });
         btnStrPrepend.setOnAction((e) -> {
             String arg = txtStrArg1.getText();
-            statusBar.setText("Prepended " + arg.length() + " character to current clipboard");
+            statusBar.show("Prepended " + arg.length() + " character to current clipboard");
             SysClipboard.write(arg + SysClipboard.read());
         });
         btnStrAppend.setOnAction((e) -> {
             String arg = txtStrArg1.getText();
-            statusBar.setText("Appended " + arg.length() + " character to current clipboard");
+            statusBar.show("Appended " + arg.length() + " character to current clipboard");
             SysClipboard.write(SysClipboard.read() + arg);
         });
         btnStrSplit.setOnAction((e) -> {
@@ -141,7 +153,7 @@ public class ClipDashboard extends Application {
             int origSize = clipboard.length();
             clipboard = clipboard.replace(arg, "\n");
             String[] array = clipboard.split("\n");
-            statusBar.setText("Split " + origSize + " character(s) using '" + arg + "' into " + array.length + " line(s) in current clipboard");
+            statusBar.show("Split " + origSize + " character(s) using '" + arg + "' into " + array.length + " line(s) in current clipboard");
             SysClipboard.write(clipboard);
         });
         btnStrReplace.setOnAction((e) -> {
@@ -149,7 +161,7 @@ public class ClipDashboard extends Application {
             String repl = txtStrArg2.getText();
             trg = StringUtil.replaceSpecialChars(trg);
             repl = StringUtil.replaceSpecialChars(repl);
-            statusBar.setText("Replaced '" + trg + "' with '" + repl + "' in current clipboard");
+            statusBar.show("Replaced '" + trg + "' with '" + repl + "' in current clipboard");
             SysClipboard.write(SysClipboard.read().replace(trg, repl));
         });
 
@@ -200,7 +212,7 @@ public class ClipDashboard extends Application {
         btnListLTrim.setOnAction((e) -> {
             String[] array = SysClipboard.read().split("\n");
             List<String> list = Arrays.asList(array);
-            statusBar.setText("Left-trimmed " + list.size() + " lines in current clipboard");
+            statusBar.show("Left-trimmed " + list.size() + " lines in current clipboard");
             for (int i = 0; i < list.size(); ++i) {
                 list.set(i, StringUtil.ltrim(list.get(i)));
             }
@@ -209,7 +221,7 @@ public class ClipDashboard extends Application {
         btnListTrim.setOnAction((e) -> {
             String[] array = SysClipboard.read().split("\n");
             List<String> list = Arrays.asList(array);
-            statusBar.setText("Trimmed " + list.size() + " lines in current clipboard");
+            statusBar.show("Trimmed " + list.size() + " lines in current clipboard");
             for (int i = 0; i < list.size(); ++i) {
                 list.set(i, list.get(i).trim());
             }
@@ -218,7 +230,7 @@ public class ClipDashboard extends Application {
         btnListRTrim.setOnAction((e) -> {
             String[] array = SysClipboard.read().split("\n");
             List<String> list = Arrays.asList(array);
-            statusBar.setText("Right-trimmed " + list.size() + " lines in current clipboard");
+            statusBar.show("Right-trimmed " + list.size() + " lines in current clipboard");
             for (int i = 0; i < list.size(); ++i) {
                 list.set(i, StringUtil.rtrim(list.get(i)));
             }
@@ -227,14 +239,14 @@ public class ClipDashboard extends Application {
         btnListSort.setOnAction((e) -> {
             String[] array = SysClipboard.read().split("\n");
             List<String> list = Arrays.asList(array);
-            statusBar.setText("Sorted " + list.size() + " lines in current clipboard");
+            statusBar.show("Sorted " + list.size() + " lines in current clipboard");
             Collections.sort(list);
             SysClipboard.write(String.join("\n", list));
         });
         btnListReverse.setOnAction((e) -> {
             String[] array = SysClipboard.read().split("\n");
             List<String> list = Arrays.asList(array);
-            statusBar.setText("Reversed " + list.size() + " lines in current clipboard");
+            statusBar.show("Reversed " + list.size() + " lines in current clipboard");
             Collections.reverse(list);
             SysClipboard.write(String.join("\n", list));
         });
@@ -259,13 +271,13 @@ public class ClipDashboard extends Application {
                     list.size(), clipboard.length(), words.length,
                     minLineLen, maxLineLen, (float) totalLineLen/list.size()
                     );
-            statusBar.setText(msg);
+            statusBar.show(msg);
         });
         btnListPrepend.setOnAction((e) -> {
             String[] array = SysClipboard.read().split("\n");
             List<String> list = Arrays.asList(array);
             String arg = txtListArg1.getText();
-            statusBar.setText("Prepended " + arg.length() + " character(s) to " + list.size() + " lines in current clipboard");
+            statusBar.show("Prepended " + arg.length() + " character(s) to " + list.size() + " lines in current clipboard");
             for (int i = 0; i < list.size(); ++i) {
                 list.set(i, arg + list.get(i));
             }
@@ -275,7 +287,7 @@ public class ClipDashboard extends Application {
             String[] array = SysClipboard.read().split("\n");
             List<String> list = Arrays.asList(array);
             String arg = txtListArg1.getText();
-            statusBar.setText("Appended " + arg.length() + " character(s) to " + list.size() + " lines in current clipboard");
+            statusBar.show("Appended " + arg.length() + " character(s) to " + list.size() + " lines in current clipboard");
             for (int i = 0; i < list.size(); ++i) {
                 list.set(i, list.get(i) + arg);
             }
@@ -284,7 +296,7 @@ public class ClipDashboard extends Application {
         btnListJoin.setOnAction((e) -> {
             String clipboard = SysClipboard.read();
             String arg = txtListArg1.getText();
-            statusBar.setText("Joined " + clipboard.split("\n").length + " lines with '" + arg + "' in current clipboard");
+            statusBar.show("Joined " + clipboard.split("\n").length + " lines with '" + arg + "' in current clipboard");
             SysClipboard.write(clipboard.replace("\n", arg));
         });
         btnListContains.setOnAction((e) -> {
@@ -298,7 +310,7 @@ public class ClipDashboard extends Application {
                     filtered.add(line);
                 }
             }
-            statusBar.setText("Filtered " + origLineCount + " lines down to " + filtered.size() + " in current clipboard");
+            statusBar.show("Filtered " + origLineCount + " lines down to " + filtered.size() + " in current clipboard");
             SysClipboard.write(String.join("\n", filtered));
 
         });
@@ -314,7 +326,7 @@ public class ClipDashboard extends Application {
                     filtered.add(line);
                 }
             }
-            statusBar.setText("Regex filtered " + origLineCount + " lines down to " + filtered.size() + " in current clipboard");
+            statusBar.show("Regex filtered " + origLineCount + " lines down to " + filtered.size() + " in current clipboard");
             SysClipboard.write(String.join("\n", filtered));
         });
         btnListRegexFull.setOnAction((e) -> {
@@ -328,7 +340,7 @@ public class ClipDashboard extends Application {
                     filtered.add(line);
                 }
             }
-            statusBar.setText("Regex (full) filtered " + origLineCount + " lines down to " + filtered.size() + " in current clipboard");
+            statusBar.show("Regex (full) filtered " + origLineCount + " lines down to " + filtered.size() + " in current clipboard");
             SysClipboard.write(String.join("\n", filtered));
         });
 
@@ -353,7 +365,7 @@ public class ClipDashboard extends Application {
         btnPrepend.setOnAction((e) -> {
             String clipboard = SysClipboard.read();
             ObservableList<Integer> indices = items.getSelectionModel().getSelectedIndices();
-            statusBar.setText("Prepend " + clipboard.length() + " characters to " + indices.size() + " buffer(s)");
+            statusBar.show("Prepend " + clipboard.length() + " characters to " + indices.size() + " buffer(s)");
             for (Integer i : indices) { // Can't use for loop with function that returns a generic? http://stackoverflow.com/questions/6271960/how-to-iterate-over-a-wildcard-generic
                 clips.set(i, clipboard + clips.get(i));
             }
@@ -362,7 +374,7 @@ public class ClipDashboard extends Application {
         btnAppend.setOnAction((e) -> {
             String clipboard = SysClipboard.read();
             ObservableList<Integer> indices = items.getSelectionModel().getSelectedIndices();
-            statusBar.setText("Append " + clipboard.length() + " characters to " + indices.size() + " buffer(s)");
+            statusBar.show("Append " + clipboard.length() + " characters to " + indices.size() + " buffer(s)");
             for (Integer i : indices) {
                 clips.set(i, clips.get(i) + clipboard);
             }
@@ -371,7 +383,7 @@ public class ClipDashboard extends Application {
         btnReplace.setOnAction((e) -> {
             String clipboard = SysClipboard.read();
             ObservableList<Integer> indices = items.getSelectionModel().getSelectedIndices();
-            statusBar.setText("Replace " + indices.size() + " buffer(s) with " + clipboard.length() + " characters");
+            statusBar.show("Replace " + indices.size() + " buffer(s) with " + clipboard.length() + " characters");
             for (Integer i : indices) {
                 clips.set(i, clipboard);
             }
@@ -389,7 +401,7 @@ public class ClipDashboard extends Application {
 
             // Check for no selected items
             if (selIdxs.size() == 0) {
-                statusBar.setText("No item selected");
+                statusBar.showErr("No item selected");
                 return;
             }
 
@@ -419,9 +431,9 @@ public class ClipDashboard extends Application {
                         ordinalOfSelected,
                         selIdxs.size()
                         );
-                statusBar.setText(msg);
+                statusBar.show(msg);
             } else {
-                statusBar.setText("Retrieving " + clip.length() + " chars from buffer and storing to the clipboard");
+                statusBar.show("Retrieving " + clip.length() + " chars from buffer and storing to the clipboard");
             }
 
             // Advance focus to next selected item
@@ -447,7 +459,7 @@ public class ClipDashboard extends Application {
             for (int i = idxs.size()-1; i >= 0; i--) {
                 clips.remove((int) idxs.get(i));
             }
-            statusBar.setText("Deleted " + startingSize + " selected clip buffer(s)\n");
+            statusBar.show("Deleted " + startingSize + " selected clip buffer(s)\n");
         });
 
         btnJoin.setOnAction((e) -> {
@@ -458,14 +470,14 @@ public class ClipDashboard extends Application {
                     clip.length()
             );
             SysClipboard.write(clip);
-            statusBar.setText(msg);
+            statusBar.show(msg);
             items.getFocusModel().focus(1);
         });
 
         btnDiff.setOnAction((e) -> {
             ObservableList<String> selectedBuffers = items.getSelectionModel().getSelectedItems();
             if (selectedBuffers.size() != 2) {
-                statusBar.setText("ERROR: Need two buffers selected to do a diff");
+                statusBar.showErr("Need two buffers selected to do a diff");
             } else {
                 try {
                     Path fileA = Files.createTempFile("ClipDashboard_buffA_", ".txt");
@@ -475,9 +487,9 @@ public class ClipDashboard extends Application {
                     Files.write(fileA, selectedBuffers.get(0).getBytes());
                     Files.write(fileB, selectedBuffers.get(1).getBytes());
                     Process proc = new ProcessBuilder("C:\\Program Files (x86)\\Meld\\Meld.exe", fileA.toString(), fileB.toString()).start();
-                    statusBar.setText("Diffing the two selected buffers");
+                    statusBar.show("Diffing the two selected buffers");
                 } catch(Exception exc) {
-                    statusBar.setText("ERROR: Can't launch diff tool");
+                    statusBar.showErr("Can't launch diff tool");
                 }
             }
         });
@@ -573,11 +585,11 @@ public class ClipDashboard extends Application {
 
     private String retrieveClipFromBufferAndShowStatus() {
         if (items.getFocusModel().getFocusedItem() == null) {
-            statusBar.setText("No item selected");
+            statusBar.showErr("No item selected");
             return "";
         }
         String msg = retrieveClipFromBuffer();
-        statusBar.setText(String.format("Retrieving %d chars from buffer and storing to the clipboard\n", msg.length()));
+        statusBar.show(String.format("Retrieving %d chars from buffer and storing to the clipboard\n", msg.length()));
         return msg;
     }
 
@@ -589,7 +601,7 @@ public class ClipDashboard extends Application {
     }
 
     private void appendToClipBuffers(String clip) {
-        statusBar.setText(String.format("Storing %d chars to a buffer from clipboard\n", clip.length()));
+        statusBar.show(String.format("Storing %d chars to a buffer from clipboard\n", clip.length()));
         clips.add(0, clip);
         items.scrollTo(clip);
     }
@@ -622,3 +634,5 @@ public class ClipDashboard extends Application {
         }
     }
 }
+
+
