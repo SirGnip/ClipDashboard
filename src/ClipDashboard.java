@@ -484,18 +484,38 @@ public class ClipDashboard extends Application {
 
         btnUp.setOnAction((e) -> {
             ObservableList<Integer> selectedIdxs = items.getSelectionModel().getSelectedIndices();
-            ArrayList<Integer> copy = new ArrayList(selectedIdxs);
-            for (int i : copy) {
-                swapBuffers(i, i-1);
+            ArrayList<Integer> selIdxs = new ArrayList(selectedIdxs); // create copy
+            Integer topBoundIdx = 0;
+            for (int i : selIdxs) {
+                // Don't swap past top of list
+                if (i <= topBoundIdx) {
+                    continue;
+                }
+                // Don't swap if item above you is selected (for when selected items bunch at the top of the list)
+                Integer prevIdx = i - 1;
+                if (prevIdx >= topBoundIdx && items.getSelectionModel().isSelected(prevIdx)) {
+                    continue;
+                }
+                swapBuffers(i, prevIdx);
             }
         });
 
         btnDown.setOnAction((e) -> {
             ObservableList<Integer> selectedIdxs = items.getSelectionModel().getSelectedIndices();
-            List<Integer> other = new ArrayList(selectedIdxs);
-            Collections.reverse(other);  // reverse is not supported by ObservableList
-            for (int i : other) {
-                swapBuffers(i, i+1);
+            List<Integer> selIdxs = new ArrayList(selectedIdxs);
+            Collections.reverse(selIdxs);  // reverse is not supported by ObservableList
+            Integer bottomBoundIdx = clips.size() - 1;
+            for (int i : selIdxs) {
+                // Don't swap past bottom of list
+                if (i >= bottomBoundIdx) {
+                    continue;
+                }
+                // Don't swap if item below you is selected (for when selected items bunch at the bottom of the list)
+                Integer nextIdx = i + 1;
+                if (nextIdx <= bottomBoundIdx && items.getSelectionModel().isSelected(nextIdx)) {
+                    continue;
+                }
+                swapBuffers(i, nextIdx);
             }
         });
 

@@ -1,3 +1,12 @@
+# next actions
+
+- derive class from statusText that simply provides two methods: one for showing a normal status and another for showing an error status (red text, red background, something...)
+    - might also be a good place in the future to add animations 
+- abbreviate text display for long items
+- get "actions" working
+    - open in editor
+    - open as url, file, folder
+    
 # roadmap
 
 Iteration #1 - minimal features so I use it instead of Python one
@@ -20,7 +29,7 @@ Iteration #1 - minimal features so I use it instead of Python one
 - create clips
     - read form clipboard, file, url, list of files
 - managing and mutating clip buffer
-    - x append, x replace, x remove, reorder, sort, x clear, filter, remove empty lines (special case of filter), remove duplicates/uniqueify, export to disk
+    - x append, x replace, x remove, reorder, x sort, x clear, filter, remove empty lines (special case of filter), remove duplicates/uniqueify, export to disk
     - x able to apply mutations to individual clips or to all selected clips?
 - mutating clip contents
     - string
@@ -114,7 +123,7 @@ Visualizing focus ideas as when the ListView control as a whole looses focus, th
     - append new clip to buffer?
     - prepend/append/replace selected clips in buffer with text in system clipboard?
 - clear the status bar x seconds after the event happens. This means that if you are retriving the same string over and over, you don't see any change on the status bar "Retrieving 10 chars..." and you don't get a visual indication an event has happened.  But if the status disappars, it is more visually obvious when something changes.
-    - bonus: made it fade out
+    - bonus: make it fade out
     - bonus: maybe don't remove status messages, but have new status bar entries flash or pulse to show they are new?
 - look at my enso plugins or java.util.Collections for ideas of other string actions
 - sorting based on a substring (tokenizing line for a table-like sort, substring, etc.))
@@ -125,13 +134,13 @@ Visualizing focus ideas as when the ListView control as a whole looses focus, th
         - line/bar charts (maybe start with text based ASCII art visualizations to start and move to actual graphics later). Remember you can easily copy a list of numbers into Excel.
         - histograms
     - calculator of sorts where i can define a function (x*2)+x and feed a list of numbers through it
-    
+- configuration
+    - for path to diff tool
+- drag and drop implementation for ListView https://coderanch.com/t/658527/java/Implement-drag-drop-ListView-custom
+- in addition to filtering, have something that counts how many times a given regex matches? Or, maybe just use the "filter" and then the "stats" to count the lines in the clipboard after the filtre.
+
 # Bugs
 
 - If you put list-based text into the clipboard (ex: "\n\n\n a \n b \n c \n\n\n") and do a "list trim", it seems to remove the trailing blank rows (but not the initial))... I'm expecting those trailing \n should result in blank rows, even after a trim.  The trimming shouldn't remove lines, only the whitespace from the lines.
 
-              
-    
-    
-        
 
