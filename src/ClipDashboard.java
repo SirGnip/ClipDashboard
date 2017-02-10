@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import com.juxtaflux.MyAppFramework;
 
@@ -20,8 +21,14 @@ import java.util.Collections;
 import java.util.List;
 
 class StatusBar extends Label {
+    static Paint defaultColor;
+
+    /** Must call this after primaryStage.show() as the real colors get set at that point. I'm guessing that is when CSS is applied. */
+    public void cacheTextFillColor() {
+        defaultColor = getTextFill();
+    }
     public void show(String msg) {
-        this.setTextFill(Color.BLACK);
+        this.setTextFill(defaultColor);
         this.setText(msg);
     }
     public void showErr(String msg) {
@@ -344,7 +351,6 @@ public class ClipDashboard extends Application {
             SysClipboard.write(String.join("\n", filtered));
         });
 
-
         // Log
         log = new TextArea();
         vbox.setVgrow(log, Priority.ALWAYS);
@@ -535,6 +541,7 @@ public class ClipDashboard extends Application {
         primaryStage.setTitle("ClipDashboard");
         primaryStage.setScene(scene);
         primaryStage.show();
+        statusBar.cacheTextFillColor();
 
         primaryStage.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
