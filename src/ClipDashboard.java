@@ -188,13 +188,15 @@ public class ClipDashboard extends Application {
         btnListTrim.setTooltip(new Tooltip("Trim whitespace from both sides of each line in the clipboard"));
         Button btnListRTrim = new Button("R");
         btnListRTrim.setTooltip(new Tooltip("Trim whitespace from the right/end of each line in the clipboard"));
+        Button btnListCollapse = new Button("collapse");
+        btnListCollapse.setTooltip(new Tooltip("Strip out all empty lines (might be useful to do a trim first)"));
         Button btnListSort = new Button("sort");
         btnListSort.setTooltip(new Tooltip("Alphabetically Sort the lines in the clipboard"));
         Button btnListReverse = new Button("reverse");
         btnListReverse.setTooltip(new Tooltip("Reverse the order of the lines in the clipboard"));
         Button btnListStats = new Button("stats");
         btnListStats.setTooltip(new Tooltip("Calculate basics stats on the lines in the clipboard"));
-        noArgListOpsHBox.getChildren().addAll(btnListLTrim, btnListTrim, btnListRTrim, btnListSort, btnListReverse, btnListStats);
+        noArgListOpsHBox.getChildren().addAll(btnListLTrim, btnListTrim, btnListRTrim, btnListCollapse, btnListReverse, btnListStats);
 
         HBox argsListOpsHBox = new HBox();
         Button btnListPrepend = new Button("prepend");
@@ -306,20 +308,30 @@ public class ClipDashboard extends Application {
             statusBar.show("Joined " + clipboard.split("\n").length + " lines with '" + arg + "' in current clipboard");
             SysClipboard.write(clipboard.replace("\n", arg));
         });
+        btnListCollapse.setOnAction((e) -> {
+            String[] array = SysClipboard.read().split("\n");
+            List<String> list = Arrays.asList(array);
+            List<String> filtered = new ArrayList();
+            for (String line : list) {
+                if (line.length() > 0) {
+                    filtered.add(line);
+                }
+            }
+            statusBar.show("Collapsed " + array.length + " lines down to " + filtered.size() + " by removing empty lines in current clipboard");
+            SysClipboard.write(String.join("\n", filtered));
+        });
         btnListContains.setOnAction((e) -> {
             String[] array = SysClipboard.read().split("\n");
             List<String> list = Arrays.asList(array);
             List<String> filtered = new ArrayList();
             String arg = txtListArg1.getText();
-            int origLineCount = list.size();
             for (String line : list) {
                 if (line.contains(arg)) {
                     filtered.add(line);
                 }
             }
-            statusBar.show("Filtered " + origLineCount + " lines down to " + filtered.size() + " in current clipboard");
+            statusBar.show("Filtered " + array.length + " lines down to " + filtered.size() + " in current clipboard");
             SysClipboard.write(String.join("\n", filtered));
-
         });
         btnListRegex.setOnAction((e) -> {
             String[] array = SysClipboard.read().split("\n");
@@ -327,13 +339,12 @@ public class ClipDashboard extends Application {
             List<String> filtered = new ArrayList();
             String regex = txtListArg1.getText();
             regex = "^.*" + regex + ".*$";
-            int origLineCount = list.size();
             for (String line : list) {
                 if (line.matches(regex)) {
                     filtered.add(line);
                 }
             }
-            statusBar.show("Regex filtered " + origLineCount + " lines down to " + filtered.size() + " in current clipboard");
+            statusBar.show("Regex filtered " + array.length + " lines down to " + filtered.size() + " in current clipboard");
             SysClipboard.write(String.join("\n", filtered));
         });
         btnListRegexFull.setOnAction((e) -> {
@@ -341,13 +352,12 @@ public class ClipDashboard extends Application {
             List<String> list = Arrays.asList(array);
             List<String> filtered = new ArrayList();
             String regex = txtListArg1.getText();
-            int origLineCount = list.size();
             for (String line : list) {
                 if (line.matches(regex)) {
                     filtered.add(line);
                 }
             }
-            statusBar.show("Regex (full) filtered " + origLineCount + " lines down to " + filtered.size() + " in current clipboard");
+            statusBar.show("Regex (full) filtered " + array.length + " lines down to " + filtered.size() + " in current clipboard");
             SysClipboard.write(String.join("\n", filtered));
         });
 
