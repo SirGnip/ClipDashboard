@@ -190,13 +190,15 @@ public class ClipDashboard extends Application {
         btnListRTrim.setTooltip(new Tooltip("Trim whitespace from the right/end of each line in the clipboard"));
         Button btnListCollapse = new Button("collapse");
         btnListCollapse.setTooltip(new Tooltip("Strip out all empty lines (might be useful to do a trim first)"));
+        Button btnListUniq = new Button("uniq");
+        btnListUniq.setTooltip(new Tooltip("Make items in list unique by removing duplicates next to each other (might be useful to do \"lower\" and \"sort\" operations first)"));
         Button btnListSort = new Button("sort");
         btnListSort.setTooltip(new Tooltip("Alphabetically Sort the lines in the clipboard"));
         Button btnListReverse = new Button("reverse");
         btnListReverse.setTooltip(new Tooltip("Reverse the order of the lines in the clipboard"));
         Button btnListStats = new Button("stats");
         btnListStats.setTooltip(new Tooltip("Calculate basics stats on the lines in the clipboard"));
-        noArgListOpsHBox.getChildren().addAll(btnListLTrim, btnListTrim, btnListRTrim, btnListCollapse, btnListReverse, btnListStats);
+        noArgListOpsHBox.getChildren().addAll(btnListLTrim, btnListTrim, btnListRTrim, btnListCollapse, btnListUniq, btnListSort, btnListReverse, btnListStats);
 
         HBox argsListOpsHBox = new HBox();
         Button btnListPrepend = new Button("prepend");
@@ -318,6 +320,20 @@ public class ClipDashboard extends Application {
                 }
             }
             statusBar.show("Collapsed " + array.length + " lines down to " + filtered.size() + " by removing empty lines in current clipboard");
+            SysClipboard.write(String.join("\n", filtered));
+        });
+        btnListUniq.setOnAction((e) -> {
+            String[] array = SysClipboard.read().split("\n");
+            List<String> list = Arrays.asList(array);
+            List<String> filtered = new ArrayList();
+            String prev = null;
+            for (String line : list) {
+                if (! line.equals(prev)) {
+                    filtered.add(line);
+                    prev = line;
+                }
+            }
+            statusBar.show("Made " + array.length + " lines " + filtered.size() + " by removing adjacent duplicates in current clipboard");
             SysClipboard.write(String.join("\n", filtered));
         });
         btnListContains.setOnAction((e) -> {

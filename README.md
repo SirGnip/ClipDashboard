@@ -1,11 +1,10 @@
 # next actions
 
-- derive class from statusText that simply provides two methods: one for showing a normal status and another for showing an error status (red text, red background, something...)
-    - might also be a good place in the future to add animations 
 - abbreviate text display for long items
 - get "actions" working
     - open in editor
     - open as url, file, folder
+- refactor clipboard list operations to extract duplicate code
     
 # roadmap
 
@@ -29,13 +28,14 @@ Iteration #1 - minimal features so I use it instead of Python one
 - create clips
     - read form clipboard, file, url, list of files
 - managing and mutating clip buffer
-    - x append, x replace, x remove, reorder, x sort, x clear, filter, remove empty lines (special case of filter), remove duplicates/uniqueify, export to disk
+    - x append, x replace, x remove, reorder, x sort, x clear, x filter, x remove empty lines (special case of filter), x remove duplicates/uniqueify, export to disk
     - x able to apply mutations to individual clips or to all selected clips?
 - mutating clip contents
     - string
         - x trim, x lower, x upper, x prepend, x append, x split, variable substitute
     - list
         - x prepend, x append, x join, filter, x reverse, x sort, x count, numbering (prepend and append) with start # and step # w/ tooltip explaining use of args
+        - substring trimming (cut off first character [1:], return last three characters [-3:], return 3rd character [3])
 - retrieving clips
     - x single
     - multiple selected
