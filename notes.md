@@ -1,3 +1,5 @@
+(working notes and brainstorm)
+
 # next actions
 
 - abbreviate text display for long items
@@ -37,7 +39,8 @@ Iteration #1 - minimal features so I use it instead of Python one
     - list
         - x prepend, x append, x join, x filter, x reverse, x sort, x count, numbering (prepend and append) with start # and step # w/ tooltip explaining use of args
         - substring trimming (cut off first character [1:], return last three characters [-3:], return 3rd character [3])
-        - Python style slicing syntax
+        - Apply Python style slicing syntax on each item in the list
+        - Apply Python style slicing syntax on the list as a whole to filter out certain lines 
 - retrieving clips
     - x single
     - x multiple selected
