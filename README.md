@@ -5,7 +5,7 @@
     - open in editor
     - open as url, file, folder
 - refactor clipboard list operations to extract duplicate code
-    
+
 # roadmap
 
 Iteration #1 - minimal features so I use it instead of Python one
@@ -14,7 +14,7 @@ Iteration #1 - minimal features so I use it instead of Python one
 - x double click to receive item
 - x two store modes:
     - x by append and by replace (what does this look like with multiselect?)
-    - x separete buttons? right click button to change mode? checkbox somehwere? toggle in Settings menu item?)
+    - x separate buttons? right click button to change mode? checkbox somehwere? toggle in Settings menu item?)
 - x delete selected
 - x add menus
     - x file
@@ -22,7 +22,8 @@ Iteration #1 - minimal features so I use it instead of Python one
     - x clip
         - x deleted selected
 - truncate text display for very long items or ones with embedded cr's?
-		
+	
+	
 # use cases
 
 - create clips
@@ -34,13 +35,14 @@ Iteration #1 - minimal features so I use it instead of Python one
     - string
         - x trim, x lower, x upper, x prepend, x append, x split, variable substitute
     - list
-        - x prepend, x append, x join, filter, x reverse, x sort, x count, numbering (prepend and append) with start # and step # w/ tooltip explaining use of args
+        - x prepend, x append, x join, x filter, x reverse, x sort, x count, numbering (prepend and append) with start # and step # w/ tooltip explaining use of args
         - substring trimming (cut off first character [1:], return last three characters [-3:], return 3rd character [3])
+        - Python style slicing syntax
 - retrieving clips
     - x single
-    - multiple selected
-        - cycle through all/selected?
-        - join w/ provided delimiter
+    - x multiple selected
+        - x cycle through all/selected?
+        - x join w/ provided delimiter (joins with \n, but can do a replace next)
 - destination of receive
     - x clipboard, file, post to url, substitute into shell command?
     
