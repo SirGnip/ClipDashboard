@@ -1,3 +1,5 @@
+import static org.apache.commons.lang3.StringUtils.substring;
+
 /** General string manipulation static functions */
 public class StringUtil {
     public static String replaceSpecialChars(String s) {
@@ -19,5 +21,22 @@ public class StringUtil {
             i--;
         }
         return s.substring(0,i+1);
+    }
+    /** Implements Python-ish slice functionality */
+    public static String slice(String s, int start) {
+        Integer endIdx = start + 1;
+        if (endIdx == 0) {
+            endIdx = s.length();
+        }
+        return substring(s, start, endIdx);
+    }
+    public static String slice(String s, Integer start, Integer end) {
+        if (start == null) {
+            start = 0;
+        }
+        if (end == null) {
+            end = s.length();
+        }
+        return substring(s, start, end);
     }
 }

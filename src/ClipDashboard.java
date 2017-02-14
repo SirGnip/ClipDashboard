@@ -12,6 +12,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import com.juxtaflux.MyAppFramework;
+import org.apache.commons.lang3.StringUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,6 +20,47 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+class ArgParseError extends Exception {
+    ArgParseError(String msg) { super(msg); }
+}
+
+class functions {
+    private static Integer parseToken(String token) throws ArgParseError {
+        if (token.trim().equals("")) {
+            return null;
+        }
+
+        try {
+            return Integer.valueOf(token);
+            // there is a difference between a parsing error and no value existing
+            // a parse error is an error. An empty string means NULL.
+        } catch (NumberFormatException exc) {
+            throw new ArgParseError("Could not parse \"" + token + "\" into an integer");
+        }
+    }
+
+    public static Integer[] parseSliceSyntax(String sliceExpr) throws ArgParseError {
+        int colonCount = StringUtils.countMatches(sliceExpr, ":");
+        Integer singleIdx = null;
+        Integer startIdx = null;
+        Integer endIdx = null;
+        if (colonCount == 0) {
+            singleIdx = parseToken(sliceExpr);
+            if (singleIdx == null) {
+                throw new ArgParseError("The single value slice argument must be an integer");
+            }
+        } else if (colonCount == 1) {
+            String[] tokens = StringUtils.splitByWholeSeparatorPreserveAllTokens(sliceExpr, ":");
+            startIdx = parseToken(tokens[0]);
+            endIdx = parseToken(tokens[1]);
+        } else {
+            throw new ArgParseError("Too many colons (" + colonCount + ") in slice argument: \"" + sliceExpr + "\"");
+        }
+        Integer[] idxs = {singleIdx, startIdx, endIdx};
+        return idxs;
+    }
+};
 
 class StatusBar extends Label {
     static Paint defaultColor;
@@ -205,6 +247,8 @@ public class ClipDashboard extends Application {
         btnListPrepend.setTooltip(new Tooltip("Prepend given text to the beginning of each line in the clipboard\n(arg1: text)"));
         Button btnListAppend = new Button("append");
         btnListAppend.setTooltip(new Tooltip("Append given text to the end of each line in the clipboard\n(arg1: text)"));
+        Button btnListSlice = new Button("slice");
+        btnListSlice.setTooltip(new Tooltip("Do a Python-style slice on each line in the clipboard\n(arg1: slice expression)\nExample: \"5:-1\" slices each line to be the substring between 6th character and one character before the end of the line"));
         Button btnListJoin = new Button("join");
         btnListJoin.setTooltip(new Tooltip("Join each line in the clipboard with the character string given\n(arg1: delimiter)"));
         Button btnListContains = new Button("contains");
@@ -215,7 +259,7 @@ public class ClipDashboard extends Application {
         btnListRegexFull.setTooltip(new Tooltip("Keep lines in the clipboard that match the regex exactly. The regex must match the entire line.\n(arg1: regex)"));
         TextField txtListArg1 = new TextField("_");
         txtListArg1.setPrefWidth(80);
-        argsListOpsHBox.getChildren().addAll(btnListPrepend, btnListAppend, btnListJoin, btnListContains, btnListRegex, btnListRegexFull, txtListArg1);
+        argsListOpsHBox.getChildren().addAll(btnListPrepend, btnListAppend, btnListSlice, btnListJoin, btnListContains, btnListRegex, btnListRegexFull, txtListArg1);
 
         listTabVBox.getChildren().addAll(noArgListOpsHBox, argsListOpsHBox);
 
@@ -303,6 +347,35 @@ public class ClipDashboard extends Application {
                 list.set(i, list.get(i) + arg);
             }
             SysClipboard.write(String.join("\n", list));
+        });
+        btnListSlice.setOnAction((e) -> {
+            String[] array = SysClipboard.read().split("\n");
+            List<String> list = Arrays.asList(array);
+
+            // parse slice argument syntax
+            String sliceExpr = txtListArg1.getText();
+            Integer[] idxs;
+            try {
+                idxs = functions.parseSliceSyntax(sliceExpr);
+            } catch(ArgParseError exc) {
+                statusBar.showErr(exc.getMessage());
+                return;
+            }
+            Integer singleIdx = idxs[0];
+            Integer startIdx = idxs[1];
+            Integer endIdx = idxs[2];
+
+            // Apply slice to list
+            for (int i = 0; i < list.size(); ++i) {
+                if (singleIdx != null) {
+                    list.set(i, StringUtil.slice(list.get(i), singleIdx));
+                } else {
+                    list.set(i, StringUtil.slice(list.get(i), startIdx, endIdx));
+                }
+            }
+            SysClipboard.write(String.join("\n", list));
+
+            statusBar.show("Applied slice substring expression \"" + sliceExpr + "\" to " + list.size() + " line(s) in current clipboard");
         });
         btnListJoin.setOnAction((e) -> {
             String clipboard = SysClipboard.read();
@@ -648,7 +721,7 @@ public class ClipDashboard extends Application {
         String tmpString2 = clips.get(idx2);
         boolean tmpSelectState2 = items.getSelectionModel().isSelected(idx2);
 
-        // NOTE: if you chnage the code below to set idx1 value and then change its selection, then do the same for idx2,
+        // NOTE: if you change the code below to set idx1 value and then change its selection, then do the same for idx2,
         // moving with multiple items selected will often cause additional rows to get selected as you move. The order
         // of the code below seems to avoid this problem for some reason.
         clips.set(idx1, tmpString2);

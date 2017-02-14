@@ -2,11 +2,12 @@
 
 # next actions
 
+- do regex replace with backreferences (so I can convert "aa,bb" to "bb,aa")
 - abbreviate text display for long items
 - get "actions" working
     - open in editor
     - open as url, file, folder
-- refactor clipboard list operations to extract duplicate code
+- refactor clipboard list operations to eliminate duplicated code
 
 # roadmap
 
@@ -38,9 +39,12 @@ Iteration #1 - minimal features so I use it instead of Python one
         - x trim, x lower, x upper, x prepend, x append, x split, variable substitute
     - list
         - x prepend, x append, x join, x filter, x reverse, x sort, x count, numbering (prepend and append) with start # and step # w/ tooltip explaining use of args
-        - substring trimming (cut off first character [1:], return last three characters [-3:], return 3rd character [3])
-        - Apply Python style slicing syntax on each item in the list
-        - Apply Python style slicing syntax on the list as a whole to filter out certain lines 
+        - x substring trimming (cut off first character [1:], return last three characters [-3:], return 3rd character [3])
+        - x Apply Python style slicing syntax on each item in the list
+        - Apply Python style slicing syntax on the list as a whole to filter out certain lines
+    - table
+        - sort, filter, reorder columns
+        - mimic the unix "cut" syntax, maybe? Can I use this tool to split on a delimiter and reorder columns (get the behavior of: cut -d',' -f3,1,4,2)
 - retrieving clips
     - x single
     - x multiple selected
@@ -143,6 +147,8 @@ Visualizing focus ideas as when the ListView control as a whole looses focus, th
     - for path to diff tool
 - drag and drop implementation for ListView https://coderanch.com/t/658527/java/Implement-drag-drop-ListView-custom
 - in addition to filtering, have something that counts how many times a given regex matches? Or, maybe just use the "filter" and then the "stats" to count the lines in the clipboard after the filtre.
+- center, wordwrap
+- can i use the features I have to wrap html tags around a list of text?
 
 # Bugs
 
