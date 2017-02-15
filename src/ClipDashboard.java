@@ -79,10 +79,26 @@ class StatusBar extends Label {
     }
 }
 
+class ClipBuffer {
+    String clip;
+    ClipBuffer(String msg) {
+        clip = msg;
+    }
+    public String toString() {
+        final int MAX_BUFFER_LENGTH = 70;
+        int lineCount = StringUtils.countMatches(clip, "\n") + 1;
+        String formatted = clip.replace("\n", " ");
+        if (formatted.length() > MAX_BUFFER_LENGTH) {
+            formatted = formatted.format("%s... (%d chars, %d lines)", formatted.substring(0, MAX_BUFFER_LENGTH), formatted.length(), lineCount);
+        }
+        return formatted;
+    }
+}
+
 public class ClipDashboard extends Application {
 
-    private ListView items;
-    private ObservableList<String> clips;
+    private ListView<ClipBuffer> items;
+    private ObservableList<ClipBuffer> clips;
     private TextArea log;
     private StatusBar statusBar;
     private CheckMenuItem chkStoreOnFocus;
@@ -97,7 +113,8 @@ public class ClipDashboard extends Application {
         initMenu(vbox);
 
         clips = FXCollections.observableArrayList (
-                "abc", "def", "ghijklmnop", "q", "rstuv", "wxyz");
+                new ClipBuffer("abc"), new ClipBuffer("xyz"));
+//                "abc", "def", "ghijklmnop", "q", "rstuv", "wxyz");
         items = new ListView(clips);
         items.setMinHeight(250);
         items.setMaxHeight(250);
@@ -472,7 +489,7 @@ public class ClipDashboard extends Application {
             ObservableList<Integer> indices = items.getSelectionModel().getSelectedIndices();
             statusBar.show("Prepend " + clipboard.length() + " characters to " + indices.size() + " buffer(s)");
             for (Integer i : indices) { // Can't use for loop with function that returns a generic? http://stackoverflow.com/questions/6271960/how-to-iterate-over-a-wildcard-generic
-                clips.set(i, clipboard + clips.get(i));
+                clips.set(i, new ClipBuffer(clipboard + clips.get(i).clip));
             }
         });
 
@@ -481,7 +498,7 @@ public class ClipDashboard extends Application {
             ObservableList<Integer> indices = items.getSelectionModel().getSelectedIndices();
             statusBar.show("Append " + clipboard.length() + " characters to " + indices.size() + " buffer(s)");
             for (Integer i : indices) {
-                clips.set(i, clips.get(i) + clipboard);
+                clips.set(i, new ClipBuffer(clips.get(i).clip + clipboard));
             }
         });
 
@@ -490,7 +507,7 @@ public class ClipDashboard extends Application {
             ObservableList<Integer> indices = items.getSelectionModel().getSelectedIndices();
             statusBar.show("Replace " + indices.size() + " buffer(s) with " + clipboard.length() + " characters");
             for (Integer i : indices) {
-                clips.set(i, clipboard);
+                clips.set(i, new ClipBuffer(clipboard));
             }
         });
 
@@ -568,8 +585,12 @@ public class ClipDashboard extends Application {
         });
 
         btnJoin.setOnAction((e) -> {
-            ObservableList<String> selectedBuffers = items.getSelectionModel().getSelectedItems();
-            String clip = String.join("\n", selectedBuffers);
+            ObservableList<ClipBuffer> selectedBuffers = items.getSelectionModel().getSelectedItems();
+            ArrayList<String> clips = new ArrayList<String>();
+            for (ClipBuffer buf : selectedBuffers) {
+                clips.add(buf.clip);
+            }
+            String clip = String.join("\n", clips);
             String msg = String.format("Joining the %d selected buffers and storing %d chars to the clipboard",
                     selectedBuffers.size(),
                     clip.length()
@@ -580,7 +601,7 @@ public class ClipDashboard extends Application {
         });
 
         btnDiff.setOnAction((e) -> {
-            ObservableList<String> selectedBuffers = items.getSelectionModel().getSelectedItems();
+            ObservableList<ClipBuffer> selectedBuffers = items.getSelectionModel().getSelectedItems();
             if (selectedBuffers.size() != 2) {
                 statusBar.showErr("Need two buffers selected to do a diff");
             } else {
@@ -589,8 +610,8 @@ public class ClipDashboard extends Application {
                     Path fileB = Files.createTempFile("ClipDashboard_buffB_", ".txt");
                     // NOTE: Files.write() writes the file with linux-style line endings. Or, maybe it just writes whatever
                     // the String is and doesn't treat "\n" as "\r\n" on Windows.
-                    Files.write(fileA, selectedBuffers.get(0).getBytes());
-                    Files.write(fileB, selectedBuffers.get(1).getBytes());
+                    Files.write(fileA, selectedBuffers.get(0).clip.getBytes());
+                    Files.write(fileB, selectedBuffers.get(1).clip.getBytes());
                     Process proc = new ProcessBuilder("C:\\Program Files (x86)\\Meld\\Meld.exe", fileA.toString(), fileB.toString()).start();
                     statusBar.show("Diffing the two selected buffers");
                 } catch(Exception exc) {
@@ -700,32 +721,32 @@ public class ClipDashboard extends Application {
     }
 
     private String retrieveClipFromBuffer() {
-        Object selected = items.getFocusModel().getFocusedItem();
-        String msg = ((String) selected);
-        SysClipboard.write(msg);
-        return msg;
+        ClipBuffer buffer = items.getFocusModel().getFocusedItem();
+        SysClipboard.write(buffer.clip);
+        return buffer.clip;
     }
 
     private void appendToClipBuffers(String clip) {
-        statusBar.show(String.format("Storing %d chars to a buffer from clipboard\n", clip.length()));
-        clips.add(0, clip);
-        items.scrollTo(clip);
+        statusBar.show(String.format("Storing %d chars from the clipboard to a buffer\n", clip.length()));
+        ClipBuffer buffer = new ClipBuffer(clip);
+        clips.add(0, buffer);
+        items.scrollTo(buffer);
     }
 
     private void swapBuffers(int idx1, int idx2) {
         // NOTE: this function does not attempt to do anything sane with focus. It seems that focus can cause issues
         // with extra rows getting selected as I move them around. I think this may have something to do with the focus?
         // I'm just guessing.
-        String tmpString1 = clips.get(idx1);
+        ClipBuffer tmpBuff1 = clips.get(idx1);
         boolean tmpSelectState1 = items.getSelectionModel().isSelected(idx1);
-        String tmpString2 = clips.get(idx2);
+        ClipBuffer tmpBuff2 = clips.get(idx2);
         boolean tmpSelectState2 = items.getSelectionModel().isSelected(idx2);
 
         // NOTE: if you change the code below to set idx1 value and then change its selection, then do the same for idx2,
         // moving with multiple items selected will often cause additional rows to get selected as you move. The order
         // of the code below seems to avoid this problem for some reason.
-        clips.set(idx1, tmpString2);
-        clips.set(idx2, tmpString1);
+        clips.set(idx1, tmpBuff2);
+        clips.set(idx2, tmpBuff1);
 
         if (tmpSelectState2) {
             items.getSelectionModel().select(idx1);

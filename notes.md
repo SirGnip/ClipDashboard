@@ -3,7 +3,6 @@
 # next actions
 
 - do regex replace with backreferences (so I can convert "aa,bb" to "bb,aa")
-- abbreviate text display for long items
 - get "actions" working
     - open in editor
     - open as url, file, folder
