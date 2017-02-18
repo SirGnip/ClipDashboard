@@ -13,6 +13,7 @@ import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import com.juxtaflux.MyAppFramework;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -359,15 +360,8 @@ public class ClipDashboard extends Application {
             SysClipboard.write(clipboard.replace("\n", arg));
         });
         btnListCollapse.setOnAction((e) -> {
-            List<String> list = SysClipboard.readAsLines();
-            List<String> filtered = new ArrayList();
-            for (String line : list) {
-                if (line.length() > 0) {
-                    filtered.add(line);
-                }
-            }
-            statusBar.show("Collapsed " + list.size() + " lines down to " + filtered.size() + " by removing empty lines in current clipboard");
-            SysClipboard.write(String.join("\n", filtered));
+            Pair<List<String>, List<String>> result = new ClipboardAsListFilter( (line) -> line.length() > 0 ).filter();
+            statusBar.show("Collapsed " + result.getLeft().size() + " lines down to " + result.getRight().size() + " by removing empty lines in current clipboard");
         });
         btnListUniq.setOnAction((e) -> {
             List<String> list = SysClipboard.readAsLines();
@@ -383,41 +377,20 @@ public class ClipDashboard extends Application {
             SysClipboard.write(String.join("\n", filtered));
         });
         btnListContains.setOnAction((e) -> {
-            List<String> list = SysClipboard.readAsLines();
-            List<String> filtered = new ArrayList();
             String arg = txtListArg1.getText();
-            for (String line : list) {
-                if (line.contains(arg)) {
-                    filtered.add(line);
-                }
-            }
-            statusBar.show("Filtered " + list.size() + " lines down to " + filtered.size() + " in current clipboard");
-            SysClipboard.write(String.join("\n", filtered));
+            Pair<List<String>, List<String>> result = new ClipboardAsListFilter( (line) -> line.contains(arg) ).filter();
+            statusBar.show("Filtered " + result.getLeft().size() + " lines down to " + result.getRight().size() + " in current clipboard");
         });
         btnListRegex.setOnAction((e) -> {
-            List<String> list = SysClipboard.readAsLines();
-            List<String> filtered = new ArrayList();
-            String regex = txtListArg1.getText();
-            regex = "^.*" + regex + ".*$";
-            for (String line : list) {
-                if (line.matches(regex)) {
-                    filtered.add(line);
-                }
-            }
-            statusBar.show("Regex filtered " + list.size() + " lines down to " + filtered.size() + " in current clipboard");
-            SysClipboard.write(String.join("\n", filtered));
+            String rawRegex = txtListArg1.getText();
+            String regex = "^.*" + rawRegex + ".*$";
+            Pair<List<String>, List<String>> result = new ClipboardAsListFilter( (line) -> line.matches(regex) ).filter();
+            statusBar.show("Regex filtered " + result.getLeft().size() + " lines down to " + result.getRight().size() + " in current clipboard");
         });
         btnListRegexFull.setOnAction((e) -> {
-            List<String> list = SysClipboard.readAsLines();
-            List<String> filtered = new ArrayList();
             String regex = txtListArg1.getText();
-            for (String line : list) {
-                if (line.matches(regex)) {
-                    filtered.add(line);
-                }
-            }
-            statusBar.show("Regex (full) filtered " + list.size() + " lines down to " + filtered.size() + " in current clipboard");
-            SysClipboard.write(String.join("\n", filtered));
+            Pair<List<String>, List<String>> result = new ClipboardAsListFilter( (line) -> line.matches(regex) ).filter();
+            statusBar.show("Regex (full) filtered " + result.getLeft().size() + " lines down to " + result.getRight().size() + " in current clipboard");
         });
 
         // Log
