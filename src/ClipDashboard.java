@@ -8,7 +8,6 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import com.juxtaflux.MyAppFramework;
@@ -21,12 +20,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 class ArgParseError extends Exception {
     ArgParseError(String msg) { super(msg); }
 }
 
-class functions {
+class Functions {
     private static Integer parseToken(String token) throws ArgParseError {
         if (token.trim().equals("")) {
             return null;
@@ -75,7 +75,7 @@ class StatusBar extends Label {
         this.setText(msg);
     }
     public void showErr(String msg) {
-        this.setTextFill(Color.RED);
+        this.setTextFill(Config.STATUS_BAR_ERROR_COLOR);
         this.setText("ERROR: " + msg);
     }
 }
@@ -86,11 +86,10 @@ class ClipBuffer {
         clip = msg;
     }
     public String toString() {
-        final int MAX_BUFFER_LENGTH = 70;
         int lineCount = StringUtils.countMatches(clip, "\n") + 1;
         String formatted = clip.replace("\n", " ");
-        if (formatted.length() > MAX_BUFFER_LENGTH) {
-            formatted = formatted.format("%s... (%d chars, %d lines)", formatted.substring(0, MAX_BUFFER_LENGTH), formatted.length(), lineCount);
+        if (formatted.length() > Config.BUFFER_CROP_LENGTH) {
+            formatted = formatted.format("%s... (%d chars, %d lines)", formatted.substring(0, Config.BUFFER_CROP_LENGTH), formatted.length(), lineCount);
         }
         return formatted;
     }
@@ -107,18 +106,16 @@ public class ClipDashboard extends Application {
     @Override
     public void start(Stage primaryStage) {
         VBox vbox = new VBox();
-        vbox.setSpacing(5);
+        vbox.setSpacing(Config.UI_SPACING);
 
         statusBar = new StatusBar();
 
         initMenu(vbox);
 
-        clips = FXCollections.observableArrayList (
-                new ClipBuffer("abc"), new ClipBuffer("xyz"));
-//                "abc", "def", "ghijklmnop", "q", "rstuv", "wxyz");
+        clips = FXCollections.observableArrayList(Config.INITIAL_CLIPS.stream().map(c -> new ClipBuffer(c)).collect(Collectors.toList()));
         items = new ListView(clips);
-        items.setMinHeight(250);
-        items.setMaxHeight(250);
+        items.setMinHeight(Config.LIST_VIEW_HEIGHT);
+        items.setMaxHeight(Config.LIST_VIEW_HEIGHT);
         items.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         items.setOnMouseClicked((e) -> {
             // double click on ListView
@@ -129,7 +126,7 @@ public class ClipDashboard extends Application {
 
         // Buffer operations
         HBox hbox = new HBox();
-        hbox.setPadding(new Insets(5));
+        hbox.setPadding(new Insets(Config.UI_SPACING));
         Label lblBuffers = new Label("Buffers: ");
         Button btnRetrieve = new Button("Retrieve");
         btnRetrieve.setMaxWidth(Double.MAX_VALUE);
@@ -152,7 +149,7 @@ public class ClipDashboard extends Application {
 
         // String/List tabs
         TabPane modificationTabPane = new TabPane();
-        modificationTabPane.setMinHeight(120);
+        modificationTabPane.setMinHeight(Config.MODIFICATION_TAB_HEIGHT);
 
         // String operation tab
         Tab tab1 = new Tab("String operations");
@@ -160,7 +157,7 @@ public class ClipDashboard extends Application {
         modificationTabPane.getTabs().add(tab1);
 
         VBox strTabVBox = new VBox();
-        strTabVBox.setSpacing(5);
+        strTabVBox.setSpacing(Config.UI_SPACING);
 
         HBox noArgStrOpsHBox = new HBox();
         Button btnStrLTrim = new Button("L");
@@ -176,9 +173,9 @@ public class ClipDashboard extends Application {
         Button btnStrSplit = new Button("split");
         Button btnStrReplace = new Button("replace");
         TextField txtStrArg1 = new TextField(",");
-        txtStrArg1.setPrefWidth(80);
+        txtStrArg1.setPrefWidth(Config.ARG_WIDTH);
         TextField txtStrArg2 = new TextField("\\n");
-        txtStrArg2.setPrefWidth(80);
+        txtStrArg2.setPrefWidth(Config.ARG_WIDTH);
         argsStrOpsHBox.getChildren().addAll(btnStrPrepend, btnStrAppend, btnStrSplit, btnStrReplace, txtStrArg1, txtStrArg2);
 
         strTabVBox.getChildren().addAll(noArgStrOpsHBox, argsStrOpsHBox);
@@ -239,7 +236,7 @@ public class ClipDashboard extends Application {
         modificationTabPane.getTabs().add(tab2);
 
         VBox listTabVBox = new VBox();
-        listTabVBox.setSpacing(5);
+        listTabVBox.setSpacing(Config.UI_SPACING);
 
         HBox noArgListOpsHBox = new HBox();
         Button btnListLTrim = new Button("L");
@@ -276,7 +273,7 @@ public class ClipDashboard extends Application {
         Button btnListRegexFull = new Button("regex full");
         btnListRegexFull.setTooltip(new Tooltip("Keep lines in the clipboard that match the regex exactly. The regex must match the entire line.\n(arg1: regex)"));
         TextField txtListArg1 = new TextField("_");
-        txtListArg1.setPrefWidth(80);
+        txtListArg1.setPrefWidth(Config.ARG_WIDTH);
         argsListOpsHBox.getChildren().addAll(btnListPrepend, btnListAppend, btnListSlice, btnListJoin, btnListContains, btnListRegex, btnListRegexFull, txtListArg1);
 
         listTabVBox.getChildren().addAll(noArgListOpsHBox, argsListOpsHBox);
@@ -339,7 +336,7 @@ public class ClipDashboard extends Application {
             String sliceExpr = txtListArg1.getText();
             Integer[] idxs;
             try {
-                idxs = functions.parseSliceSyntax(sliceExpr);
+                idxs = Functions.parseSliceSyntax(sliceExpr);
             } catch(ArgParseError exc) {
                 statusBar.showErr(exc.getMessage());
                 return;
@@ -533,14 +530,14 @@ public class ClipDashboard extends Application {
                 statusBar.showErr("Need two buffers selected to do a diff");
             } else {
                 try {
-                    Path fileA = Files.createTempFile("ClipDashboard_buffA_", ".txt");
-                    Path fileB = Files.createTempFile("ClipDashboard_buffB_", ".txt");
-                    // NOTE: Files.write() writes the file with linux-style line endings. Or, maybe it just writes whatever
-                    // the String is and doesn't treat "\n" as "\r\n" on Windows.
+                    Path fileA = Files.createTempFile(Config.DIFF_TEMP_FILE_A, Config.DIFF_TEMP_FILE_EXT);
+                    Path fileB = Files.createTempFile(Config.DIFF_TEMP_FILE_B, Config.DIFF_TEMP_FILE_EXT);
+                    // NOTE: Files.write() writes the file with linux-style line endings. Or, maybe it just passes
+                    // through whatever is in the String is and doesn't automatically treat "\n" as "\r\n" on Windows.
                     Files.write(fileA, selectedBuffers.get(0).clip.getBytes());
                     Files.write(fileB, selectedBuffers.get(1).clip.getBytes());
-                    Process proc = new ProcessBuilder("C:\\Program Files (x86)\\Meld\\Meld.exe", fileA.toString(), fileB.toString()).start();
-                    statusBar.show("Diffing the two selected buffers");
+                    Process proc = new ProcessBuilder(Config.DIFF_APP, fileA.toString(), fileB.toString()).start();
+                    statusBar.show("Diffing the two selected buffers with " + Config.DIFF_APP);
                 } catch(Exception exc) {
                     statusBar.showErr("Can't launch diff tool");
                 }
@@ -584,8 +581,8 @@ public class ClipDashboard extends Application {
             }
         });
 
-        Scene scene = new Scene(vbox, 600, 700);
-        primaryStage.setTitle("ClipDashboard");
+        Scene scene = new Scene(vbox, Config.APP_WIDTH, Config.APP_HEIGHT);
+        primaryStage.setTitle(Config.APP_TITLE);
         primaryStage.setScene(scene);
         primaryStage.show();
         statusBar.cacheTextFillColor();

@@ -2,13 +2,12 @@
 
 # next actions
 
-- extract a few of the constants as static members at the top of the class (maybe create a separate file with the class?)
-- look at warning highlights on StatusBar class and fix them
+- look at IntelliJ warning highlights on StatusBar class and fix them
 - do regex replace with backreferences (so I can convert "aa,bb" to "bb,aa")
 - get "actions" working
     - open in editor
     - open as url, file, folder
-- refactor clipboard list operations to eliminate duplicated code
+- skim docs/tutorials on streams?
 
 # roadmap
 
