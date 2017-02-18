@@ -2,6 +2,9 @@
 
 # next actions
 
+- use lambdas to reduce the filtering operations (use a predicate interface)
+- extract a few of the constants as static members at the top of the class (maybe create a separate file with the class?)
+- look at warning highlights on StatusBar class and fix them
 - do regex replace with backreferences (so I can convert "aa,bb" to "bb,aa")
 - get "actions" working
     - open in editor

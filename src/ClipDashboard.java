@@ -232,7 +232,7 @@ public class ClipDashboard extends Application {
         });
 
         // List operations tab
-        // NOTE: List operations assume each "item" of the "list" is a line of text, each separated from the other by carriage returns.
+        // NOTE: List operations assume each "item" of the "list" is a line of text, each separated by a carriage returns.
         Tab tab2 = new Tab("List operations");
         tab2.setClosable(false);
         modificationTabPane.getTabs().add(tab2);
@@ -282,47 +282,25 @@ public class ClipDashboard extends Application {
 
         tab2.setContent(listTabVBox);
         btnListLTrim.setOnAction((e) -> {
-            String[] array = SysClipboard.read().split("\n");
-            List<String> list = Arrays.asList(array);
-            statusBar.show("Left-trimmed " + list.size() + " lines in current clipboard");
-            for (int i = 0; i < list.size(); ++i) {
-                list.set(i, StringUtil.ltrim(list.get(i)));
-            }
-            SysClipboard.write(String.join("\n", list));
+            List<String> result = new ClipboardAsListMutatorByLine( (line) -> StringUtil.ltrim(line) ).mutate();
+            statusBar.show("Left-trimmed " + result.size() + " lines in current clipboard");
         });
         btnListTrim.setOnAction((e) -> {
-            String[] array = SysClipboard.read().split("\n");
-            List<String> list = Arrays.asList(array);
-            statusBar.show("Trimmed " + list.size() + " lines in current clipboard");
-            for (int i = 0; i < list.size(); ++i) {
-                list.set(i, list.get(i).trim());
-            }
-            SysClipboard.write(String.join("\n", list));
+            List<String> result = new ClipboardAsListMutatorByLine( (line) -> line.trim() ).mutate();
+            statusBar.show("Trimmed " + result.size() + " lines in current clipboard");
         });
         btnListRTrim.setOnAction((e) -> {
-            String[] array = SysClipboard.read().split("\n");
-            List<String> list = Arrays.asList(array);
-            statusBar.show("Right-trimmed " + list.size() + " lines in current clipboard");
-            for (int i = 0; i < list.size(); ++i) {
-                list.set(i, StringUtil.rtrim(list.get(i)));
-            }
-            SysClipboard.write(String.join("\n", list));
+            List<String> result = new ClipboardAsListMutatorByLine( (line) -> StringUtil.rtrim(line) ).mutate();
+            statusBar.show("Right-trimmed " + result.size() + " lines in current clipboard");
         });
         btnListSort.setOnAction((e) -> {
-            String[] array = SysClipboard.read().split("\n");
-            List<String> list = Arrays.asList(array);
-            statusBar.show("Sorted " + list.size() + " lines in current clipboard");
-            Collections.sort(list);
-            SysClipboard.write(String.join("\n", list));
+            List<String> result = new ClipboardAsListMutator( (list) -> Collections.sort(list) ).mutate();
+            statusBar.show("Sorted " + result.size() + " lines in current clipboard");
         });
         btnListReverse.setOnAction((e) -> {
-            String[] array = SysClipboard.read().split("\n");
-            List<String> list = Arrays.asList(array);
-            statusBar.show("Reversed " + list.size() + " lines in current clipboard");
-            Collections.reverse(list);
-            SysClipboard.write(String.join("\n", list));
+            List<String> result = new ClipboardAsListMutator( (list) -> Collections.reverse(list) ).mutate();
+            statusBar.show("Reversed " + result.size() + " lines in current clipboard");
         });
-
         btnListStats.setOnAction((e) -> {
             String clipboard = SysClipboard.read();
             String[] array = clipboard.split("\n");
@@ -346,29 +324,16 @@ public class ClipDashboard extends Application {
             statusBar.show(msg);
         });
         btnListPrepend.setOnAction((e) -> {
-            String[] array = SysClipboard.read().split("\n");
-            List<String> list = Arrays.asList(array);
             String arg = txtListArg1.getText();
-            statusBar.show("Prepended " + arg.length() + " character(s) to " + list.size() + " lines in current clipboard");
-            for (int i = 0; i < list.size(); ++i) {
-                list.set(i, arg + list.get(i));
-            }
-            SysClipboard.write(String.join("\n", list));
+            List<String> result = new ClipboardAsListMutatorByLine( (line) -> arg + line ).mutate();
+            statusBar.show("Prepended " + arg.length() + " character(s) to " + result.size() + " lines in current clipboard");
         });
         btnListAppend.setOnAction((e) -> {
-            String[] array = SysClipboard.read().split("\n");
-            List<String> list = Arrays.asList(array);
             String arg = txtListArg1.getText();
-            statusBar.show("Appended " + arg.length() + " character(s) to " + list.size() + " lines in current clipboard");
-            for (int i = 0; i < list.size(); ++i) {
-                list.set(i, list.get(i) + arg);
-            }
-            SysClipboard.write(String.join("\n", list));
+            List<String> result = new ClipboardAsListMutatorByLine( (line) -> line + arg ).mutate();
+            statusBar.show("Appended " + arg.length() + " character(s) to " + result.size() + " lines in current clipboard");
         });
         btnListSlice.setOnAction((e) -> {
-            String[] array = SysClipboard.read().split("\n");
-            List<String> list = Arrays.asList(array);
-
             // parse slice argument syntax
             String sliceExpr = txtListArg1.getText();
             Integer[] idxs;
@@ -382,17 +347,10 @@ public class ClipDashboard extends Application {
             Integer startIdx = idxs[1];
             Integer endIdx = idxs[2];
 
-            // Apply slice to list
-            for (int i = 0; i < list.size(); ++i) {
-                if (singleIdx != null) {
-                    list.set(i, StringUtil.slice(list.get(i), singleIdx));
-                } else {
-                    list.set(i, StringUtil.slice(list.get(i), startIdx, endIdx));
-                }
-            }
-            SysClipboard.write(String.join("\n", list));
-
-            statusBar.show("Applied slice substring expression \"" + sliceExpr + "\" to " + list.size() + " line(s) in current clipboard");
+            List<String> result = singleIdx != null
+                    ? new ClipboardAsListMutatorByLine( (line) -> StringUtil.slice(line, singleIdx)).mutate()
+                    : new ClipboardAsListMutatorByLine( (line) -> StringUtil.slice(line, startIdx, endIdx)).mutate();
+            statusBar.show("Applied slice substring expression \"" + sliceExpr + "\" to " + result.size() + " line(s) in current clipboard");
         });
         btnListJoin.setOnAction((e) -> {
             String clipboard = SysClipboard.read();
@@ -401,20 +359,18 @@ public class ClipDashboard extends Application {
             SysClipboard.write(clipboard.replace("\n", arg));
         });
         btnListCollapse.setOnAction((e) -> {
-            String[] array = SysClipboard.read().split("\n");
-            List<String> list = Arrays.asList(array);
+            List<String> list = SysClipboard.readAsLines();
             List<String> filtered = new ArrayList();
             for (String line : list) {
                 if (line.length() > 0) {
                     filtered.add(line);
                 }
             }
-            statusBar.show("Collapsed " + array.length + " lines down to " + filtered.size() + " by removing empty lines in current clipboard");
+            statusBar.show("Collapsed " + list.size() + " lines down to " + filtered.size() + " by removing empty lines in current clipboard");
             SysClipboard.write(String.join("\n", filtered));
         });
         btnListUniq.setOnAction((e) -> {
-            String[] array = SysClipboard.read().split("\n");
-            List<String> list = Arrays.asList(array);
+            List<String> list = SysClipboard.readAsLines();
             List<String> filtered = new ArrayList();
             String prev = null;
             for (String line : list) {
@@ -423,12 +379,11 @@ public class ClipDashboard extends Application {
                     prev = line;
                 }
             }
-            statusBar.show("Made " + array.length + " lines " + filtered.size() + " by removing adjacent duplicates in current clipboard");
+            statusBar.show("Made " + list.size() + " lines " + filtered.size() + " by removing adjacent duplicates in current clipboard");
             SysClipboard.write(String.join("\n", filtered));
         });
         btnListContains.setOnAction((e) -> {
-            String[] array = SysClipboard.read().split("\n");
-            List<String> list = Arrays.asList(array);
+            List<String> list = SysClipboard.readAsLines();
             List<String> filtered = new ArrayList();
             String arg = txtListArg1.getText();
             for (String line : list) {
@@ -436,12 +391,11 @@ public class ClipDashboard extends Application {
                     filtered.add(line);
                 }
             }
-            statusBar.show("Filtered " + array.length + " lines down to " + filtered.size() + " in current clipboard");
+            statusBar.show("Filtered " + list.size() + " lines down to " + filtered.size() + " in current clipboard");
             SysClipboard.write(String.join("\n", filtered));
         });
         btnListRegex.setOnAction((e) -> {
-            String[] array = SysClipboard.read().split("\n");
-            List<String> list = Arrays.asList(array);
+            List<String> list = SysClipboard.readAsLines();
             List<String> filtered = new ArrayList();
             String regex = txtListArg1.getText();
             regex = "^.*" + regex + ".*$";
@@ -450,12 +404,11 @@ public class ClipDashboard extends Application {
                     filtered.add(line);
                 }
             }
-            statusBar.show("Regex filtered " + array.length + " lines down to " + filtered.size() + " in current clipboard");
+            statusBar.show("Regex filtered " + list.size() + " lines down to " + filtered.size() + " in current clipboard");
             SysClipboard.write(String.join("\n", filtered));
         });
         btnListRegexFull.setOnAction((e) -> {
-            String[] array = SysClipboard.read().split("\n");
-            List<String> list = Arrays.asList(array);
+            List<String> list = SysClipboard.readAsLines();
             List<String> filtered = new ArrayList();
             String regex = txtListArg1.getText();
             for (String line : list) {
@@ -463,7 +416,7 @@ public class ClipDashboard extends Application {
                     filtered.add(line);
                 }
             }
-            statusBar.show("Regex (full) filtered " + array.length + " lines down to " + filtered.size() + " in current clipboard");
+            statusBar.show("Regex (full) filtered " + list.size() + " lines down to " + filtered.size() + " in current clipboard");
             SysClipboard.write(String.join("\n", filtered));
         });
 
@@ -548,14 +501,15 @@ public class ClipDashboard extends Application {
             String clip = retrieveClipFromBuffer();
             System.out.println(clip);
             if (selIdxs.size() > 1) {
-                String msg = String.format("Retrieving %d chars from buffer (#%d of %d) and storing to the clipboard",
+                String msg = String.format("Retrieving %d line(s) and %d chars from buffer (#%d of %d) and storing to the clipboard",
+                        StringUtils.countMatches(clip, "\n") + 1,
                         clip.length(),
                         ordinalOfSelected,
                         selIdxs.size()
                         );
                 statusBar.show(msg);
             } else {
-                statusBar.show("Retrieving " + clip.length() + " chars from buffer and storing to the clipboard");
+                statusBar.show("Retrieving " + (StringUtils.countMatches(clip, "\n") + 1) + " line(s) and " + clip.length() + " chars from buffer and storing to the clipboard");
             }
 
             // Advance focus to next selected item
@@ -716,7 +670,9 @@ public class ClipDashboard extends Application {
             return "";
         }
         String msg = retrieveClipFromBuffer();
-        statusBar.show(String.format("Retrieving %d chars from buffer and storing to the clipboard\n", msg.length()));
+        statusBar.show(String.format("Retrieving %d line(s) and %d chars from buffer and storing to the clipboard\n",
+                StringUtils.countMatches(msg, "\n") + 1,
+                msg.length()));
         return msg;
     }
 
@@ -727,7 +683,9 @@ public class ClipDashboard extends Application {
     }
 
     private void appendToClipBuffers(String clip) {
-        statusBar.show(String.format("Storing %d chars from the clipboard to a buffer\n", clip.length()));
+        statusBar.show(String.format("Storing %d line(s) and %d chars from the clipboard to a buffer\n",
+                StringUtils.countMatches(clip, "\n") + 1,
+                clip.length()));
         ClipBuffer buffer = new ClipBuffer(clip);
         clips.add(0, buffer);
         items.scrollTo(buffer);
