@@ -11,7 +11,7 @@
 
 # roadmap
 
-Iteration #1 - minimal features so I use it instead of Python one
+Iteration #1 - (DONE) minimal features so I use it instead of Python one
 
 - x make Receive bigger so it is easy to click
 - x double click to receive item
@@ -24,7 +24,7 @@ Iteration #1 - minimal features so I use it instead of Python one
         - x exit
     - x clip
         - x deleted selected
-- truncate text display for very long items or ones with embedded cr's?
+- x truncate text display for very long items or ones with embedded cr's?
 	
 	
 # use cases
@@ -56,14 +56,13 @@ Iteration #1 - minimal features so I use it instead of Python one
 uncategorized
     
 - java clipboard toolbox UI
-    - able to split, join, prepend, append, replace, sort, filter, columns, graph, clipboard stack, etc.
+    - able to x split, x join, x prepend, x append, x replace, x sort, x filter, columns, graph, x clipboard stack, etc.
     - variable substitution?
-    - push and retrieve from other buffers
+    - x push and retrieve from other buffers
     - able to treat buffers and deque (push/pop from front and back) and random access (read from anywehre)
-    - clipboard stack/cache/manipulator
-    - manage a clipboard stack
-    - allow modifications (regex, substitution, replacement, stripping, append/prepend, numbering) to clipboard in memory and 
-clipboard buffers
+    - x clipboard stack/cache/manipulator
+    - x manage a clipboard stack
+    - x allow modifications (regex, substitution, replacement, stripping, append/prepend, numbering) to clipboard in memory and clipboard buffers
     - different ways of getting text in (take a multi-line selection and put each line into a separate bucket? separate by a comma?)
         - drag and drop replaces
         - drag and drop appends (maybe with optional delimiter)
@@ -79,21 +78,21 @@ l (any way to search for docs given just a class/interface name?)
         - x append/prepend system clipboard to selected buffers (if I want to incrementally build up a long clipboard buffer entry)
         - x replace
         - insert after selected (don't want to do "before selected" because then I could never insert anything at the end of the list. The combinaton of "after selected" and "store at head" lets me put stuff anywhere
-        - reorder
+        - x reorder
         - variable substitution that can reference other buffers (by index? indexes can change easily. Some tagging mechanism by color? icon? assigned number? initial text?)
 
 # modification
 - what is input? output?
 
 - clip operations (modifies selected clip)
-    - prepend, append
+    - x prepend, x append
         - in: string 
         - output: selected clip
 - line operations (treats selected clip as a list of lines with each line being one item)
-    - sort lines (tokenizes by lines)
+    - x sort lines (tokenizes by lines)
         - in: selected clip
         - out: selected clip
-    - filter lines (tokenize by lines)
+    - x filter lines (tokenize by lines)
 
 # clipboard todo
 - maybe list out core use cases (broad, but not exhaustive)
@@ -101,7 +100,7 @@ l (any way to search for docs given just a class/interface name?)
     - then list ist *must* have features (the core, fun features like append, split, join, sort filter)
     - have a second list for "maybe" (like ability to control truncation of )
 
-- double click on item does a "retrieve" of that item into clipboard
+- x double click on item does a "retrieve" of that item into clipboard
     - what about multi-select?
 - with multi-select, maybe retrieve becomes multi-select aware, where it merges the multiple lines together with a given token (empty, space, carriage return, tab, comma)
     - how do i reconcile this with doing a multi-select to be used in a cyclical retrieve?  THe assumption would be that a cyclical retrieve would be bounded by what is selected? Maybe two modes (merge and cycle) of retrieve? When in cycle mode, how does UI track what clip is current?
@@ -119,15 +118,15 @@ Visualizing focus ideas as when the ListView control as a whole looses focus, th
 
 - do some manual animation on the cell to highlight it
 - add some text to the data model if it has focus
-- have another control (anothre ListView) next to it in parallel that highlights the current cycle row somehow?
+- have another control (another ListView) next to it in parallel that highlights the current cycle row somehow?
 - add a status bar at the bottom of the screen and have it show the buffer ID with the focus and preview of it
 - just not worry about having a nice visualization for cycling for now
 
 # Brainstorm
 
-- some kind of preview of system clipboard (have it poll the systme clipboard while UI is open)
+- some kind of preview of system clipboard (have it poll the system clipboard while UI is open)
 - Feature that would provide a full screen view of the current system clipboard. Maybe just a "open in Notepad" would be sufficient.
-- diff two buffers. Diff a buffer with system clipboard.
+- x diff two buffers. Diff a buffer with system clipboard.
 - maybe have a generic "store" button that has different behavior based on some mode/configuration?
     - append new clip to buffer?
     - prepend/append/replace selected clips in buffer with text in system clipboard?
