@@ -7,6 +7,8 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
@@ -14,6 +16,10 @@ import com.juxtaflux.MyAppFramework;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -123,6 +129,98 @@ public class ClipDashboard extends Application {
                 retrieveClipFromBufferAndShowStatus();
             }
         });
+        items.setOnDragOver((e) -> {
+            Dragboard board = e.getDragboard();
+//            System.out.println("drag over " + board.hasString() + " " + board.hasUrl() + " " + board.hasFiles() + " " + board.hasImage());
+            e.acceptTransferModes(TransferMode.ANY);
+            e.consume();
+        });
+        items.setOnDragEntered((e) -> {
+            System.out.println("on drag entered");
+            e.consume();
+        });
+        items.setOnDragExited((e) -> {
+            System.out.println("on drag exited");
+            e.consume();
+        });
+        items.setOnDragDropped((e) -> {
+            // if dropped file is a directory, each file is loaded into its own buffer?
+            Dragboard b = e.getDragboard();
+            System.out.printf("on drag dropped %s %s %s %s %s %s\n",
+                b.hasString(),
+                b.hasUrl(),
+                b.hasFiles(),
+                b.hasHtml(),
+                b.hasRtf(),
+                b.hasImage()
+            );
+
+            b.getContentTypes().forEach(df -> System.out.println("MIMETYPE: " + df.getClass().getName() + " " + df + " - " + b.getContent(df).getClass().getName() + " >" + b.getContent(df))); // reference: http://stackoverflow.com/questions/30923817/javafx-dnd-third-party-program-to-javafx-app
+
+            URL url = null;
+            try {
+                url = new URL(b.getUrl());
+                System.out.println("was a URL " + url);
+            } catch(Exception x) {
+                System.out.println("was NOT a URL");
+                System.out.println(x);
+            }
+
+            if (b.hasFiles()) {
+                Object o = b.getFiles();  System.out.println("**Files:" + o.getClass().getName() + " " + o);
+                List<File> x = b.getFiles();
+                System.out.println(">>>" + x);
+                for (File f : x) {
+                    System.out.println("  file: " + f.getAbsolutePath() + " " + f.isFile() + " " + f.isDirectory());
+                    if (f.isDirectory()) {
+                        System.out.println(f.list());
+                        String[] ss = f.list();
+                        File[] fs = f.listFiles();
+                        for (int i = 0; i < fs.length; ++i) {
+                            System.out.println("     dir contents:" + fs[i]);
+                        }
+                    }
+                }
+            } else if (url != null) {
+                System.out.println("dropped a URL");
+                String txt = getDataFromURL(url);
+                int lineCount = StringUtils.countMatches(txt, "\n") + 1;
+                statusBar.show("Put " + lineCount + " lines and " + txt.length() + " characters to system clipboard from '" + url.toString() + "'");
+                SysClipboard.write(txt);
+
+//                try {
+//                    Object o = url.getContent().;
+//                    System.out.println(o);
+//                } catch(Exception exc) {
+//                    System.out.println("error getting url");
+//                }
+
+            }
+
+//            if (b.hasHtml()) {
+//                Object o = b.getHtml();  System.out.println("**Html:" + o.getClass().getName() + " " + o);
+//            }
+
+
+//            if (e.getDragboard().hasString()) {
+//                System.out.println("writing");
+//                appendToClipBuffers(e.getDragboard().getString());
+//                e.setDropCompleted(true);
+//            } else if (e.getDragboard().hasFiles()) {
+//                try {
+//                    for (File f : e.getDragboard().getFiles()) {
+//                        appendToClipBuffers("FILE: " + f.getPath());
+//                    }
+//                } catch (Exception exc) {
+//                    System.out.println("clipboard error");
+//                }
+//            } else {
+//                e.setDropCompleted(false);
+//            }
+            e.consume();
+        });
+
+
 
         // Buffer operations
         HBox hbox = new HBox();
@@ -687,6 +785,22 @@ public class ClipDashboard extends Application {
         } else {
             items.getSelectionModel().clearSelection(idx2);
         }
+    }
+
+    private String getDataFromURL(URL url) {
+        // Reference: https://docs.oracle.com/javase/tutorial/networking/urls/readingURL.html
+        String text = "";
+        try {
+            BufferedReader rd = new BufferedReader(new InputStreamReader(url.openStream()));
+            String line;
+            while ((line = rd.readLine()) != null) {
+                text += line + "\n"; // this adds an extra \n at the end. Should read into a list and then join with "\n"
+            }
+            rd.close();
+        } catch (Exception exc) {
+            System.out.println("error reading from url: " + url);
+        }
+        return text;
     }
 }
 

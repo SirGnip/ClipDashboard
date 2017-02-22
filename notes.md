@@ -1,7 +1,35 @@
+
+    TEXT
+    MIMETYPE: javafx.scene.input.DataFormat [text/uri-list] - java.lang.String >childCnt
+    MIMETYPE: javafx.scene.input.DataFormat [text/plain] 
+        
+    CHROME:
+    MIMETYPE: javafx.scene.input.DataFormat [text/uri-list] - java.lang.String >http://juxtaflux.pythonanywhere.com/clipshout/wrecv
+    MIMETYPE: javafx.scene.input.DataFormat [message/external-body;access-type=clipboard;index=0;name="juxtaflux.pythonanywhere.com.url"] - java.nio.HeapByteBuffer >java.nio.HeapByteBuffer[pos=0 lim=77 cap=77]
+    MIMETYPE: javafx.scene.input.DataFormat [text/x-moz-url] - java.nio.HeapByteBuffer >java.nio.HeapByteBuffer[pos=0 lim=162cap=162]
+    MIMETYPE: javafx.scene.input.DataFormat [text/plain] - java.lang.String >http://juxtaflux.pythonanywhere.com/clipshout/wrecv
+    MIMETYPE: javafx.scene.input.DataFormat [DragImageBits] - java.nio.HeapByteBuffer >java.nio.HeapByteBuffer[pos=0 lim=17320cap=17320]
+    
+    IE:
+    MIMETYPE: javafx.scene.input.DataFormat [text/uri-list] - java.lang.String >http://google.com/
+    MIMETYPE: javafx.scene.input.DataFormat [message/external-body;access-type=clipboard;index=0;size=483;name="You’re not connected to a network.website"] - java.nio.HeapByteBuffer >java.nio.HeapByteBuffer[pos=0 lim=483 cap=483]
+    MIMETYPE: javafx.scene.input.DataFormat [text/plain] - java.lang.String >http://google.com/
+    MIMETYPE: javafx.scene.input.DataFormat [IESiteModeToUrl] - java.nio.HeapByteBuffer >java.nio.HeapByteBuffer[pos=0 lim=106 cap=106]
+    MIMETYPE: javafx.scene.input.DataFormat [Shell IDList Array] - java.nio.HeapByteBuffer >java.nio.HeapByteBuffer[pos=0 lim=859 cap=859]
+
+
+
+
+
 (working notes and brainstorm)
 
 # next actions
 
+- drag and drop file or URL onto window to put contents into a new buffer?
+    - oracle docs: https://docs.oracle.com/javafx/2/drag_drop/jfxpub-drag_drop.htm
+    - http://stackoverflow.com/questions/32534113/javafx-drag-and-drop-a-file-into-a-program
+    - this might handle URL's: http://stackoverflow.com/questions/30923817/javafx-dnd-third-party-program-to-javafx-app
+        - or the Dragboard object has "hasUrl()" and "getUrl()" methods 
 - look at IntelliJ warning highlights on StatusBar class and fix them
 - do regex replace with backreferences (so I can convert "aa,bb" to "bb,aa")
 - get "actions" working
@@ -152,5 +180,5 @@ Visualizing focus ideas as when the ListView control as a whole looses focus, th
 # Bugs
 
 - If you put list-based text into the clipboard (ex: "\n\n\n a \n b \n c \n\n\n") and do a "list trim", it seems to remove the trailing blank rows (but not the initial))... I'm expecting those trailing \n should result in blank rows, even after a trim.  The trimming shouldn't remove lines, only the whitespace from the lines.
-
+- If i drag text from IntelliJ and drop it on ClipDashboard, it still has some kind of embedded newline/carriage return
 
