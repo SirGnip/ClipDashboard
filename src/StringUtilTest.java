@@ -1,14 +1,16 @@
-import static junit.framework.Assert.*;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class StringUtilTest {
-    @org.junit.Test
+    @Test
     public void replaceSpecialChars() throws Exception {
         assertEquals(StringUtil.replaceSpecialChars(""), "");
         assertEquals(StringUtil.replaceSpecialChars("a b c"), "a b c");
         assertEquals(StringUtil.replaceSpecialChars("\\n\\t abc \\n\\t"), "\n\t abc \n\t");
     }
 
-    @org.junit.Test
+    @Test
     public void ltrim() throws Exception {
         assertEquals(StringUtil.ltrim(""), "");
         assertEquals(StringUtil.ltrim("abc"), "abc");
@@ -17,7 +19,7 @@ public class StringUtilTest {
         assertEquals(StringUtil.ltrim("  abc  "), "abc  ");
     }
 
-    @org.junit.Test
+    @Test
     public void rtrim() throws Exception {
         assertEquals(StringUtil.rtrim(""), "");
         assertEquals(StringUtil.rtrim("abc"), "abc");
@@ -26,7 +28,7 @@ public class StringUtilTest {
         assertEquals(StringUtil.rtrim("  abc  "), "  abc");
     }
 
-    @org.junit.Test
+    @Test
     public void sliceDegenerate() throws Exception {
         String s = "";
         assertEquals("", StringUtil.slice(s, 5));
@@ -39,7 +41,7 @@ public class StringUtilTest {
         assertEquals("", StringUtil.slice(t, -1, -3));
     }
 
-    @org.junit.Test
+    @Test
     public void sliceOneIndex() throws Exception {
         String s = "0123456789";
         assertEquals("0", StringUtil.slice(s, 0));
@@ -51,7 +53,7 @@ public class StringUtilTest {
         assertEquals("", StringUtil.slice(s, -999)); // this differs from Python, which throws an IndexError
     }
 
-    @org.junit.Test
+    @Test
     public void sliceTwoIndexes() throws Exception {
         String s = "0123456789";
         assertEquals("0123456789", StringUtil.slice(s, null, null));
