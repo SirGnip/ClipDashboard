@@ -34,6 +34,20 @@ class ArgParseError extends Exception {
     ArgParseError(String msg) { super(msg); }
 }
 
+class Debug {
+    public static void dumpDragboard(Dragboard b) {
+        System.out.printf("Dragboard %s %s %s %s %s %s\n",
+                b.hasString(),
+                b.hasUrl(),
+                b.hasFiles(),
+                b.hasHtml(),
+                b.hasRtf(),
+                b.hasImage()
+        );
+        b.getContentTypes().forEach(df -> System.out.println("MIMETYPE: " + df.getClass().getName() + " " + df + " - " + b.getContent(df).getClass().getName() + " >" + b.getContent(df))); // reference: http://stackoverflow.com/questions/30923817/javafx-dnd-third-party-program-to-javafx-app
+    }
+}
+
 class Functions {
     private static Integer parseToken(String token) throws ArgParseError {
         if (token.trim().equals("")) {
@@ -136,6 +150,7 @@ public class ClipDashboard extends Application {
             e.consume();
         });
         items.setOnDragEntered((e) -> {
+            if (Config.DEBUG) { Debug.dumpDragboard(e.getDragboard()); }
             items.setOpacity(Config.DRAG_N_DROP_ENTER_OPACITY);
             e.consume();
         });
@@ -570,6 +585,7 @@ public class ClipDashboard extends Application {
             e.consume();
         });
         btnRetrieve.setOnDragEntered((e) -> {
+            if (Config.DEBUG) { Debug.dumpDragboard(e.getDragboard()); }
             if (shouldAcceptDropOnRetrieve(e.getDragboard())) {
                 btnRetrieve.setOpacity(Config.DRAG_N_DROP_ENTER_OPACITY);
             }

@@ -6,6 +6,7 @@ import java.util.List;
 
 /** Local config settings */
 class Config {
+    public static final boolean DEBUG = false; // toggle debugging (extra logging, etc.)
     public static final int APP_WIDTH = 600;
     public static final int APP_HEIGHT = 700;
     public static final String APP_TITLE = "ClipDashboard";
