@@ -15,6 +15,8 @@ class Config {
     public static final int LIST_VIEW_HEIGHT = 250;
     public static final int UI_SPACING = 5;
     public static final int MODIFICATION_TAB_HEIGHT = 120;
+    public static final double DRAG_N_DROP_ENTER_OPACITY = 0.2;
+    public static final double DRAG_N_DROP_EXIT_OPACITY = 1.0;
     public static final int ARG_WIDTH = 80;
 
     // diffing

@@ -19,9 +19,11 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -102,7 +104,6 @@ class ClipBuffer {
 }
 
 public class ClipDashboard extends Application {
-
     private ListView<ClipBuffer> items;
     private ObservableList<ClipBuffer> clips;
     private TextArea log;
@@ -130,97 +131,63 @@ public class ClipDashboard extends Application {
             }
         });
         items.setOnDragOver((e) -> {
-            Dragboard board = e.getDragboard();
-//            System.out.println("drag over " + board.hasString() + " " + board.hasUrl() + " " + board.hasFiles() + " " + board.hasImage());
+            // Should accept files, directories, URL's, strings
             e.acceptTransferModes(TransferMode.ANY);
             e.consume();
         });
         items.setOnDragEntered((e) -> {
-            System.out.println("on drag entered");
+            items.setOpacity(Config.DRAG_N_DROP_ENTER_OPACITY);
             e.consume();
         });
         items.setOnDragExited((e) -> {
-            System.out.println("on drag exited");
+            items.setOpacity(Config.DRAG_N_DROP_EXIT_OPACITY);
             e.consume();
         });
         items.setOnDragDropped((e) -> {
-            // if dropped file is a directory, each file is loaded into its own buffer?
+            // if dropped file is a directory, each file is loaded into its own buffer.
             Dragboard b = e.getDragboard();
-            System.out.printf("on drag dropped %s %s %s %s %s %s\n",
-                b.hasString(),
-                b.hasUrl(),
-                b.hasFiles(),
-                b.hasHtml(),
-                b.hasRtf(),
-                b.hasImage()
-            );
-
-            b.getContentTypes().forEach(df -> System.out.println("MIMETYPE: " + df.getClass().getName() + " " + df + " - " + b.getContent(df).getClass().getName() + " >" + b.getContent(df))); // reference: http://stackoverflow.com/questions/30923817/javafx-dnd-third-party-program-to-javafx-app
-
-            URL url = null;
-            try {
-                url = new URL(b.getUrl());
-                System.out.println("was a URL " + url);
-            } catch(Exception x) {
-                System.out.println("was NOT a URL");
-                System.out.println(x);
-            }
+            URL url = getDragboardUrl(b);
 
             if (b.hasFiles()) {
-                Object o = b.getFiles();  System.out.println("**Files:" + o.getClass().getName() + " " + o);
-                List<File> x = b.getFiles();
-                System.out.println(">>>" + x);
-                for (File f : x) {
-                    System.out.println("  file: " + f.getAbsolutePath() + " " + f.isFile() + " " + f.isDirectory());
-                    if (f.isDirectory()) {
-                        System.out.println(f.list());
-                        String[] ss = f.list();
-                        File[] fs = f.listFiles();
-                        for (int i = 0; i < fs.length; ++i) {
-                            System.out.println("     dir contents:" + fs[i]);
+                List<File> items = b.getFiles();
+                int bufferCount = 0;
+                for (File item : items) {
+                    if (item.isFile()) {
+                        if (readFileAndStoreInBuffer(item)) {
+                            bufferCount += 1;
                         }
+                    } else if (item.isDirectory()) {
+                        File[] dirItems = item.listFiles();
+                        for (File dirItem : dirItems) {
+                            if (readFileAndStoreInBuffer(dirItem)) {
+                                bufferCount += 1;
+                            }
+                        }
+                    } else {
+                        // TODO: not sure if this case is even possible
                     }
+                    statusBar.show("Read " + bufferCount + " files and stored contents in buffers");
                 }
             } else if (url != null) {
                 System.out.println("dropped a URL");
                 String txt = getDataFromURL(url);
                 int lineCount = StringUtils.countMatches(txt, "\n") + 1;
-                statusBar.show("Put " + lineCount + " lines and " + txt.length() + " characters to system clipboard from '" + url.toString() + "'");
-                SysClipboard.write(txt);
-
-//                try {
-//                    Object o = url.getContent().;
-//                    System.out.println(o);
-//                } catch(Exception exc) {
-//                    System.out.println("error getting url");
-//                }
-
+                statusBar.show("Storing " + lineCount + " lines and " + txt.length() + " characters to buffer from '" + url.toString() + "'");
+                appendToClipBuffers(txt);
+                e.setDropCompleted(true);
+            } else if (b.hasString()) {
+                String txt = b.getString();
+                int lineCount = StringUtils.countMatches(txt, "\n") + 1;
+                statusBar.show("Storing " + lineCount + " lines and " + txt.length() + " characters from drag and dropped string to a buffer");
+                appendToClipBuffers(txt);
+                e.setDropCompleted(true);
+            } else {
+                statusBar.showErr("Unexpected content dropped on control");
+                e.setDropCompleted(false);
             }
 
-//            if (b.hasHtml()) {
-//                Object o = b.getHtml();  System.out.println("**Html:" + o.getClass().getName() + " " + o);
-//            }
-
-
-//            if (e.getDragboard().hasString()) {
-//                System.out.println("writing");
-//                appendToClipBuffers(e.getDragboard().getString());
-//                e.setDropCompleted(true);
-//            } else if (e.getDragboard().hasFiles()) {
-//                try {
-//                    for (File f : e.getDragboard().getFiles()) {
-//                        appendToClipBuffers("FILE: " + f.getPath());
-//                    }
-//                } catch (Exception exc) {
-//                    System.out.println("clipboard error");
-//                }
-//            } else {
-//                e.setDropCompleted(false);
-//            }
             e.consume();
         });
-
-
 
         // Buffer operations
         HBox hbox = new HBox();
@@ -502,7 +469,7 @@ public class ClipDashboard extends Application {
         vbox.getChildren().add(statusBar);
 
         btnStore.setOnAction((e) -> {
-            appendToClipBuffers(SysClipboard.read());
+            appendToClipBuffersAndShowStatus(SysClipboard.read());
         });
 
         btnPrepend.setOnAction((e) -> {
@@ -594,6 +561,59 @@ public class ClipDashboard extends Application {
                     }
                 }
             }
+        });
+
+        btnRetrieve.setOnDragOver((e) -> {
+            if (shouldAcceptDropOnRetrieve(e.getDragboard())) {
+                e.acceptTransferModes(TransferMode.ANY);
+            }
+            e.consume();
+        });
+        btnRetrieve.setOnDragEntered((e) -> {
+            if (shouldAcceptDropOnRetrieve(e.getDragboard())) {
+                btnRetrieve.setOpacity(Config.DRAG_N_DROP_ENTER_OPACITY);
+            }
+            e.consume();
+        });
+        btnRetrieve.setOnDragExited((e) -> {
+            if (shouldAcceptDropOnRetrieve(e.getDragboard())) {
+                btnRetrieve.setOpacity(Config.DRAG_N_DROP_EXIT_OPACITY);
+            }
+            e.consume();
+        });
+        btnRetrieve.setOnDragDropped((e) -> {
+            Dragboard b = e.getDragboard();
+            URL url = getDragboardUrl(b);
+
+            if (b.hasFiles()) {
+                List<File> items = b.getFiles();
+                if (items.size() == 1 && items.get(0).isFile()) {
+                    File f = items.get(0);
+                    List<String> lines = readFileAndStoreInClipboard(f);
+                    if (lines != null) {
+                        statusBar.show("Read " + lines.size() + " lines from file (" + f.getName() + ") into system clipboard");
+                    } else {
+                        statusBar.showErr("Problem reading from file " + f.getName());
+                    }
+                }
+            } else if (url != null) {
+                System.out.println("dropped a URL");
+                String txt = getDataFromURL(url);
+                int lineCount = StringUtils.countMatches(txt, "\n") + 1;
+                statusBar.show("Storing " + lineCount + " lines and " + txt.length() + " characters from '" + url.toString() + "' to system clipboard");
+                SysClipboard.write(txt);
+                e.setDropCompleted(true);
+            } else if (b.hasString()) {
+                String txt = b.getString();
+                int lineCount = StringUtils.countMatches(txt, "\n") + 1;
+                statusBar.show("Storing " + lineCount + " lines and " + txt.length() + " characters from drag and dropped string to system clipboard");
+                SysClipboard.write(txt);
+                e.setDropCompleted(true);
+            } else {
+                statusBar.showErr("Unexpected content dropped on control");
+                e.setDropCompleted(false);
+            }
+            e.consume();
         });
 
         btnDelete.setOnAction((e) -> {
@@ -691,17 +711,49 @@ public class ClipDashboard extends Application {
                 if (ov.getValue()) {
                     if (chkStoreOnFocus.isSelected()) {
                         log.insertText(0, "got focus\n");
-                        appendToClipBuffers(SysClipboard.read());
+                        appendToClipBuffersAndShowStatus(SysClipboard.read());
                     }
                 }
             }
         });
 
         if (chkStoreOnFocus.isSelected()) {
-            appendToClipBuffers(SysClipboard.read()); // read and store first clip when app first opens
+            appendToClipBuffersAndShowStatus(SysClipboard.read()); // read and store first clip when app first opens
         }
 
         MyAppFramework.dump(vbox);
+    }
+
+    /** Reads contents of file and stores in clipboard buffer */
+    // BUG: Nearly silently fails when can't read contents of a file (usually when reading a binary file)
+    private boolean readFileAndStoreInBuffer(File file) {
+        if (file.isFile()) {
+            Path f = Paths.get(file.getAbsolutePath());
+            try {
+                List<String> lines = Files.readAllLines(f);
+                String txt = String.join("\n", lines);
+                appendToClipBuffers(txt);
+                return true;
+            } catch (Exception exc) {
+                System.out.println("Problem reading '" + f.toString() + "'. Exception: " + exc);
+            }
+        }
+        return false;
+    }
+
+    private List<String> readFileAndStoreInClipboard(File file) {
+        if (file.isFile()) {
+            Path f = Paths.get(file.getAbsolutePath());
+            try {
+                List<String> lines = Files.readAllLines(f);
+                String txt = String.join("\n", lines);
+                SysClipboard.write(txt);
+                return lines;
+            } catch (Exception exc) {
+                System.out.println("Problem reading '" + f.toString() + "'. Exception: " + exc);
+            }
+        }
+        return null;
     }
 
     private void initMenu(Pane root) {
@@ -751,12 +803,16 @@ public class ClipDashboard extends Application {
     }
 
     private void appendToClipBuffers(String clip) {
-        statusBar.show(String.format("Storing %d line(s) and %d chars from the clipboard to a buffer\n",
-                StringUtils.countMatches(clip, "\n") + 1,
-                clip.length()));
         ClipBuffer buffer = new ClipBuffer(clip);
         clips.add(0, buffer);
         items.scrollTo(buffer);
+    }
+
+    private void appendToClipBuffersAndShowStatus(String clip) {
+        appendToClipBuffers(clip);
+        statusBar.show(String.format("Storing %d line(s) and %d chars from the clipboard to a buffer\n",
+                StringUtils.countMatches(clip, "\n") + 1,
+                clip.length()));
     }
 
     private void swapBuffers(int idx1, int idx2) {
@@ -801,6 +857,32 @@ public class ClipDashboard extends Application {
             System.out.println("error reading from url: " + url);
         }
         return text;
+    }
+
+    /** Tests whether there is a valid web URL in the dragboard. Dragboard.hasUrl() has a much broader interpretation of URL than I would like. */
+    private static URL getDragboardUrl(Dragboard dragboard) {
+        URL url = null;
+        try {
+            url = new URL(dragboard.getUrl());
+        } catch(MalformedURLException ignored) {
+        }
+        return url;
+    }
+
+    /** Encapsulates logic of whether the retrieve button should be the target of a drop */
+    // Should accept a single file, URL, or string
+    private static boolean shouldAcceptDropOnRetrieve(Dragboard b) {
+        if (b.hasFiles()) {
+            List<File> files = b.getFiles();
+            if (files.size() == 1 && files.get(0).isFile()) {
+                return true;
+            }
+        } else if (getDragboardUrl(b) != null) {
+            return true;
+        } else if (b.hasString()) {
+            return true;
+        }
+        return false;
     }
 }
 
