@@ -252,11 +252,14 @@ public class ClipDashboard extends Application {
         Button btnStrAppend = new Button("append");
         Button btnStrSplit = new Button("split");
         Button btnStrReplace = new Button("replace");
+        Button btnStrRegexReplace = new Button("regex repl");
+        btnStrRegexReplace.setTooltip(new Tooltip("Replace string matched by given regex with replacement string. Supports backreferences in replacement string\nExample: '$2 $1'"));
+
         TextField txtStrArg1 = new TextField(",");
         txtStrArg1.setPrefWidth(Config.ARG_WIDTH);
         TextField txtStrArg2 = new TextField("\\n");
         txtStrArg2.setPrefWidth(Config.ARG_WIDTH);
-        argsStrOpsHBox.getChildren().addAll(btnStrPrepend, btnStrAppend, btnStrSplit, btnStrReplace, txtStrArg1, txtStrArg2);
+        argsStrOpsHBox.getChildren().addAll(btnStrPrepend, btnStrAppend, btnStrSplit, btnStrReplace, btnStrRegexReplace, txtStrArg1, txtStrArg2);
 
         strTabVBox.getChildren().addAll(noArgStrOpsHBox, argsStrOpsHBox);
         tab1.setContent(strTabVBox);
@@ -308,6 +311,12 @@ public class ClipDashboard extends Application {
             statusBar.show("Replaced '" + trg + "' with '" + repl + "' in current clipboard");
             SysClipboard.write(SysClipboard.read().replace(trg, repl));
         });
+        btnStrRegexReplace.setOnAction((e) -> {
+            String regex = txtStrArg1.getText();
+            String repl = txtStrArg2.getText();
+            statusBar.show("Replaced regex '" + regex + "' with '" + repl + "' in current clipboard");
+            SysClipboard.write(SysClipboard.read().replaceAll(regex, repl));
+        });
 
         // List operations tab
         // NOTE: List operations assume each "item" of the "list" is a line of text, each separated by a carriage returns.
@@ -352,9 +361,13 @@ public class ClipDashboard extends Application {
         btnListRegex.setTooltip(new Tooltip("Keep lines in the clipboard that contain a match to the regex\n(arg1: regex)"));
         Button btnListRegexFull = new Button("regex full");
         btnListRegexFull.setTooltip(new Tooltip("Keep lines in the clipboard that match the regex exactly. The regex must match the entire line.\n(arg1: regex)"));
+        Button btnListRegexRepl = new Button("regex repl");
+        btnListRegexRepl.setTooltip(new Tooltip("Replace string matched by given regex with replacement string in each line in the clipboard. Replacement string supports backreferences in replacement string\n(arg1: regex, arg2: replacement_string)\nExample regex='(\\S+) (\\S+)': repl='$2 $1'"));
         TextField txtListArg1 = new TextField("_");
         txtListArg1.setPrefWidth(Config.ARG_WIDTH);
-        argsListOpsHBox.getChildren().addAll(btnListPrepend, btnListAppend, btnListSlice, btnListJoin, btnListContains, btnListRegex, btnListRegexFull, txtListArg1);
+        TextField txtListArg2 = new TextField("_");
+        txtListArg2.setPrefWidth(Config.ARG_WIDTH);
+        argsListOpsHBox.getChildren().addAll(btnListPrepend, btnListAppend, btnListSlice, btnListJoin, btnListContains, btnListRegex, btnListRegexFull, btnListRegexRepl, txtListArg1, txtListArg2);
 
         listTabVBox.getChildren().addAll(noArgListOpsHBox, argsListOpsHBox);
 
@@ -468,6 +481,12 @@ public class ClipDashboard extends Application {
             String regex = txtListArg1.getText();
             Pair<List<String>, List<String>> result = new ClipboardAsListFilter( (line) -> line.matches(regex) ).filter();
             statusBar.show("Regex (full) filtered " + result.getLeft().size() + " lines down to " + result.getRight().size() + " in current clipboard");
+        });
+        btnListRegexRepl.setOnAction((e) -> {
+            String regex = txtListArg1.getText();
+            String repl = txtListArg2.getText();
+            List<String> result = new ClipboardAsListMutatorByLine( (line) -> line.replaceAll(regex, repl)).mutate();
+            statusBar.show("Replaced regex '" + regex + "' with '" + repl + "' in lines in current clipboard");
         });
 
         // Log

@@ -1,14 +1,14 @@
-(working notes and brainstorm)
+(personal working notes and brainstorms)
 
 # next actions
 
-- drag and drop file or URL onto window to put contents into a new buffer?
-    - oracle docs: https://docs.oracle.com/javafx/2/drag_drop/jfxpub-drag_drop.htm
-    - http://stackoverflow.com/questions/32534113/javafx-drag-and-drop-a-file-into-a-program
-    - this might handle URL's: http://stackoverflow.com/questions/30923817/javafx-dnd-third-party-program-to-javafx-app
-        - or the Dragboard object has "hasUrl()" and "getUrl()" methods 
 - look at IntelliJ warning highlights on StatusBar class and fix them
-- do regex replace with backreferences (so I can convert "aa,bb" to "bb,aa")
+- try builder syntax for ui (does this replace my framework?)
+- drop down for clipboatrd operations?
+    - to save space
+    - be able to hide arg boxes that are not needed
+    - makes it require a bit more flipping around to get what you want if you are using different operations (maybe just wait)
+- move log to a hidden tab or menu option (maybe it is just a debug log?)
 - get "actions" working
     - open in editor
     - open as url, file, folder
@@ -46,8 +46,8 @@ Iteration #1 - (DONE) minimal features so I use it instead of Python one
 	
 # use cases
 
-- create clips
-    - read form clipboard, file, url, list of files
+- x create clips
+    - x read form clipboard, file, url, list of files
 - managing and mutating clip buffer
     - x append, x replace, x remove, reorder, x sort, x clear, x filter, x remove empty lines (special case of filter), x remove duplicates/uniqueify, export to disk
     - x able to apply mutations to individual clips or to all selected clips?
