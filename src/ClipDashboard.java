@@ -345,7 +345,9 @@ public class ClipDashboard extends Application {
         btnListReverse.setTooltip(new Tooltip("Reverse the order of the lines in the clipboard"));
         Button btnListStats = new Button("stats");
         btnListStats.setTooltip(new Tooltip("Calculate basics stats on the lines in the clipboard"));
-        noArgListOpsHBox.getChildren().addAll(btnListLTrim, btnListTrim, btnListRTrim, btnListCollapse, btnListUniq, btnListSort, btnListReverse, btnListStats);
+        Button btnListStore = new Button("store");
+        btnListStore.setTooltip(new Tooltip("Store each line from the clipboard into a separate buffer"));
+        noArgListOpsHBox.getChildren().addAll(btnListLTrim, btnListTrim, btnListRTrim, btnListCollapse, btnListUniq, btnListSort, btnListReverse, btnListStats, btnListStore);
 
         HBox argsListOpsHBox = new HBox();
         Button btnListPrepend = new Button("prepend");
@@ -414,6 +416,14 @@ public class ClipDashboard extends Application {
                     minLineLen, maxLineLen, (float) totalLineLen/list.size()
                     );
             statusBar.show(msg);
+        });
+        btnListStore.setOnAction((e) -> {
+            List<String> lines = SysClipboard.readAsLines();
+            Collections.reverse(lines);
+            for (String line : lines) {
+                appendToClipBuffers(line);
+            }
+            statusBar.show("Stored " + lines.size() + " line(s) into individual buffers");
         });
         btnListPrepend.setOnAction((e) -> {
             String arg = txtListArg1.getText();
