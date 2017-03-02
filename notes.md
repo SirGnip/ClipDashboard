@@ -3,29 +3,20 @@
 # next actions
 
 - look at IntelliJ warning highlights on StatusBar class and fix them
-- try builder syntax for ui (does this replace my framework?)
-- drop down for clipboatrd operations?
-    - to save space
+- use drop down for clipboard operations instead of lots of buttons
+    - reduce clutter
+    - to save screen space
     - be able to hide arg boxes that are not needed
-    - makes it require a bit more flipping around to get what you want if you are using different operations (maybe just wait)
+    - able to provide operation-specific help tooltips on the arg text boxes
+    - con: makes it require a bit more flipping around to get what you want if you are using different operations (maybe just wait)
 - move log to a hidden tab or menu option (maybe it is just a debug log?)
 - get "actions" working
     - open in editor
     - open as url, file, folder
 - skim docs/tutorials on streams?
 - on app startup or shutdown, clean up diff temp files
-- add notes to a IntelliJ cheat sheet
-    - recipess:
-        - setting up JUnit
-            - put cursor on a class
-            - Alt+Enter
-            - Choose "create test"
-            - choos JUnit 4
-            - click "Fix" button on dialog (to add JUnit as module)
-                - choose the "Module shipped with IntelliJ"
-            - Click OK
-            - Go to Project Structure->Modules->Dependencies->JUnit4 and change scope from "Test" to "Compile"
-             
+- refactoring: move some of the classes into their own file 
+
 # roadmap
 
 Iteration #1 - (DONE) minimal features so I use it instead of Python one
@@ -47,7 +38,7 @@ Iteration #1 - (DONE) minimal features so I use it instead of Python one
 # use cases
 
 - x create clips
-    - x read form clipboard, file, url, list of files
+    - x read form clipboard, x file, x url, x list of files
 - managing and mutating clip buffer
     - x append, x replace, x remove, reorder, x sort, x clear, x filter, x remove empty lines (special case of filter), x remove duplicates/uniqueify, export to disk
     - x able to apply mutations to individual clips or to all selected clips?
@@ -94,7 +85,7 @@ l (any way to search for docs given just a class/interface name?)
     - buffer
         - x append/prepend system clipboard to selected buffers (if I want to incrementally build up a long clipboard buffer entry)
         - x replace
-        - insert after selected (don't want to do "before selected" because then I could never insert anything at the end of the list. The combinaton of "after selected" and "store at head" lets me put stuff anywhere
+        - insert after selected (don't want to do "before selected" because then I could never insert anything at the end of the list. The combination of "after selected" and "store at head" lets me put stuff anywhere
         - x reorder
         - variable substitution that can reference other buffers (by index? indexes can change easily. Some tagging mechanism by color? icon? assigned number? initial text?)
 

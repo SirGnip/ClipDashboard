@@ -11,6 +11,7 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import com.juxtaflux.MyAppFramework;
 import org.apache.commons.lang3.StringUtils;
@@ -131,7 +132,7 @@ public class ClipDashboard extends Application {
 
         statusBar = new StatusBar();
 
-        initMenu(vbox);
+        initMenu(vbox, primaryStage);
 
         clips = FXCollections.observableArrayList(Config.INITIAL_CLIPS.stream().map(c -> new ClipBuffer(c)).collect(Collectors.toList()));
         items = new ListView(clips);
@@ -791,7 +792,7 @@ public class ClipDashboard extends Application {
         return null;
     }
 
-    private void initMenu(Pane root) {
+    private void initMenu(Pane root, Stage primaryStage) {
         MenuBar menuBar = new MenuBar();
         root.getChildren().add(menuBar);
 
@@ -799,12 +800,20 @@ public class ClipDashboard extends Application {
         Menu fileMenu = new Menu("File");
         menuBar.getMenus().add(fileMenu);
 
-        MenuItem stuffItem = new MenuItem("stuff");
-        fileMenu.getItems().add(stuffItem);
+        MenuItem saveAllBuffers = new MenuItem("Save all buffers");
+        fileMenu.getItems().add(saveAllBuffers);
+        MenuItem saveSelectedBuffers = new MenuItem("Save selected buffers");
+        fileMenu.getItems().add(saveSelectedBuffers);
         fileMenu.getItems().add(new SeparatorMenuItem());
         MenuItem exitItem = new MenuItem("Exit");
         exitItem.setOnAction((e) -> {
             Platform.exit();
+        });
+        saveAllBuffers.setOnAction((e) -> {
+            saveClipsToDisk(clips, primaryStage);
+        });
+        saveSelectedBuffers.setOnAction((e) -> {
+            saveClipsToDisk(items.getSelectionModel().getSelectedItems(), primaryStage);
         });
 
         // Buffer Menu
@@ -878,6 +887,37 @@ public class ClipDashboard extends Application {
         }
     }
 
+    private void saveClipsToDisk(List<ClipBuffer> buffers, Stage primaryStage) {
+        if (buffers.size() == 0) {
+            statusBar.showErr("There were no buffers selected");
+            return;
+        }
+        DirectoryChooser dirChooser = new DirectoryChooser();
+        File dir = dirChooser.showDialog(primaryStage);
+        int idx = 1;
+        boolean failed = false;
+        for (ClipBuffer buff : buffers) {
+            String fileName = String.format("buffer_%03d", idx);
+            String desc = StringUtil.extractInitialWords(buff.clip, Config.WORDS_FOR_FILE_NAMING);
+            if (desc.length() > 0) {
+                fileName += "_" + desc;
+            }
+            fileName += ".txt";
+            ++idx;
+            File file = new File(dir, fileName);
+            Path p = Paths.get(file.getAbsolutePath());
+            try {
+                Files.write(p, buff.clip.getBytes());
+            } catch (Exception exc) {
+                statusBar.showErr("Problem writing file: " + p);
+                failed = true;
+                break;
+            }
+        }
+        if (! failed) {
+            statusBar.show("Wrote " + buffers.size() + " buffer(s) to " + dir);
+        }
+    }
     private String getDataFromURL(URL url) {
         // Reference: https://docs.oracle.com/javase/tutorial/networking/urls/readingURL.html
         String text = "";

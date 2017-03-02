@@ -19,6 +19,7 @@ class Config {
     public static final double DRAG_N_DROP_ENTER_OPACITY = 0.2;
     public static final double DRAG_N_DROP_EXIT_OPACITY = 1.0;
     public static final int ARG_WIDTH = 80;
+    public static final int WORDS_FOR_FILE_NAMING = 4;
 
     // diffing
     public static final String DIFF_TEMP_FILE_A = "ClipDashboard_buffA_";

@@ -1,5 +1,8 @@
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 public class StringUtilTest {
@@ -67,7 +70,18 @@ public class StringUtilTest {
         assertEquals("78", StringUtil.slice(s, 7, -1));
         assertEquals("45", StringUtil.slice(s, -6, -4));
     }
+
+    @Test
+    public void extractInitialWords() {
+        assertEquals("clip1", StringUtil.extractInitialWords("clip1", 3));
+        assertEquals("this is a", StringUtil.extractInitialWords(" 'this is a test of the emergency broadcast system'", 3));
+        assertEquals("public void extractInitialWords", StringUtil.extractInitialWords("  public void extractInitialWords() {", 3));
+        assertEquals("token trim equals", StringUtil.extractInitialWords(" (token.trim().equals(\"\")) {", 3));
+        assertEquals("", StringUtil.extractInitialWords("   . _ * () \n  \t  ", 3));
+        assertEquals("a b c", StringUtil.extractInitialWords("  a ' \"b c\" this isn't as fun as it looks! *a*b*c*", 3));
+    }
 }
+
 
 /* Python snippet for comparison
 s = '0123456789'

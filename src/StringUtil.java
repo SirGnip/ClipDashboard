@@ -1,3 +1,8 @@
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Arrays;
+import java.util.List;
+
 import static org.apache.commons.lang3.StringUtils.substring;
 
 /** General string manipulation static functions */
@@ -39,4 +44,17 @@ public class StringUtil {
         }
         return substring(s, start, end);
     }
+    /** Given an arbitrary string, extract the first few words */
+    public static String extractInitialWords(String s, int wordCount) {
+        s = s.substring(0, Math.min(100, s.length()));
+        s = s.replaceAll("[^a-zA-Z0-9 ]", " "); // replace everything but alphanumerics and spaces with spaces
+        s = s.trim();
+        String[] words = StringUtils.split(s); // merges consecutive decimeters
+        List<String> stuff = Arrays.asList(words);
+        stuff = stuff.subList(0, Math.min(wordCount, stuff.size()));
+        return String.join(" ", stuff);
+    }
 }
+
+
+
