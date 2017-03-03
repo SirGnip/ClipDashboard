@@ -1,5 +1,31 @@
 (personal working notes and brainstorms)
 
+- variable substitution
+    - have a "variable substitution" toggle in menu
+    - when enabled, each buffer is $0, $1, $2 (or whatever other variable substitution Java supports). Any buffer can substitute others. No mutli-level substituion.
+    - use case:
+        - set up list of buffers that use "$0", for example
+        - store first value in $0
+        - select 1-3
+        - hit retrieve to cycle thru each message, it doing variable substitution with $0
+        - put a new value in clipboard, select buffer 0, and use "replace" to overwrite contents of buffer 0
+        - re-select the messages in 1-3 
+        - go thru cycle again
+    - problem:
+        - retrieve cycling. It doesn't start at first item after you change selection.
+        - cumbersome to have to re-select the items each time after updating buffer 0
+            - maybe make cycling based on something other than selection? ability to save selection ranges?
+            - maybe I don't worry about it for now and get variable substituion working and see what I can do with it.
+- actions
+    - actions operate on lists (lists of URL's)
+    - build code to require explicit action at first (url, file, etc), but can get smarter later on (automatically determine what "type" of string it is) once the code is written to do the action.
+    - types
+        - open in notepad
+        - open as url (support list)
+        - open as file/dir in explorer (support list)
+        - post contents of clipboard to URL (arg1=url)
+            - drag url over a button labeled POST? then a dialog asks for a URL?
+
 # next actions
 
 - look at IntelliJ warning highlights on StatusBar class and fix them
@@ -16,6 +42,8 @@
 - skim docs/tutorials on streams?
 - on app startup or shutdown, clean up diff temp files
 - refactoring: move some of the classes into their own file 
+- do a pass on the visuals (better button layout and sizing, dynamic sizing)
+
 
 # roadmap
 
@@ -40,7 +68,7 @@ Iteration #1 - (DONE) minimal features so I use it instead of Python one
 - x create clips
     - x read form clipboard, x file, x url, x list of files
 - managing and mutating clip buffer
-    - x append, x replace, x remove, reorder, x sort, x clear, x filter, x remove empty lines (special case of filter), x remove duplicates/uniqueify, export to disk
+    - x append, x replace, x remove, reorder, x sort, x clear, x filter, x remove empty lines (special case of filter), x remove duplicates/uniqueify, x export to disk
     - x able to apply mutations to individual clips or to all selected clips?
 - mutating clip contents
     - string
@@ -67,13 +95,13 @@ uncategorized
     - able to x split, x join, x prepend, x append, x replace, x sort, x filter, columns, graph, x clipboard stack, etc.
     - variable substitution?
     - x push and retrieve from other buffers
-    - able to treat buffers and deque (push/pop from front and back) and random access (read from anywehre)
+    - able to treat buffers and deque (push/pop from front and back) and random access (read from anywhere)
     - x clipboard stack/cache/manipulator
     - x manage a clipboard stack
     - x allow modifications (regex, substitution, replacement, stripping, append/prepend, numbering) to clipboard in memory and clipboard buffers
-    - different ways of getting text in (take a multi-line selection and put each line into a separate bucket? separate by a comma?)
+    - different ways of getting text in (x take a multi-line selection and put each line into a separate bucket? separate by a comma?)
         - drag and drop replaces
-        - drag and drop appends (maybe with optional delimiter)
+        - x drag and drop appends (maybe with optional delimiter)
     - different ways of getting text out (clipboard, save to file, POST to URL?)
         - post clipboard to url
         - use variable substitution to open a url (ex: http://www.stuff.com/doit/%{1}
@@ -106,7 +134,7 @@ l (any way to search for docs given just a class/interface name?)
 - maybe list out core use cases (broad, but not exhaustive)
     - list bare-bones features to replace my python implmenetation so i will actually start using it
     - then list ist *must* have features (the core, fun features like append, split, join, sort filter)
-    - have a second list for "maybe" (like ability to control truncation of )
+    - have a second list for "maybe"
 
 - x double click on item does a "retrieve" of that item into clipboard
     - what about multi-select?
@@ -138,6 +166,7 @@ Visualizing focus ideas as when the ListView control as a whole looses focus, th
 - maybe have a generic "store" button that has different behavior based on some mode/configuration?
     - append new clip to buffer?
     - prepend/append/replace selected clips in buffer with text in system clipboard?
+        - do arbitrary multation operations to buffers (able to achieve this with multiselect->join->listPrepend->DelSelBuffers->ListStore)
 - clear the status bar x seconds after the event happens. This means that if you are retriving the same string over and over, you don't see any change on the status bar "Retrieving 10 chars..." and you don't get a visual indication an event has happened.  But if the status disappars, it is more visually obvious when something changes.
     - bonus: make it fade out
     - bonus: maybe don't remove status messages, but have new status bar entries flash or pulse to show they are new?

@@ -22,8 +22,10 @@ class Config {
     public static final int WORDS_FOR_FILE_NAMING = 4;
 
     // diffing
+    public static final String TEMP_FILE_EXT = ".txt";
     public static final String DIFF_TEMP_FILE_A = "ClipDashboard_buffA_";
     public static final String DIFF_TEMP_FILE_B = "ClipDashboard_buffB_";
-    public static final String DIFF_TEMP_FILE_EXT = ".txt";
+    public static final String VIEW_APP = "notepad";
+    public static final String VIEW_TEMP_FILE = "ClipDashboard_notepad_";
     public static final String DIFF_APP = "C:\\Program Files (x86)\\Meld\\Meld.exe";
 }

@@ -84,6 +84,18 @@ class Functions {
         Integer[] idxs = {singleIdx, startIdx, endIdx};
         return idxs;
     }
+    public static Path writeToTempFile(String prefix, String suffix, byte[] text) {
+        Path result = null;
+        try {
+            result = Files.createTempFile(prefix, suffix);
+            // NOTE: Files.write() writes the file with linux-style line endings. Or, maybe it just passes
+            // through whatever is in the String is and doesn't automatically treat "\n" as "\r\n" on Windows.
+            Files.write(result, text);
+        } catch(Exception exc) {
+            result = null;
+        }
+        return result;
+    }
 };
 
 class StatusBar extends Label {
@@ -500,6 +512,36 @@ public class ClipDashboard extends Application {
             statusBar.show("Replaced regex '" + regex + "' with '" + repl + "' in lines in current clipboard");
         });
 
+        Tab tabActions = new Tab("Actions");
+        tabActions.setClosable(false);
+        modificationTabPane.getTabs().add(tabActions);
+
+        VBox actionTabVBox = new VBox();
+        actionTabVBox.setSpacing(Config.UI_SPACING);
+
+        HBox actionTabHBox = new HBox();
+        Button btnNotepadAction = new Button("notepad");
+        btnNotepadAction.setTooltip(new Tooltip("Open contents of system clipboard in Notepad"));
+        Button btn222 = new Button("notepad");
+        btn222.setTooltip(new Tooltip("Open contents of system clipboard in Notepad"));
+        actionTabHBox.getChildren().addAll(btnNotepadAction);
+        actionTabVBox.getChildren().addAll(actionTabHBox);
+        tabActions.setContent(actionTabVBox);
+
+        btnNotepadAction.setOnAction((e) -> {
+            Path result = Functions.writeToTempFile(Config.VIEW_TEMP_FILE, Config.TEMP_FILE_EXT, SysClipboard.read().getBytes());
+            if (result != null) {
+                try {
+                    new ProcessBuilder(Config.VIEW_APP, result.toString()).start();
+                } catch(Exception exc) {
+                    statusBar.showErr("Couldn't launch notepad tool");
+                }
+            } else {
+                statusBar.showErr("Couldn't write temp file for opening with Notepad");
+            }
+        });
+
+
         // Log
         log = new TextArea();
         vbox.setVgrow(log, Priority.ALWAYS);
@@ -694,13 +736,9 @@ public class ClipDashboard extends Application {
                 statusBar.showErr("Need two buffers selected to do a diff");
             } else {
                 try {
-                    Path fileA = Files.createTempFile(Config.DIFF_TEMP_FILE_A, Config.DIFF_TEMP_FILE_EXT);
-                    Path fileB = Files.createTempFile(Config.DIFF_TEMP_FILE_B, Config.DIFF_TEMP_FILE_EXT);
-                    // NOTE: Files.write() writes the file with linux-style line endings. Or, maybe it just passes
-                    // through whatever is in the String is and doesn't automatically treat "\n" as "\r\n" on Windows.
-                    Files.write(fileA, selectedBuffers.get(0).clip.getBytes());
-                    Files.write(fileB, selectedBuffers.get(1).clip.getBytes());
-                    Process proc = new ProcessBuilder(Config.DIFF_APP, fileA.toString(), fileB.toString()).start();
+                    Path fileA = Functions.writeToTempFile(Config.DIFF_TEMP_FILE_A, Config.TEMP_FILE_EXT, selectedBuffers.get(0).clip.getBytes());
+                    Path fileB = Functions.writeToTempFile(Config.DIFF_TEMP_FILE_B, Config.TEMP_FILE_EXT, selectedBuffers.get(1).clip.getBytes());
+                    new ProcessBuilder(Config.DIFF_APP, fileA.toString(), fileB.toString()).start();
                     statusBar.show("Diffing the two selected buffers with " + Config.DIFF_APP);
                 } catch(Exception exc) {
                     statusBar.showErr("Can't launch diff tool");
