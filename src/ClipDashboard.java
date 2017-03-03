@@ -131,7 +131,7 @@ class ClipBuffer {
 }
 
 public class ClipDashboard extends Application {
-    private ListView<ClipBuffer> items;
+    private ListView<ClipBuffer> buffers;
     private ObservableList<ClipBuffer> clips;
     private TextArea log;
     private StatusBar statusBar;
@@ -147,39 +147,39 @@ public class ClipDashboard extends Application {
         initMenu(vbox, primaryStage);
 
         clips = FXCollections.observableArrayList(Config.INITIAL_CLIPS.stream().map(c -> new ClipBuffer(c)).collect(Collectors.toList()));
-        items = new ListView(clips);
-        items.setMinHeight(Config.LIST_VIEW_HEIGHT);
-        items.setMaxHeight(Config.LIST_VIEW_HEIGHT);
-        items.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        items.setOnMouseClicked((e) -> {
+        buffers = new ListView(clips);
+        buffers.setMinHeight(Config.LIST_VIEW_HEIGHT);
+        buffers.setMaxHeight(Config.LIST_VIEW_HEIGHT);
+        buffers.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        buffers.setOnMouseClicked((e) -> {
             if (e.getClickCount() == 2) {
                 // double click on ListView
                 retrieveClipFromBufferAndShowStatus();
             } else {
                 // single click - reset focus to top of list every time selection list changes (provide user a consistent behavior)
-                List<Integer> selectedIdxs = items.getSelectionModel().getSelectedIndices();
+                List<Integer> selectedIdxs = buffers.getSelectionModel().getSelectedIndices();
                 if (selectedIdxs.size() == 0) {
                     return;
                 }
                 int firstSelected = selectedIdxs.get(0);
-                items.getFocusModel().focus(firstSelected);
+                buffers.getFocusModel().focus(firstSelected);
             }
         });
-        items.setOnDragOver((e) -> {
+        buffers.setOnDragOver((e) -> {
             // Should accept files, directories, URL's, strings
             e.acceptTransferModes(TransferMode.ANY);
             e.consume();
         });
-        items.setOnDragEntered((e) -> {
+        buffers.setOnDragEntered((e) -> {
             if (Config.DEBUG) { Debug.dumpDragboard(e.getDragboard()); }
-            items.setOpacity(Config.DRAG_N_DROP_ENTER_OPACITY);
+            buffers.setOpacity(Config.DRAG_N_DROP_ENTER_OPACITY);
             e.consume();
         });
-        items.setOnDragExited((e) -> {
-            items.setOpacity(Config.DRAG_N_DROP_EXIT_OPACITY);
+        buffers.setOnDragExited((e) -> {
+            buffers.setOpacity(Config.DRAG_N_DROP_EXIT_OPACITY);
             e.consume();
         });
-        items.setOnDragDropped((e) -> {
+        buffers.setOnDragDropped((e) -> {
             // if dropped file is a directory, each file is loaded into its own buffer.
             Dragboard b = e.getDragboard();
             URL url = getDragboardUrl(b);
@@ -554,7 +554,7 @@ public class ClipDashboard extends Application {
         log = new TextArea();
         vbox.setVgrow(log, Priority.ALWAYS);
 
-        vbox.getChildren().add(items);
+        vbox.getChildren().add(buffers);
         vbox.getChildren().add(btnRetrieve);
         vbox.getChildren().add(hbox);
         hbox.getChildren().addAll(lblBuffers, btnStore, btnPrepend, btnAppend, btnReplace, btnDelete, btnJoin, btnDiff, btnUp, btnDown);
@@ -569,7 +569,7 @@ public class ClipDashboard extends Application {
 
         btnPrepend.setOnAction((e) -> {
             String clipboard = SysClipboard.read();
-            ObservableList<Integer> indices = items.getSelectionModel().getSelectedIndices();
+            ObservableList<Integer> indices = buffers.getSelectionModel().getSelectedIndices();
             statusBar.show("Prepend " + clipboard.length() + " characters to " + indices.size() + " buffer(s)");
             for (Integer i : indices) { // Can't use for loop with function that returns a generic? http://stackoverflow.com/questions/6271960/how-to-iterate-over-a-wildcard-generic
                 clips.set(i, new ClipBuffer(clipboard + clips.get(i).clip));
@@ -578,7 +578,7 @@ public class ClipDashboard extends Application {
 
         btnAppend.setOnAction((e) -> {
             String clipboard = SysClipboard.read();
-            ObservableList<Integer> indices = items.getSelectionModel().getSelectedIndices();
+            ObservableList<Integer> indices = buffers.getSelectionModel().getSelectedIndices();
             statusBar.show("Append " + clipboard.length() + " characters to " + indices.size() + " buffer(s)");
             for (Integer i : indices) {
                 clips.set(i, new ClipBuffer(clips.get(i).clip + clipboard));
@@ -587,7 +587,7 @@ public class ClipDashboard extends Application {
 
         btnReplace.setOnAction((e) -> {
             String clipboard = SysClipboard.read();
-            ObservableList<Integer> indices = items.getSelectionModel().getSelectedIndices();
+            ObservableList<Integer> indices = buffers.getSelectionModel().getSelectedIndices();
             statusBar.show("Replace " + indices.size() + " buffer(s) with " + clipboard.length() + " characters");
             for (Integer i : indices) {
                 clips.set(i, new ClipBuffer(clipboard));
@@ -600,8 +600,8 @@ public class ClipDashboard extends Application {
             // Give list control focus so we can see current focus, but focus makes no visual difference to items that are selected.
             // items.requestFocus();
 
-            Integer focusIdx = items.getFocusModel().getFocusedIndex();
-            List<Integer> selIdxs = items.getSelectionModel().getSelectedIndices();
+            Integer focusIdx = buffers.getFocusModel().getFocusedIndex();
+            List<Integer> selIdxs = buffers.getSelectionModel().getSelectedIndices();
             Integer lastSelIdx = selIdxs.get(selIdxs.size() - 1);
 
             // Check for no selected items
@@ -614,13 +614,13 @@ public class ClipDashboard extends Application {
             Integer ordinalOfSelected = -1; // first? second?
             if (focusIdx > lastSelIdx) {
                 focusIdx = selIdxs.get(0);
-                items.getFocusModel().focus(focusIdx);
+                buffers.getFocusModel().focus(focusIdx);
                 ordinalOfSelected = 0 + 1;
             } else {
                 for (int i = 0; i < selIdxs.size(); ++i) {
                     if (selIdxs.get(i) >= focusIdx) {
                         focusIdx = selIdxs.get(i);
-                        items.getFocusModel().focus(focusIdx);
+                        buffers.getFocusModel().focus(focusIdx);
                         ordinalOfSelected = i + 1;
                         break;
                     }
@@ -645,12 +645,12 @@ public class ClipDashboard extends Application {
             // Advance focus to next selected item
             if (focusIdx >= lastSelIdx) {
                 focusIdx = selIdxs.get(0);
-                items.getFocusModel().focus(focusIdx);
+                buffers.getFocusModel().focus(focusIdx);
             } else {
                 for (Integer selIdx : selIdxs) {
                     if (selIdx > focusIdx) {
                         focusIdx = selIdx;
-                        items.getFocusModel().focus(focusIdx);
+                        buffers.getFocusModel().focus(focusIdx);
                         System.out.println(" new focus" + focusIdx);
                         break;
                     }
@@ -713,7 +713,7 @@ public class ClipDashboard extends Application {
         });
 
         btnDelete.setOnAction((e) -> {
-            ObservableList<Integer> idxs = items.getSelectionModel().getSelectedIndices();
+            ObservableList<Integer> idxs = buffers.getSelectionModel().getSelectedIndices();
             int startingSize = idxs.size();
             // delete items in reverse index order to not offset indexes while iterating
             for (int i = idxs.size()-1; i >= 0; i--) {
@@ -723,7 +723,7 @@ public class ClipDashboard extends Application {
         });
 
         btnJoin.setOnAction((e) -> {
-            ObservableList<ClipBuffer> selectedBuffers = items.getSelectionModel().getSelectedItems();
+            ObservableList<ClipBuffer> selectedBuffers = buffers.getSelectionModel().getSelectedItems();
             ArrayList<String> clips = new ArrayList<String>();
             for (ClipBuffer buf : selectedBuffers) {
                 clips.add(buf.clip);
@@ -735,11 +735,11 @@ public class ClipDashboard extends Application {
             );
             SysClipboard.write(clip);
             statusBar.show(msg);
-            items.getFocusModel().focus(1);
+            buffers.getFocusModel().focus(1);
         });
 
         btnDiff.setOnAction((e) -> {
-            ObservableList<ClipBuffer> selectedBuffers = items.getSelectionModel().getSelectedItems();
+            ObservableList<ClipBuffer> selectedBuffers = buffers.getSelectionModel().getSelectedItems();
             if (selectedBuffers.size() != 2) {
                 statusBar.showErr("Need two buffers selected to do a diff");
             } else {
@@ -755,7 +755,7 @@ public class ClipDashboard extends Application {
         });
 
         btnUp.setOnAction((e) -> {
-            ObservableList<Integer> selectedIdxs = items.getSelectionModel().getSelectedIndices();
+            ObservableList<Integer> selectedIdxs = buffers.getSelectionModel().getSelectedIndices();
             ArrayList<Integer> selIdxs = new ArrayList(selectedIdxs); // create copy
             Integer topBoundIdx = 0;
             for (int i : selIdxs) {
@@ -765,7 +765,7 @@ public class ClipDashboard extends Application {
                 }
                 // Don't swap if item above you is selected (for when selected items bunch at the top of the list)
                 Integer prevIdx = i - 1;
-                if (prevIdx >= topBoundIdx && items.getSelectionModel().isSelected(prevIdx)) {
+                if (prevIdx >= topBoundIdx && buffers.getSelectionModel().isSelected(prevIdx)) {
                     continue;
                 }
                 swapBuffers(i, prevIdx);
@@ -773,7 +773,7 @@ public class ClipDashboard extends Application {
         });
 
         btnDown.setOnAction((e) -> {
-            ObservableList<Integer> selectedIdxs = items.getSelectionModel().getSelectedIndices();
+            ObservableList<Integer> selectedIdxs = buffers.getSelectionModel().getSelectedIndices();
             List<Integer> selIdxs = new ArrayList(selectedIdxs);
             Collections.reverse(selIdxs);  // reverse is not supported by ObservableList
             Integer bottomBoundIdx = clips.size() - 1;
@@ -784,7 +784,7 @@ public class ClipDashboard extends Application {
                 }
                 // Don't swap if item below you is selected (for when selected items bunch at the bottom of the list)
                 Integer nextIdx = i + 1;
-                if (nextIdx <= bottomBoundIdx && items.getSelectionModel().isSelected(nextIdx)) {
+                if (nextIdx <= bottomBoundIdx && buffers.getSelectionModel().isSelected(nextIdx)) {
                     continue;
                 }
                 swapBuffers(i, nextIdx);
@@ -869,7 +869,7 @@ public class ClipDashboard extends Application {
             saveClipsToDisk(clips, primaryStage);
         });
         saveSelectedBuffers.setOnAction((e) -> {
-            saveClipsToDisk(items.getSelectionModel().getSelectedItems(), primaryStage);
+            saveClipsToDisk(buffers.getSelectionModel().getSelectedItems(), primaryStage);
         });
 
         // Buffer Menu
@@ -885,7 +885,7 @@ public class ClipDashboard extends Application {
     }
 
     private String retrieveClipFromBufferAndShowStatus() {
-        if (items.getFocusModel().getFocusedItem() == null) {
+        if (buffers.getFocusModel().getFocusedItem() == null) {
             statusBar.showErr("No item selected");
             return "";
         }
@@ -897,7 +897,7 @@ public class ClipDashboard extends Application {
     }
 
     private String retrieveClipFromBuffer() {
-        ClipBuffer buffer = items.getFocusModel().getFocusedItem();
+        ClipBuffer buffer = buffers.getFocusModel().getFocusedItem();
         SysClipboard.write(buffer.clip);
         return buffer.clip;
     }
@@ -905,7 +905,7 @@ public class ClipDashboard extends Application {
     private void appendToClipBuffers(String clip) {
         ClipBuffer buffer = new ClipBuffer(clip);
         clips.add(0, buffer);
-        items.scrollTo(buffer);
+        buffers.scrollTo(buffer);
     }
 
     private void appendToClipBuffersAndShowStatus(String clip) {
@@ -920,9 +920,9 @@ public class ClipDashboard extends Application {
         // with extra rows getting selected as I move them around. I think this may have something to do with the focus?
         // I'm just guessing.
         ClipBuffer tmpBuff1 = clips.get(idx1);
-        boolean tmpSelectState1 = items.getSelectionModel().isSelected(idx1);
+        boolean tmpSelectState1 = buffers.getSelectionModel().isSelected(idx1);
         ClipBuffer tmpBuff2 = clips.get(idx2);
-        boolean tmpSelectState2 = items.getSelectionModel().isSelected(idx2);
+        boolean tmpSelectState2 = buffers.getSelectionModel().isSelected(idx2);
 
         // NOTE: if you change the code below to set idx1 value and then change its selection, then do the same for idx2,
         // moving with multiple items selected will often cause additional rows to get selected as you move. The order
@@ -931,15 +931,15 @@ public class ClipDashboard extends Application {
         clips.set(idx2, tmpBuff1);
 
         if (tmpSelectState2) {
-            items.getSelectionModel().select(idx1);
+            buffers.getSelectionModel().select(idx1);
         } else {
-            items.getSelectionModel().clearSelection(idx1);
+            buffers.getSelectionModel().clearSelection(idx1);
         }
 
         if (tmpSelectState1) {
-            items.getSelectionModel().select(idx2);
+            buffers.getSelectionModel().select(idx2);
         } else {
-            items.getSelectionModel().clearSelection(idx2);
+            buffers.getSelectionModel().clearSelection(idx2);
         }
     }
 
