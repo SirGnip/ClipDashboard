@@ -152,9 +152,17 @@ public class ClipDashboard extends Application {
         items.setMaxHeight(Config.LIST_VIEW_HEIGHT);
         items.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         items.setOnMouseClicked((e) -> {
-            // double click on ListView
             if (e.getClickCount() == 2) {
+                // double click on ListView
                 retrieveClipFromBufferAndShowStatus();
+            } else {
+                // single click - reset focus to top of list every time selection list changes (provide user a consistent behavior)
+                List<Integer> selectedIdxs = items.getSelectionModel().getSelectedIndices();
+                if (selectedIdxs.size() == 0) {
+                    return;
+                }
+                int firstSelected = selectedIdxs.get(0);
+                items.getFocusModel().focus(firstSelected);
             }
         });
         items.setOnDragOver((e) -> {
@@ -643,7 +651,7 @@ public class ClipDashboard extends Application {
                     if (selIdx > focusIdx) {
                         focusIdx = selIdx;
                         items.getFocusModel().focus(focusIdx);
-                        System.out.println("new focus " + focusIdx);
+                        System.out.println(" new focus" + focusIdx);
                         break;
                     }
                 }
