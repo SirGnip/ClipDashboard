@@ -25,6 +25,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -136,6 +137,7 @@ public class ClipDashboard extends Application {
     private TextArea log;
     private StatusBar statusBar;
     private CheckMenuItem chkStoreOnFocus;
+    private CheckMenuItem chkVariableSubstitution;
 
     @Override
     public void start(Stage primaryStage) {
@@ -239,9 +241,9 @@ public class ClipDashboard extends Application {
                         "(See \"Join\" to store all selected buffers in clipboard)"
                 ));
         Button btnStore = new Button("Store");
+        Button btnReplace = new Button("Replace");
         Button btnPrepend = new Button("Prepend");
         Button btnAppend = new Button("Append");
-        Button btnReplace = new Button("Replace");
         Button btnDelete = new Button("Del");
         Button btnJoin = new Button("Join");
         Button btnDiff = new Button("Diff");
@@ -557,7 +559,7 @@ public class ClipDashboard extends Application {
         vbox.getChildren().add(buffers);
         vbox.getChildren().add(btnRetrieve);
         vbox.getChildren().add(hbox);
-        hbox.getChildren().addAll(lblBuffers, btnStore, btnPrepend, btnAppend, btnReplace, btnDelete, btnJoin, btnDiff, btnUp, btnDown);
+        hbox.getChildren().addAll(lblBuffers, btnStore, btnReplace, btnPrepend, btnAppend, btnDelete, btnJoin, btnDiff, btnUp, btnDown);
         vbox.getChildren().add(new Label("System Clipboard:"));
         vbox.getChildren().add(modificationTabPane);
         vbox.getChildren().add(log);
@@ -626,20 +628,24 @@ public class ClipDashboard extends Application {
                     }
                 }
             }
-
+            
             // Set clipboard
-            String clip = retrieveClipFromBuffer();
-            System.out.println(clip);
-            if (selIdxs.size() > 1) {
-                String msg = String.format("Retrieving %d line(s) and %d chars from buffer (#%d of %d) and storing to the clipboard",
-                        StringUtils.countMatches(clip, "\n") + 1,
-                        clip.length(),
-                        ordinalOfSelected,
-                        selIdxs.size()
-                        );
-                statusBar.show(msg);
-            } else {
-                statusBar.show("Retrieving " + (StringUtils.countMatches(clip, "\n") + 1) + " line(s) and " + clip.length() + " chars from buffer and storing to the clipboard");
+            try {
+                String clip = chkVariableSubstitution.isSelected() ? retrieveVarSubstitutedClipFromBuffer() : retrieveClipFromBuffer();
+                if (selIdxs.size() > 1) {
+                    String msg = String.format("Retrieving %d line(s) and %d chars from buffer (#%d of %d) and storing to the clipboard",
+                            StringUtils.countMatches(clip, "\n") + 1,
+                            clip.length(),
+                            ordinalOfSelected,
+                            selIdxs.size()
+                    );
+                    statusBar.show(msg);
+                } else {
+                    statusBar.show("Retrieving " + (StringUtils.countMatches(clip, "\n") + 1) + " line(s) and " + clip.length() + " chars from buffer and storing to the clipboard");
+                }
+            } catch (IllegalArgumentException exc) {
+                System.out.println("problem");
+                statusBar.showErr("Problem substituting variables in buffer: " + exc.toString());
             }
 
             // Advance focus to next selected item
@@ -879,6 +885,10 @@ public class ClipDashboard extends Application {
         chkStoreOnFocus.setSelected(false);
         bufferMenu.getItems().add(chkStoreOnFocus);
 
+        chkVariableSubstitution = new CheckMenuItem("Substitute variables (ex: {0}, {1}) when retrieving a buffer into the clipboard");
+        chkVariableSubstitution.setSelected(false);
+        bufferMenu.getItems().add(chkVariableSubstitution);
+
         // MenuBar
         menuBar.getMenus().add(bufferMenu);
         fileMenu.getItems().add(exitItem);
@@ -900,6 +910,13 @@ public class ClipDashboard extends Application {
         ClipBuffer buffer = buffers.getFocusModel().getFocusedItem();
         SysClipboard.write(buffer.clip);
         return buffer.clip;
+    }
+
+    private String retrieveVarSubstitutedClipFromBuffer() {
+        ClipBuffer buffer = buffers.getFocusModel().getFocusedItem();
+        String txt = MessageFormat.format(buffer.clip, clips.toArray()); // tolerant of variables in string that don't have a value for... Just doesn't substitute that variable.
+        SysClipboard.write(txt);
+        return txt;
     }
 
     private void appendToClipBuffers(String clip) {
