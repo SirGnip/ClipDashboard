@@ -8,6 +8,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
@@ -17,6 +18,7 @@ import com.juxtaflux.MyAppFramework;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
@@ -153,6 +155,18 @@ public class ClipDashboard extends Application {
         buffers.setMinHeight(Config.LIST_VIEW_HEIGHT);
         buffers.setMaxHeight(Config.LIST_VIEW_HEIGHT);
         buffers.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        buffers.setOnKeyPressed(((e) -> {
+            if (e.getCode() == KeyCode.DELETE) {
+                ObservableList<Integer> idxs = buffers.getSelectionModel().getSelectedIndices();
+                int startingSize = idxs.size();
+                // delete items in reverse index order to not offset indexes while iterating
+                for (int i = idxs.size()-1; i >= 0; i--) {
+                    clips.remove((int) idxs.get(i));
+                }
+                statusBar.show("Deleted " + startingSize + " selected clip buffer(s)\n");
+            }
+        }));
+
         buffers.setOnMouseClicked((e) -> {
             if (e.getClickCount() == 2) {
                 // double click on ListView
@@ -250,7 +264,6 @@ public class ClipDashboard extends Application {
         Button btnReplace = new Button("Replace");
         Button btnPrepend = new Button("Prepend");
         Button btnAppend = new Button("Append");
-        Button btnDelete = new Button("Del");
         Button btnJoin = new Button("Join");
         Button btnDiff = new Button("Diff");
         Button btnUp = new Button("^");
@@ -565,7 +578,7 @@ public class ClipDashboard extends Application {
         vbox.getChildren().add(buffers);
         vbox.getChildren().add(btnRetrieve);
         vbox.getChildren().add(hbox);
-        hbox.getChildren().addAll(lblBuffers, btnStore, btnReplace, btnPrepend, btnAppend, btnDelete, btnJoin, btnDiff, btnUp, btnDown);
+        hbox.getChildren().addAll(lblBuffers, btnStore, btnReplace, btnPrepend, btnAppend, btnJoin, btnDiff, btnUp, btnDown);
         vbox.getChildren().add(new Label("System Clipboard:"));
         vbox.getChildren().add(modificationTabPane);
         vbox.getChildren().add(log);
@@ -722,16 +735,6 @@ public class ClipDashboard extends Application {
                 e.setDropCompleted(false);
             }
             e.consume();
-        });
-
-        btnDelete.setOnAction((e) -> {
-            ObservableList<Integer> idxs = buffers.getSelectionModel().getSelectedIndices();
-            int startingSize = idxs.size();
-            // delete items in reverse index order to not offset indexes while iterating
-            for (int i = idxs.size()-1; i >= 0; i--) {
-                clips.remove((int) idxs.get(i));
-            }
-            statusBar.show("Deleted " + startingSize + " selected clip buffer(s)\n");
         });
 
         btnJoin.setOnAction((e) -> {

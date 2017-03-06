@@ -10,7 +10,6 @@
         - post contents of clipboard to URL (arg1=url)
             - drag url over a button labeled POST? then a dialog asks for a URL?
 - make retrieve button a bit larger
-- use delete key when buffer list is selected to delete items
 
 # next actions
 
