@@ -1,21 +1,5 @@
 (personal working notes and brainstorms)
 
-- variable substitution
-    - have a "variable substitution" toggle in menu
-    - when enabled, each buffer is $0, $1, $2 (or whatever other variable substitution Java supports). Any buffer can substitute others. No mutli-level substituion.
-    - use case:
-        - set up list of buffers that use "$0", for example
-        - store first value in $0
-        - select 1-3
-        - hit retrieve to cycle thru each message, it doing variable substitution with $0
-        - put a new value in clipboard, select buffer 0, and use "replace" to overwrite contents of buffer 0
-        - re-select the messages in 1-3 
-        - go thru cycle again
-    - problem:
-        - retrieve cycling. It doesn't start at first item after you change selection.
-        - cumbersome to have to re-select the items each time after updating buffer 0
-            - maybe make cycling based on something other than selection? ability to save selection ranges?
-            - maybe I don't worry about it for now and get variable substituion working and see what I can do with it.
 - actions
     - actions operate on lists (lists of URL's)
     - build code to require explicit action at first (url, file, etc), but can get smarter later on (automatically determine what "type" of string it is) once the code is written to do the action.
@@ -25,6 +9,8 @@
         - open as file/dir in explorer (support list)
         - post contents of clipboard to URL (arg1=url)
             - drag url over a button labeled POST? then a dialog asks for a URL?
+- make retrieve button a bit larger
+- use delete key when buffer list is selected to delete items
 
 # next actions
 

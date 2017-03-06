@@ -156,7 +156,13 @@ public class ClipDashboard extends Application {
         buffers.setOnMouseClicked((e) -> {
             if (e.getClickCount() == 2) {
                 // double click on ListView
-                retrieveClipFromBufferAndShowStatus();
+                try {
+                    String clip = chkVariableSubstitution.isSelected() ? retrieveVarSubstitutedClipFromBuffer() : retrieveClipFromBuffer();
+                    statusBar.show("Retrieving " + (StringUtils.countMatches(clip, "\n") + 1) + " line(s) and " + clip.length() + " chars from buffer and storing to the clipboard");
+                } catch (IllegalArgumentException exc) {
+                    System.out.println("problem");
+                    statusBar.showErr("Problem substituting variables in buffer: " + exc.toString());
+                }
             } else {
                 // single click - reset focus to top of list every time selection list changes (provide user a consistent behavior)
                 List<Integer> selectedIdxs = buffers.getSelectionModel().getSelectedIndices();
@@ -628,7 +634,7 @@ public class ClipDashboard extends Application {
                     }
                 }
             }
-            
+
             // Set clipboard
             try {
                 String clip = chkVariableSubstitution.isSelected() ? retrieveVarSubstitutedClipFromBuffer() : retrieveClipFromBuffer();
@@ -892,18 +898,6 @@ public class ClipDashboard extends Application {
         // MenuBar
         menuBar.getMenus().add(bufferMenu);
         fileMenu.getItems().add(exitItem);
-    }
-
-    private String retrieveClipFromBufferAndShowStatus() {
-        if (buffers.getFocusModel().getFocusedItem() == null) {
-            statusBar.showErr("No item selected");
-            return "";
-        }
-        String msg = retrieveClipFromBuffer();
-        statusBar.show(String.format("Retrieving %d line(s) and %d chars from buffer and storing to the clipboard\n",
-                StringUtils.countMatches(msg, "\n") + 1,
-                msg.length()));
-        return msg;
     }
 
     private String retrieveClipFromBuffer() {
