@@ -262,6 +262,8 @@ public class ClipDashboard extends Application {
         hbox.setPadding(new Insets(Config.UI_SPACING));
         Label lblBuffers = new Label("Buffers: ");
         Button btnRetrieve = new Button("Retrieve");
+        btnRetrieve.setMinHeight(45);
+        btnRetrieve.setStyle("-fx-font-size: 1.5em");
         btnRetrieve.setMaxWidth(Double.MAX_VALUE);
         btnRetrieve.setTooltip(
                 new Tooltip(

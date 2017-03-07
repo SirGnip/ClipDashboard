@@ -1,7 +1,5 @@
 (personal working notes and brainstorms)
 
-- make retrieve button a bit larger
-
 # next actions
 
 - look at IntelliJ warning highlights on StatusBar class and fix them
