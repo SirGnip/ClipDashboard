@@ -23,6 +23,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import com.juxtaflux.MyAppFramework;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.awt.*;
@@ -301,6 +302,7 @@ public class ClipDashboard extends Application {
         HBox argsStrOpsHBox = new HBox();
         Button btnStrPrepend = new Button("prepend");
         Button btnStrAppend = new Button("append");
+        Button btnStrWordWrap = new Button("word wrap");
         Button btnStrSplit = new Button("split");
         Button btnStrReplace = new Button("replace");
         Button btnStrRegexReplace = new Button("regex repl");
@@ -310,7 +312,7 @@ public class ClipDashboard extends Application {
         txtStrArg1.setPrefWidth(Config.ARG_WIDTH);
         TextField txtStrArg2 = new TextField("\\n");
         txtStrArg2.setPrefWidth(Config.ARG_WIDTH);
-        argsStrOpsHBox.getChildren().addAll(btnStrPrepend, btnStrAppend, btnStrSplit, btnStrReplace, btnStrRegexReplace, txtStrArg1, txtStrArg2);
+        argsStrOpsHBox.getChildren().addAll(btnStrPrepend, btnStrAppend, btnStrWordWrap, btnStrReplace, btnStrRegexReplace, txtStrArg1, txtStrArg2);
 
         strTabVBox.getChildren().addAll(noArgStrOpsHBox, argsStrOpsHBox);
         tab1.setContent(strTabVBox);
@@ -344,6 +346,15 @@ public class ClipDashboard extends Application {
             String arg = txtStrArg1.getText();
             statusBar.show("Appended " + arg.length() + " character to current clipboard");
             SysClipboard.write(SysClipboard.read() + arg);
+        });
+        btnStrWordWrap.setOnAction((e) -> {
+            try {
+                int width = Integer.valueOf(txtStrArg1.getText());
+                statusBar.show("Word wrapped the current clipboard contents to " + width + " columns wide");
+                SysClipboard.write(WordUtils.wrap(SysClipboard.read(), width));
+            } catch (NumberFormatException exc) {
+                statusBar.showErr("Invalid argument for word wrap. It must be an integer. (" + exc.getMessage() + ")");
+            }
         });
         btnStrSplit.setOnAction((e) -> {
             String arg = txtStrArg1.getText();

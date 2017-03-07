@@ -159,7 +159,7 @@ Visualizing focus ideas as when the ListView control as a whole looses focus, th
     - for path to diff tool and notepad
 - drag and drop implementation for reordering ListView contents https://coderanch.com/t/658527/java/Implement-drag-drop-ListView-custom
 - x in addition to filtering, have something that counts how many times a given regex matches? Or, maybe just use the "filter" and then the "stats" to count the lines in the clipboard after the filtre.
-- center, wordwrap
+- center, x wordwrap
 - use case test: can i use the features I have to wrap html tags around a list of text?
 
 # Bugs
