@@ -2,7 +2,6 @@
 
 # next actions
 
-- look at IntelliJ warning highlights on StatusBar class and fix them
 - use drop down for clipboard operations instead of lots of buttons
     - reduce clutter
     - to save screen space

@@ -48,7 +48,7 @@ class ArgParseError extends Exception {
 }
 
 class Debug {
-    public static void dumpDragboard(Dragboard b) {
+    static void dumpDragboard(Dragboard b) {
         System.out.printf("Dragboard %s %s %s %s %s %s\n",
                 b.hasString(),
                 b.hasUrl(),
@@ -76,7 +76,7 @@ class Functions {
         }
     }
 
-    public static Integer[] parseSliceSyntax(String sliceExpr) throws ArgParseError {
+    static Integer[] parseSliceSyntax(String sliceExpr) throws ArgParseError {
         int colonCount = StringUtils.countMatches(sliceExpr, ":");
         Integer singleIdx = null;
         Integer startIdx = null;
@@ -96,7 +96,7 @@ class Functions {
         Integer[] idxs = {singleIdx, startIdx, endIdx};
         return idxs;
     }
-    public static Path writeToTempFile(String prefix, String suffix, byte[] text) {
+    static Path writeToTempFile(String prefix, String suffix, byte[] text) {
         Path result = null;
         try {
             result = Files.createTempFile(prefix, suffix);
@@ -111,17 +111,17 @@ class Functions {
 };
 
 class StatusBar extends Label {
-    static Paint defaultColor;
+    private static Paint defaultColor;
 
     /** Must call this after primaryStage.show() as the real colors get set at that point. I'm guessing that is when CSS is applied. */
-    public void cacheTextFillColor() {
+    void cacheTextFillColor() {
         defaultColor = getTextFill();
     }
-    public void show(String msg) {
+    void show(String msg) {
         this.setTextFill(defaultColor);
         this.setText(msg);
     }
-    public void showErr(String msg) {
+    void showErr(String msg) {
         this.setTextFill(Config.STATUS_BAR_ERROR_COLOR);
         this.setText("ERROR: " + msg);
     }
