@@ -7,6 +7,13 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.TransferMode;
@@ -18,11 +25,12 @@ import com.juxtaflux.MyAppFramework;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.awt.event.KeyEvent;
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -152,6 +160,7 @@ public class ClipDashboard extends Application {
 
         clips = FXCollections.observableArrayList(Config.INITIAL_CLIPS.stream().map(c -> new ClipBuffer(c)).collect(Collectors.toList()));
         buffers = new ListView(clips);
+        buffers.setTooltip(new Tooltip("A list of clipboard buffers.\nDelete key will delete selected buffers."));
         buffers.setMinHeight(Config.LIST_VIEW_HEIGHT);
         buffers.setMaxHeight(Config.LIST_VIEW_HEIGHT);
         buffers.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -551,9 +560,12 @@ public class ClipDashboard extends Application {
         HBox actionTabHBox = new HBox();
         Button btnNotepadAction = new Button("notepad");
         btnNotepadAction.setTooltip(new Tooltip("Open contents of system clipboard in Notepad"));
-        Button btn222 = new Button("notepad");
-        btn222.setTooltip(new Tooltip("Open contents of system clipboard in Notepad"));
-        actionTabHBox.getChildren().addAll(btnNotepadAction);
+        Button btnOpenUrl = new Button("open URL's");
+        btnOpenUrl.setTooltip(new Tooltip("Open contents of system clipboard as URL's (supports newline separated lists of URI's)"));
+        Button btnOpenFiles = new Button("open files/folders");
+        btnOpenFiles.setTooltip(new Tooltip("Open contents of system clipboard as files/folders (supports newline separated lists of paths)"));
+
+        actionTabHBox.getChildren().addAll(btnNotepadAction, btnOpenUrl, btnOpenFiles);
         actionTabVBox.getChildren().addAll(actionTabHBox);
         tabActions.setContent(actionTabVBox);
 
@@ -569,7 +581,32 @@ public class ClipDashboard extends Application {
                 statusBar.showErr("Couldn't write temp file for opening with Notepad");
             }
         });
-
+        btnOpenUrl.setOnAction((e) -> {
+            try {
+                int count = 0;
+                for (String uri : SysClipboard.readAsLines()) {
+                    System.out.println(new URI(uri));
+                    Desktop.getDesktop().browse(new URI(uri));
+                    count += 1;
+                }
+                statusBar.show("Opened " + count + " URI(s) in the browser");
+            } catch(Exception exc) {
+                statusBar.showErr("Couldn't launch URI's in clipboard because: " + exc.getMessage());
+            }
+        });
+        btnOpenFiles.setOnAction((e) -> {
+            try {
+                int count = 0;
+                for (String folder : SysClipboard.readAsLines()) {
+                    System.out.println(new File(folder));
+                    Desktop.getDesktop().open(new File(folder));
+                    count += 1;
+                }
+                statusBar.show("Opened " + count + " file(s)/folder(s) in the browser");
+            } catch(Exception exc) {
+                statusBar.showErr("Couldn't launch file/folder in clipboard because: " + exc.getMessage());
+            }
+        });
 
         // Log
         log = new TextArea();

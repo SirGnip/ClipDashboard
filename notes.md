@@ -1,14 +1,5 @@
 (personal working notes and brainstorms)
 
-- actions
-    - actions operate on lists (lists of URL's)
-    - build code to require explicit action at first (url, file, etc), but can get smarter later on (automatically determine what "type" of string it is) once the code is written to do the action.
-    - types
-        - open in notepad
-        - open as url (support list)
-        - open as file/dir in explorer (support list)
-        - post contents of clipboard to URL (arg1=url)
-            - drag url over a button labeled POST? then a dialog asks for a URL?
 - make retrieve button a bit larger
 
 # next actions
@@ -57,7 +48,7 @@ Iteration #1 - (DONE) minimal features so I use it instead of Python one
     - x able to apply mutations to individual clips or to all selected clips?
 - mutating clip contents
     - string
-        - x trim, x lower, x upper, x prepend, x append, x split, variable substitute
+        - x trim, x lower, x upper, x prepend, x append, x split, x variable substitute
     - list
         - x prepend, x append, x join, x filter, x reverse, x sort, x count, numbering (prepend and append) with start # and step # w/ tooltip explaining use of args
         - x substring trimming (cut off first character [1:], return last three characters [-3:], return 3rd character [3])
@@ -72,13 +63,13 @@ Iteration #1 - (DONE) minimal features so I use it instead of Python one
         - x cycle through all/selected?
         - x join w/ provided delimiter (joins with \n, but can do a replace next)
 - destination of receive
-    - x clipboard, file, post to url, substitute into shell command?
+    - x clipboard, x file, post to url, substitute into shell command?
     
 uncategorized
     
 - java clipboard toolbox UI
     - able to x split, x join, x prepend, x append, x replace, x sort, x filter, columns, graph, x clipboard stack, etc.
-    - variable substitution?
+    - x variable substitution?
     - x push and retrieve from other buffers
     - able to treat buffers and deque (push/pop from front and back) and random access (read from anywhere)
     - x clipboard stack/cache/manipulator
@@ -90,8 +81,8 @@ uncategorized
     - different ways of getting text out (clipboard, save to file, POST to URL?)
         - post clipboard to url
         - use variable substitution to open a url (ex: http://www.stuff.com/doit/%{1}
-    - variable substitution
-        - be able to independently set values for aaa=somestring bbb=other and substitute those into a sequence of clips 
+    - x variable substitution
+        - x be able to independently set values for aaa=somestring bbb=other and substitute those into a sequence of clips 
 (if clip contains "this is ${aaa} for ${bbb}". 
     - open url after substituting current clipboard into a url (ex: http://docs.oracle.com/javase/8/docs/api/javax/swing/SpinnerDateModel.htm
 l (any way to search for docs given just a class/interface name?)
@@ -100,7 +91,7 @@ l (any way to search for docs given just a class/interface name?)
         - x replace
         - insert after selected (don't want to do "before selected" because then I could never insert anything at the end of the list. The combination of "after selected" and "store at head" lets me put stuff anywhere
         - x reorder
-        - variable substitution that can reference other buffers (by index? indexes can change easily. Some tagging mechanism by color? icon? assigned number? initial text?)
+        - x variable substitution that can reference other buffers (by index? indexes can change easily. Some tagging mechanism by color? icon? assigned number? initial text?)
 
 # modification
 - what is input? output?
@@ -165,14 +156,15 @@ Visualizing focus ideas as when the ListView control as a whole looses focus, th
         - histograms
     - calculator of sorts where i can define a function (x*2)+x and feed a list of numbers through it
 - configuration
-    - for path to diff tool
-- drag and drop implementation for ListView https://coderanch.com/t/658527/java/Implement-drag-drop-ListView-custom
-- in addition to filtering, have something that counts how many times a given regex matches? Or, maybe just use the "filter" and then the "stats" to count the lines in the clipboard after the filtre.
+    - for path to diff tool and notepad
+- drag and drop implementation for reordering ListView contents https://coderanch.com/t/658527/java/Implement-drag-drop-ListView-custom
+- x in addition to filtering, have something that counts how many times a given regex matches? Or, maybe just use the "filter" and then the "stats" to count the lines in the clipboard after the filtre.
 - center, wordwrap
-- can i use the features I have to wrap html tags around a list of text?
+- use case test: can i use the features I have to wrap html tags around a list of text?
 
 # Bugs
 
 - If you put list-based text into the clipboard (ex: "\n\n\n a \n b \n c \n\n\n") and do a "list trim", it seems to remove the trailing blank rows (but not the initial))... I'm expecting those trailing \n should result in blank rows, even after a trim.  The trimming shouldn't remove lines, only the whitespace from the lines.
 - If i drag text from IntelliJ and drop it on ClipDashboard, it still has some kind of embedded newline/carriage return
 - lots of silent failures in drag-n-drop files/directories on read failures (file being an executable, for instance). It silently skips the file if it fails.
+- if you view clipboard contents in Notepad, it doesn't respect carriage returns
