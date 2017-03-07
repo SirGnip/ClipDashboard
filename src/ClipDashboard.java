@@ -415,6 +415,8 @@ public class ClipDashboard extends Application {
         btnListPrepend.setTooltip(new Tooltip("Prepend given text to the beginning of each line in the clipboard\n(arg1: text)"));
         Button btnListAppend = new Button("append");
         btnListAppend.setTooltip(new Tooltip("Append given text to the end of each line in the clipboard\n(arg1: text)"));
+        Button btnListCenter = new Button("center");
+        btnListCenter.setTooltip(new Tooltip("Center each line in the clipboard\n(arg1: width)"));
         Button btnListSlice = new Button("slice");
         btnListSlice.setTooltip(new Tooltip("Do a Python-style slice on each line in the clipboard\n(arg1: slice expression)\nExample: \"5:-1\" slices each line to be the substring between 6th character and one character before the end of the line"));
         Button btnListJoin = new Button("join");
@@ -431,7 +433,7 @@ public class ClipDashboard extends Application {
         txtListArg1.setPrefWidth(Config.ARG_WIDTH);
         TextField txtListArg2 = new TextField("_");
         txtListArg2.setPrefWidth(Config.ARG_WIDTH);
-        argsListOpsHBox.getChildren().addAll(btnListPrepend, btnListAppend, btnListSlice, btnListJoin, btnListContains, btnListRegex, btnListRegexFull, btnListRegexRepl, txtListArg1, txtListArg2);
+        argsListOpsHBox.getChildren().addAll(btnListPrepend, btnListAppend, btnListCenter, btnListSlice, btnListJoin, btnListContains, btnListRegex, btnListRegexFull, btnListRegexRepl, txtListArg1, txtListArg2);
 
         listTabVBox.getChildren().addAll(noArgListOpsHBox, argsListOpsHBox);
 
@@ -495,6 +497,15 @@ public class ClipDashboard extends Application {
             String arg = txtListArg1.getText();
             List<String> result = new ClipboardAsListMutatorByLine( (line) -> line + arg ).mutate();
             statusBar.show("Appended " + arg.length() + " character(s) to " + result.size() + " lines in current clipboard");
+        });
+        btnListCenter.setOnAction((e) -> {
+            try {
+                int width = Integer.valueOf(txtListArg1.getText());
+                List<String> result = new ClipboardAsListMutatorByLine( (line) -> StringUtils.center(line, width) ).mutate();
+                statusBar.show("Centered " + result.size() + " lines in current clipboard");
+            } catch (NumberFormatException exc) {
+                statusBar.showErr("Invalid argument for center. It must be an integer. (" + exc.getMessage() + ")");
+            }
         });
         btnListSlice.setOnAction((e) -> {
             // parse slice argument syntax
