@@ -272,12 +272,12 @@ public class ClipDashboard extends Application {
                         "Double clicking a buffer is a shortcut for \"Retrieve\".\n" +
                         "(See \"Join\" to store all selected buffers in clipboard)"
                 ));
-        Button btnStore = new Button("Store");
-        Button btnReplace = new Button("Replace");
-        Button btnPrepend = new Button("Prepend");
-        Button btnAppend = new Button("Append");
-        Button btnJoin = new Button("Join");
-        Button btnDiff = new Button("Diff");
+        Button btnStore = new Button("store");
+        Button btnReplace = new Button("replace");
+        Button btnPrepend = new Button("prepend");
+        Button btnAppend = new Button("append");
+        Button btnJoin = new Button("join");
+        Button btnDiff = new Button("diff");
         Button btnUp = new Button("^");
         Button btnDown = new Button("v");
 
