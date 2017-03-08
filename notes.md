@@ -9,11 +9,7 @@
     - able to provide operation-specific help tooltips on the arg text boxes
     - con: makes it require a bit more flipping around to get what you want if you are using different operations (maybe just wait)
 - move log to a hidden tab or menu option (maybe it is just a debug log?)
-- get "actions" working
-    - open in editor
-    - open as url in browser, open explorer to file, open to folder
 - skim docs/tutorials on streams?
-- on app startup or shutdown, clean up diff temp files
 - refactoring: move some of the classes into their own file 
 - do a pass on the visuals (better button layout and sizing, dynamic sizing)
 

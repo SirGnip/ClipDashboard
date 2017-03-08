@@ -33,6 +33,7 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -100,6 +101,7 @@ class Functions {
         Path result = null;
         try {
             result = Files.createTempFile(prefix, suffix);
+            result.toFile().deleteOnExit(); // register file to be deleted when app exits
             // NOTE: Files.write() writes the file with linux-style line endings. Or, maybe it just passes
             // through whatever is in the String is and doesn't automatically treat "\n" as "\r\n" on Windows.
             Files.write(result, text);
