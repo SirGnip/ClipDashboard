@@ -18,7 +18,6 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Paint;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import com.juxtaflux.MyAppFramework;
@@ -33,7 +32,6 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -48,6 +46,7 @@ class ArgParseError extends Exception {
     ArgParseError(String msg) { super(msg); }
 }
 
+/** Debugging functions */
 class Debug {
     static void dumpDragboard(Dragboard b) {
         System.out.printf("Dragboard %s %s %s %s %s %s\n",
@@ -62,6 +61,7 @@ class Debug {
     }
 }
 
+/** generic utility functions */
 class Functions {
     private static Integer parseToken(String token) throws ArgParseError {
         if (token.trim().equals("")) {
@@ -109,38 +109,6 @@ class Functions {
             result = null;
         }
         return result;
-    }
-};
-
-class StatusBar extends Label {
-    private static Paint defaultColor;
-
-    /** Must call this after primaryStage.show() as the real colors get set at that point. I'm guessing that is when CSS is applied. */
-    void cacheTextFillColor() {
-        defaultColor = getTextFill();
-    }
-    void show(String msg) {
-        this.setTextFill(defaultColor);
-        this.setText(msg);
-    }
-    void showErr(String msg) {
-        this.setTextFill(Config.STATUS_BAR_ERROR_COLOR);
-        this.setText("ERROR: " + msg);
-    }
-}
-
-class ClipBuffer {
-    String clip;
-    ClipBuffer(String msg) {
-        clip = msg;
-    }
-    public String toString() {
-        int lineCount = StringUtils.countMatches(clip, "\n") + 1;
-        String formatted = clip.replace("\n", " ");
-        if (formatted.length() > Config.BUFFER_CROP_LENGTH) {
-            formatted = formatted.format("%s... (%d chars, %d lines)", formatted.substring(0, Config.BUFFER_CROP_LENGTH), formatted.length(), lineCount);
-        }
-        return formatted;
     }
 }
 
