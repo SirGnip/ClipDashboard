@@ -20,7 +20,7 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-import com.juxtaflux.MyAppFramework;
+import com.juxtaflux.AppFramework;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -859,7 +859,7 @@ public class ClipDashboard extends Application {
             appendToClipBuffersAndShowStatus(SysClipboard.read()); // read and store first clip when app first opens
         }
 
-        MyAppFramework.dump(vbox);
+        AppFramework.dump(vbox);
     }
 
     /** Reads contents of file and stores in clipboard buffer */

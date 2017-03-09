@@ -2,6 +2,9 @@
 
 # next actions
 
+- use this snippet for reading file contents? `new String(Files.readAllBytes(Paths.get(loader.getResource("blah/file.txt").toURI())));`
+- take notes on layouts from video
+- can I build code and jar from command line? (exercise to help me understand what is going on)
 - use drop down for clipboard operations instead of lots of buttons
     - reduce clutter
     - to save screen space
@@ -10,7 +13,6 @@
     - con: makes it require a bit more flipping around to get what you want if you are using different operations (maybe just wait)
 - move log to a hidden tab or menu option (maybe it is just a debug log?)
 - skim docs/tutorials on streams?
-- refactoring: move some of the classes into their own file 
 - do a pass on the visuals (better button layout and sizing, dynamic sizing)
 
 

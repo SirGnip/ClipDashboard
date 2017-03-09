@@ -26,3 +26,7 @@ Clipboard buffers
 This is a JavaFX UI application I am writing while learning Java.  I don't like writing programs that serve no useful purpose. You don't learn as much doing that.  So, I'm doing ye ol' scratch your own itch.  I do a lot of text processing in my day job, so this app may help with that a bit. 
   
 This is a work in progress and I make no promises as to how complete, beautiful, useful, elegant or robust it currently is.
+
+# Dependencies
+
+- [JavaFXUtils 0.1](https://github.com/SirGnip/JavaFXUtils/releases/tag/0.1)
