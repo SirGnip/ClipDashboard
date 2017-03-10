@@ -8,27 +8,27 @@ import static org.junit.Assert.*;
 public class StringUtilTest {
     @Test
     public void replaceSpecialChars() throws Exception {
-        assertEquals(StringUtil.replaceSpecialChars(""), "");
-        assertEquals(StringUtil.replaceSpecialChars("a b c"), "a b c");
-        assertEquals(StringUtil.replaceSpecialChars("\\n\\t abc \\n\\t"), "\r\n\t abc \r\n\t");
+        assertEquals("", StringUtil.replaceSpecialChars(""));
+        assertEquals("a b c", StringUtil.replaceSpecialChars("a b c"));
+        assertEquals("\r\n\t abc \r\n\t", StringUtil.replaceSpecialChars("\\n\\t abc \\n\\t"));
     }
 
     @Test
     public void ltrim() throws Exception {
-        assertEquals(StringUtil.ltrim(""), "");
-        assertEquals(StringUtil.ltrim("abc"), "abc");
-        assertEquals(StringUtil.ltrim("  abc"), "abc");
-        assertEquals(StringUtil.ltrim("abc  "), "abc  ");
-        assertEquals(StringUtil.ltrim("  abc  "), "abc  ");
+        assertEquals("", StringUtil.ltrim(""));
+        assertEquals("abc", StringUtil.ltrim("abc"));
+        assertEquals("abc", StringUtil.ltrim("  abc"));
+        assertEquals("abc  ", StringUtil.ltrim("abc  "));
+        assertEquals("abc  ", StringUtil.ltrim("  abc  "));
     }
 
     @Test
     public void rtrim() throws Exception {
-        assertEquals(StringUtil.rtrim(""), "");
-        assertEquals(StringUtil.rtrim("abc"), "abc");
-        assertEquals(StringUtil.rtrim("  abc"), "  abc");
-        assertEquals(StringUtil.rtrim("abc  "), "abc");
-        assertEquals(StringUtil.rtrim("  abc  "), "  abc");
+        assertEquals("", StringUtil.rtrim(""));
+        assertEquals("abc", StringUtil.rtrim("abc"));
+        assertEquals("  abc", StringUtil.rtrim("  abc"));
+        assertEquals("abc", StringUtil.rtrim("abc  "));
+        assertEquals("  abc", StringUtil.rtrim("  abc  "));
     }
 
     @Test
