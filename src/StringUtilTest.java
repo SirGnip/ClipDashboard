@@ -10,7 +10,7 @@ public class StringUtilTest {
     public void replaceSpecialChars() throws Exception {
         assertEquals(StringUtil.replaceSpecialChars(""), "");
         assertEquals(StringUtil.replaceSpecialChars("a b c"), "a b c");
-        assertEquals(StringUtil.replaceSpecialChars("\\n\\t abc \\n\\t"), "\n\t abc \n\t");
+        assertEquals(StringUtil.replaceSpecialChars("\\n\\t abc \\n\\t"), "\r\n\t abc \r\n\t");
     }
 
     @Test

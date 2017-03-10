@@ -21,7 +21,7 @@ abstract class ClipboardAsListMutatorBase {
     public List<String> mutate() {
         List<String> result = SysClipboard.readAsLines();
         mutateImpl(result);
-        SysClipboard.write(String.join("\n", result));
+        SysClipboard.write(String.join(System.lineSeparator(), result));
         return result;
     }
     protected abstract void mutateImpl(List<String> result);
@@ -65,7 +65,7 @@ class ClipboardAsListFilter {
                 filtered.add(line);
             }
         }
-        SysClipboard.write(String.join("\n", filtered));
+        SysClipboard.write(String.join(System.lineSeparator(), filtered));
         return Pair.of(list, filtered);
     }
 }

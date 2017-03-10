@@ -8,7 +8,7 @@ import static org.apache.commons.lang3.StringUtils.substring;
 /** General string manipulation static functions */
 public class StringUtil {
     public static String replaceSpecialChars(String s) {
-        s = s.replace("\\n", "\n");
+        s = s.replace("\\n", System.lineSeparator());
         s = s.replace("\\t", "\t");
         return s;
     }
@@ -49,7 +49,7 @@ public class StringUtil {
         s = s.substring(0, Math.min(100, s.length()));
         s = s.replaceAll("[^a-zA-Z0-9 ]", " "); // replace everything but alphanumerics and spaces with spaces
         s = s.trim();
-        String[] words = StringUtils.split(s); // merges consecutive decimeters
+        String[] words = StringUtils.split(s); // merges consecutive delimiters
         List<String> stuff = Arrays.asList(words);
         stuff = stuff.subList(0, Math.min(wordCount, stuff.size()));
         return String.join(" ", stuff);

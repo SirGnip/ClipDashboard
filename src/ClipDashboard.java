@@ -59,6 +59,18 @@ class Debug {
         );
         b.getContentTypes().forEach(df -> System.out.println("MIMETYPE: " + df.getClass().getName() + " " + df + " - " + b.getContent(df).getClass().getName() + " >" + b.getContent(df))); // reference: http://stackoverflow.com/questions/30923817/javafx-dnd-third-party-program-to-javafx-app
     }
+
+    /** dump each character of a string, its index, and its ascii value */
+    static void dumpString(String s) {
+        // 10 LF    13 CR
+        // Unix and modern Mac's   :   LF     (\n)
+        // Windows                 :   CR LF  (\r\n)
+        System.out.println("length " + s.length());
+        System.out.println(s);
+        for (int i = 0; i < s.length(); ++i) {
+            System.out.println(i + "> " + ((int) s.charAt(i)) + " " + s.charAt(i));
+        }
+    }
 }
 
 /** generic utility functions */
@@ -284,7 +296,7 @@ public class ClipDashboard extends Application {
         txtStrArg1.setPrefWidth(Config.ARG_WIDTH);
         TextField txtStrArg2 = new TextField("\\n");
         txtStrArg2.setPrefWidth(Config.ARG_WIDTH);
-        argsStrOpsHBox.getChildren().addAll(btnStrPrepend, btnStrAppend, btnStrWordWrap, btnStrReplace, btnStrRegexReplace, txtStrArg1, txtStrArg2);
+        argsStrOpsHBox.getChildren().addAll(btnStrPrepend, btnStrAppend, btnStrWordWrap, btnStrSplit, btnStrReplace, btnStrRegexReplace, txtStrArg1, txtStrArg2);
 
         strTabVBox.getChildren().addAll(noArgStrOpsHBox, argsStrOpsHBox);
         tab1.setContent(strTabVBox);
@@ -332,8 +344,8 @@ public class ClipDashboard extends Application {
             String arg = txtStrArg1.getText();
             String clipboard = SysClipboard.read();
             int origSize = clipboard.length();
-            clipboard = clipboard.replace(arg, "\n");
-            String[] array = clipboard.split("\n");
+            clipboard = clipboard.replace(arg, System.lineSeparator());
+            String[] array = StringUtils.splitByWholeSeparatorPreserveAllTokens(clipboard, System.lineSeparator());
             statusBar.show("Split " + origSize + " character(s) using '" + arg + "' into " + array.length + " line(s) in current clipboard");
             SysClipboard.write(clipboard);
         });
@@ -432,9 +444,9 @@ public class ClipDashboard extends Application {
         });
         btnListStats.setOnAction((e) -> {
             String clipboard = SysClipboard.read();
-            String[] array = clipboard.split("\n");
+            String[] array = StringUtils.splitByWholeSeparatorPreserveAllTokens(clipboard, System.lineSeparator());
             List<String> list = Arrays.asList(array);
-            String[] words = clipboard.split("\\s+");
+            String[] words = clipboard.split("\\s+"); // want to collapse identical, adjacent tokens
 
             Integer minLineLen = Integer.MAX_VALUE;
             Integer maxLineLen = 0;
@@ -501,8 +513,8 @@ public class ClipDashboard extends Application {
         btnListJoin.setOnAction((e) -> {
             String clipboard = SysClipboard.read();
             String arg = txtListArg1.getText();
-            statusBar.show("Joined " + clipboard.split("\n").length + " lines with '" + arg + "' in current clipboard");
-            SysClipboard.write(clipboard.replace("\n", arg));
+            statusBar.show("Joined " + StringUtils.splitByWholeSeparatorPreserveAllTokens(clipboard, System.lineSeparator()).length + " lines with '" + arg + "' in current clipboard");
+            SysClipboard.write(clipboard.replace(System.lineSeparator(), arg));
         });
         btnListCollapse.setOnAction((e) -> {
             Pair<List<String>, List<String>> result = new ClipboardAsListFilter( (line) -> line.length() > 0 ).filter();

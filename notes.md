@@ -2,8 +2,8 @@
 
 # next actions
 
+- reorder the expected/actual values in my asserts in StringUtil.java
 - use this snippet for reading file contents? `new String(Files.readAllBytes(Paths.get(loader.getResource("blah/file.txt").toURI())));`
-- take notes on layouts from video
 - can I build code and jar from command line? (exercise to help me understand what is going on)
 - use drop down for clipboard operations instead of lots of buttons
     - reduce clutter
@@ -11,7 +11,6 @@
     - be able to hide arg boxes that are not needed
     - able to provide operation-specific help tooltips on the arg text boxes
     - con: makes it require a bit more flipping around to get what you want if you are using different operations (maybe just wait)
-- move log to a hidden tab or menu option (maybe it is just a debug log?)
 - skim docs/tutorials on streams?
 - do a pass on the visuals (better button layout and sizing, dynamic sizing)
 
@@ -159,7 +158,5 @@ Visualizing focus ideas as when the ListView control as a whole looses focus, th
 
 # Bugs
 
-- If you put list-based text into the clipboard (ex: "\n\n\n a \n b \n c \n\n\n") and do a "list trim", it seems to remove the trailing blank rows (but not the initial))... I'm expecting those trailing \n should result in blank rows, even after a trim.  The trimming shouldn't remove lines, only the whitespace from the lines.
-- If i drag text from IntelliJ and drop it on ClipDashboard, it still has some kind of embedded newline/carriage return
 - lots of silent failures in drag-n-drop files/directories on read failures (file being an executable, for instance). It silently skips the file if it fails.
-- if you view clipboard contents in Notepad, it doesn't respect carriage returns
+- if you type multi-line strings into the text box in ClipDashboard and copy into the system clipboard, the lines are separated with "\n", not the expected "\r\n". Might need to replace \n's that don't have \r with "\r\n" to normalize all text when reading from the clipboard. 
