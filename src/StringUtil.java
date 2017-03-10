@@ -10,6 +10,7 @@ public class StringUtil {
     public static String replaceSpecialChars(String s) {
         s = s.replace("\\n", System.lineSeparator());
         s = s.replace("\\t", "\t");
+        s = s.replace("\\r", "\r");
         return s;
     }
     // Reference: http://stackoverflow.com/a/15567181
