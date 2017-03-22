@@ -15,7 +15,6 @@
     - con: makes it require a bit more flipping around to get what you want if you are using different operations (maybe just wait)
 - skim docs/tutorials on streams?
 - do a pass on the visuals (better button layout and sizing, dynamic sizing)
-- if i put a multiline string into a buffer, it doesn't display the carriage returns as designed. But, it might be nice if the "summary" string showed up that said how many lines were in that buffer. usually that summary only shows up if it is lone. maybe it should show up if it is long OR it has more than one line...
 
 # roadmap
 
