@@ -1,3 +1,5 @@
+package com.juxtaflux;
+
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
@@ -13,12 +15,8 @@ class Config {
     static final List<String> INITIAL_CLIPS = Arrays.asList("abc", "def", "ghijklmnop", "q", "rstuv", "wxyz");
     static final Paint STATUS_BAR_ERROR_COLOR = Color.RED;
     static final int BUFFER_CROP_LENGTH = 70;
-    static final int LIST_VIEW_HEIGHT = 250;
-    static final int UI_SPACING = 5;
-    static final int MODIFICATION_TAB_HEIGHT = 120;
     static final double DRAG_N_DROP_ENTER_OPACITY = 0.2;
     static final double DRAG_N_DROP_EXIT_OPACITY = 1.0;
-    static final int ARG_WIDTH = 80;
     static final int WORDS_FOR_FILE_NAMING = 4;
 
     // diffing

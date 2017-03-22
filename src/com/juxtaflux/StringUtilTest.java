@@ -1,7 +1,6 @@
-import org.junit.Test;
+package com.juxtaflux;
 
-import java.util.Arrays;
-import java.util.List;
+import org.junit.Test;
 
 import static org.junit.Assert.*;
 

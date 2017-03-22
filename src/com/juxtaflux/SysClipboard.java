@@ -1,3 +1,5 @@
+package com.juxtaflux;
+
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import org.apache.commons.lang3.StringUtils;

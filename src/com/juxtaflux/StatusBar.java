@@ -1,7 +1,9 @@
+package com.juxtaflux;
+
 import javafx.scene.control.Label;
 import javafx.scene.paint.Paint;
 
-class StatusBar extends Label {
+public class StatusBar extends Label {
     private static Paint defaultColor;
 
     /** Must call this after primaryStage.show() as the real colors get set at that point. I'm guessing that is when CSS is applied. */

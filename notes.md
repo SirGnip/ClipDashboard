@@ -2,7 +2,9 @@
 
 # next actions
 
-- reorder the expected/actual values in my asserts in StringUtil.java
+- probably don't worry about tooltips as I'm going to be creating a textfield/area that shows help on hover.
+- variable substitution where a variable refers to the contents of the clipboard
+    - ex: create a buffer that is "start ${clip} end". put some word in system clipboard. turn on variable substitution.  click retrieve and it will retrieve the buffer and substitute in the contents of the word into "${clip}"
 - use this snippet for reading file contents? `new String(Files.readAllBytes(Paths.get(loader.getResource("blah/file.txt").toURI())));`
 - can I build code and jar from command line? (exercise to help me understand what is going on)
 - use drop down for clipboard operations instead of lots of buttons
@@ -13,7 +15,7 @@
     - con: makes it require a bit more flipping around to get what you want if you are using different operations (maybe just wait)
 - skim docs/tutorials on streams?
 - do a pass on the visuals (better button layout and sizing, dynamic sizing)
-
+- if i put a multiline string into a buffer, it doesn't display the carriage returns as designed. But, it might be nice if the "summary" string showed up that said how many lines were in that buffer. usually that summary only shows up if it is lone. maybe it should show up if it is long OR it has more than one line...
 
 # roadmap
 
