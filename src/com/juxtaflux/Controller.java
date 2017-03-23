@@ -13,6 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.*;
+import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
@@ -129,27 +130,106 @@ public class Controller implements Initializable {
     private TextArea log;
     @FXML
     private StatusBar statusBar;
-    @FXML
-    private TextField txtStrArg1;
-    @FXML
-    private TextField txtStrArg2;
-    @FXML
-    private TextField txtListArg1;
-    @FXML
-    private TextField txtListArg2;
 
     @FXML
     private CheckMenuItem chkStoreOnFocus;
     @FXML
     private CheckMenuItem chkVariableSubstitution;
 
+    @FXML
+    private TextField txtArg1;
+    @FXML
+    private TextField txtArg2;
+    @FXML
+    private Text txtHelpHeader;
+    @FXML
+    private Text txtHelpBody;
+
+    private HashMap<String, ButtonSetup> buttonMap = new HashMap();
     Stage primaryStage;
+
+    class ButtonSetup {
+        public List<TextField> disable;
+        public String helpHeader;
+        public String helpBody;
+
+        public ButtonSetup(List<TextField> disable, String helpHeader, String helpBody) {
+            this.disable = disable;
+            this.helpHeader = helpHeader;
+            this.helpBody = helpBody;
+        }
+    }
+
+    public void onMouseEnter(MouseEvent e) {
+        Button b = (Button) e.getSource();
+        if (! buttonMap.containsKey(b.getId())) { throw new RuntimeException("Control ID doesn't exist in map: " + b.getId()); };
+        ButtonSetup stuff = buttonMap.get(b.getId());
+        for (TextField f : stuff.disable) {
+            f.setDisable(true);
+        }
+        txtHelpHeader.setText(stuff.helpHeader + "\n");
+        txtHelpBody.setText(stuff.helpBody);
+    }
+    public void onMouseExit(MouseEvent e) {
+        Button b = (Button) e.getSource();
+        if (! buttonMap.containsKey(b.getId())) { throw new RuntimeException("Control ID doesn't exist in map: " + b.getId()); };
+        ButtonSetup stuff = buttonMap.get(b.getId());
+        for (TextField f : stuff.disable) {
+            f.setDisable(false);
+        }
+        txtHelpHeader.setText("\n");
+        txtHelpBody.setText("");
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         buffers.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         buffers.setItems(clips);
         statusBar.cacheTextFillColor();
+
+        buttonMap.put("btnStore", new ButtonSetup(Arrays.asList(txtArg1, txtArg2), "Store", "Add contents of clipboard to buffer"));
+        buttonMap.put("btnReplace", new ButtonSetup(Arrays.asList(txtArg1, txtArg2), "Replace", "Replace selected buffer with current clipboard contents"));
+        buttonMap.put("btnPrepend", new ButtonSetup(Arrays.asList(txtArg1, txtArg2), "Prepend", "Prepend clipboard contents to the beginning of each selected buffer"));
+        buttonMap.put("btnAppend", new ButtonSetup(Arrays.asList(txtArg1, txtArg2), "Append", "Append clipboard contents to the end of each selected buffer"));
+        buttonMap.put("btnJoin", new ButtonSetup(Arrays.asList(txtArg1, txtArg2), "Join", "Join selected buffers with newlines"));
+        buttonMap.put("btnDiff", new ButtonSetup(Arrays.asList(txtArg1, txtArg2), "Diff", "Diff two selected buffers"));
+        buttonMap.put("btnUp", new ButtonSetup(Arrays.asList(txtArg1, txtArg2), "Up", "Move selected buffers up"));
+        buttonMap.put("btnDown", new ButtonSetup(Arrays.asList(txtArg1, txtArg2), "Down", "Move selected buffers down"));
+
+        buttonMap.put("btnStrLTrim", new ButtonSetup(Arrays.asList(txtArg1, txtArg2), "String: Left trim", "Trim whitespace off the left side of the clipboard"));
+        buttonMap.put("btnStrTrim", new ButtonSetup(Arrays.asList(txtArg1, txtArg2), "String: Trim", "Trim whitespace off the left and right side of the clipboard"));
+        buttonMap.put("btnStrRTrim", new ButtonSetup(Arrays.asList(txtArg1, txtArg2), "String: Right trim", "Trim whitespace off the right side of the clipboard"));
+        buttonMap.put("btnStrLower", new ButtonSetup(Arrays.asList(txtArg1, txtArg2), "String: Lowercase", "Convert clipboard to lowercase"));
+        buttonMap.put("btnStrUpper", new ButtonSetup(Arrays.asList(txtArg1, txtArg2), "String: Uppercase", "Convert clipboard to uppercase"));
+        buttonMap.put("btnStrPrepend", new ButtonSetup(Arrays.asList(txtArg2), "String: Prepend string", "Prepend text (arg1) to start of clipboard"));
+        buttonMap.put("btnStrAppend", new ButtonSetup(Arrays.asList(txtArg2), "String: Append string", "Append text (arg1) to end of clipboard"));
+        buttonMap.put("btnStrWordWrap", new ButtonSetup(Arrays.asList(txtArg2), "String: Word wrap", "Wrap the clipboard to the given width (arg1). If a line goes too long with no whitespace, it will not be truncated."));
+        buttonMap.put("btnStrSplit", new ButtonSetup(Arrays.asList(txtArg2), "String: Split", "Split clipboard into multiple lines on given string (arg1)"));
+        buttonMap.put("btnStrReplace", new ButtonSetup(Arrays.asList(), "String: Replace", "Replace all text that matches the search text (arg1), with the replacement string (arg2)"));
+        buttonMap.put("btnStrRegexRepl", new ButtonSetup(Arrays.asList(), "String: Replace via regex", "Replace all text that matches the regex (arg1) with the replacement string (arg2). Supports backreferences in replacement string.\nExample: arg1='(\\w+) (\\w+)' and arg2='$2,$1' which turns 'foo bar' into 'bar,foo'"));
+
+        buttonMap.put("btnListLTrim", new ButtonSetup(Arrays.asList(txtArg1, txtArg2), "List: Left trim", "Trim whitespace off the left side of each line in the clipboard"));
+        buttonMap.put("btnListTrim", new ButtonSetup(Arrays.asList(txtArg1, txtArg2), "List: Trim", "Trim whitespace off the left and right side of each line in the clipboard"));
+        buttonMap.put("btnListRTrim", new ButtonSetup(Arrays.asList(txtArg1, txtArg2), "List: Right trim", "Trim whitespace off the right side of each line in the clipboard"));
+        buttonMap.put("btnListCollapse", new ButtonSetup(Arrays.asList(txtArg1, txtArg2), "List: Collapse", "Strip out all empty lines (might be useful to do a trim first)"));
+        buttonMap.put("btnListUniq", new ButtonSetup(Arrays.asList(txtArg1, txtArg2), "List: Uniquify", "Make items in list unique by removing duplicates next to each other (might be useful to do \"lower\" and \"sort\" operations first)"));
+        buttonMap.put("btnListSort", new ButtonSetup(Arrays.asList(txtArg1, txtArg2), "List: Sort", "Sort the lines alphabetically in the clipboard"));
+        buttonMap.put("btnListReverse", new ButtonSetup(Arrays.asList(txtArg1, txtArg2), "List: List reverse", "Reverse the order of the lines in the clipboard"));
+        buttonMap.put("btnListStats", new ButtonSetup(Arrays.asList(txtArg1, txtArg2), "List: Show stats", "Calculate basics stats on the lines in the clipboard"));
+        buttonMap.put("btnListStore", new ButtonSetup(Arrays.asList(txtArg1, txtArg2), "List: Store lines", "Store each line from the clipboard into a separate buffer"));
+        buttonMap.put("btnListPrepend", new ButtonSetup(Arrays.asList(txtArg2), "List: Prepend to lines", "Prepend given text (arg1) to the beginning of each line in the clipboard"));
+        buttonMap.put("btnListAppend", new ButtonSetup(Arrays.asList(txtArg2), "List: Append to lines", "Append given text (arg1) to the end of each line in the clipboard"));
+        buttonMap.put("btnListCenter", new ButtonSetup(Arrays.asList(txtArg2), "List: Center lines", "Center each line in the clipboard with given column width (arg1)"));
+        buttonMap.put("btnListSlice", new ButtonSetup(Arrays.asList(txtArg2), "List: Slice", "Apply Python-style slice syntax (arg1) on each line's characters\nExamples: '4', '3:5', '2:', ':-4'"));
+        buttonMap.put("btnListJoin", new ButtonSetup(Arrays.asList(txtArg2), "List: Join lines with character", "Join each line in the clipboard with the given delimiter (arg1)"));
+        buttonMap.put("btnListContains", new ButtonSetup(Arrays.asList(txtArg2), "List Filter: lines that contain...", "Keep lines in the clipboard that contain the given literal string (arg1)"));
+        buttonMap.put("btnListRegex", new ButtonSetup(Arrays.asList(txtArg2), "List Filter: lines that match regex...", "Keep lines in the clipboard that match the regex (arg1)"));
+        buttonMap.put("btnListRegexFull", new ButtonSetup(Arrays.asList(txtArg2), "List Filter: full lines that match regex", "Keep lines in the clipboard that match the regex (arg1) exactly. The regex must match the entire line."));
+        buttonMap.put("btnListRegexRepl", new ButtonSetup(Arrays.asList(), "List: Regex replace", "Replace text in each line that matches the regex (arg1) with the replacement string (arg2). Supports backreferences in replacement string.\nExample: arg1='(\\w+) (\\w+)' and arg2='$2,$1' which turns 'foo bar' into 'bar,foo'"));
+
+        buttonMap.put("btnActionNotepad", new ButtonSetup(Arrays.asList(txtArg1, txtArg2), "Action: Open in Notepad", "Open contents of clipboard in Notepad"));
+        buttonMap.put("btnActionOpenUrl", new ButtonSetup(Arrays.asList(txtArg1, txtArg2), "Action: Open as URL", "Open contents of system clipboard as URL's (supports newline separated lists of URL's)"));
+        buttonMap.put("btnActionOpenFiles", new ButtonSetup(Arrays.asList(txtArg1, txtArg2), "Action: Open files in explorer", "Open contents of system clipboard as files/folders (supports newline separated lists of paths)"));
     }
 
     public void onReady(Stage primaryStage) {
@@ -169,6 +249,9 @@ public class Controller implements Initializable {
         if (chkStoreOnFocus.isSelected()) {
             appendToClipBuffersAndShowStatus(SysClipboard.read()); // read and store first clip when app first opens
         }
+
+        txtHelpHeader.setText("my code header\n");
+        txtHelpBody.setText("the body\nand the end goes ehre djs ladfkj aldskjf alskdjf a;lksjfd");
     }
 
     public void onBuffersKeyPressed(KeyEvent e) {
@@ -282,18 +365,18 @@ public class Controller implements Initializable {
         SysClipboard.write(SysClipboard.read().toUpperCase());
     }
     public void onBtnStrPrepend(ActionEvent e) {
-        String arg = txtStrArg1.getText();
+        String arg = txtArg1.getText();
         statusBar.show("Prepended " + arg.length() + " character to current clipboard");
         SysClipboard.write(arg + SysClipboard.read());
     }
     public void onBtnStrAppend(ActionEvent e) {
-        String arg = txtStrArg1.getText();
+        String arg = txtArg1.getText();
         statusBar.show("Appended " + arg.length() + " character to current clipboard");
         SysClipboard.write(SysClipboard.read() + arg);
     }
     public void onBtnStrWordWrap(ActionEvent e) {
         try {
-            int width = Integer.valueOf(txtStrArg1.getText());
+            int width = Integer.valueOf(txtArg1.getText());
             statusBar.show("Word wrapped the current clipboard contents to " + width + " columns wide");
             SysClipboard.write(WordUtils.wrap(SysClipboard.read(), width));
         } catch (NumberFormatException exc) {
@@ -301,7 +384,7 @@ public class Controller implements Initializable {
         }
     }
     public void onBtnStrSplit(ActionEvent e) {
-        String arg = txtStrArg1.getText();
+        String arg = txtArg1.getText();
         String clipboard = SysClipboard.read();
         int origSize = clipboard.length();
         clipboard = clipboard.replace(arg, System.lineSeparator());
@@ -311,8 +394,8 @@ public class Controller implements Initializable {
     }
     public void onBtnStrReplace(ActionEvent e) {
         Debug.dumpString(SysClipboard.read());
-        String trg = txtStrArg1.getText();
-        String repl = txtStrArg2.getText();
+        String trg = txtArg1.getText();
+        String repl = txtArg2.getText();
         trg = StringUtil.replaceSpecialChars(trg);
         repl = StringUtil.replaceSpecialChars(repl);
         statusBar.show("Replaced '" + trg + "' with '" + repl + "' in current clipboard");
@@ -320,10 +403,15 @@ public class Controller implements Initializable {
         Debug.dumpString(SysClipboard.read());
     }
     public void onBtnStrRegexReplace(ActionEvent e) {
-        String regex = txtStrArg1.getText();
-        String repl = txtStrArg2.getText();
+        String regex = txtArg1.getText();
+        String repl = txtArg2.getText();
         statusBar.show("Replaced regex '" + regex + "' with '" + repl + "' in current clipboard");
-        SysClipboard.write(SysClipboard.read().replaceAll(regex, repl));
+        try {
+            String result = SysClipboard.read().replaceAll(regex, repl);
+            SysClipboard.write(result);
+        } catch (Exception exc) {
+            statusBar.showErr("Problem doing the regex substitution: " + exc);
+        }
     }
     public void onBtnListLTrim(ActionEvent e) {
         List<String> result = new ClipboardAsListMutatorByLine( (line) -> StringUtil.ltrim(line) ).mutate();
@@ -376,18 +464,18 @@ public class Controller implements Initializable {
         statusBar.show("Stored " + lines.size() + " line(s) into individual buffers");
     }
     public void onBtnListPrepend(ActionEvent e) {
-        String arg = txtListArg1.getText();
+        String arg = txtArg1.getText();
         List<String> result = new ClipboardAsListMutatorByLine( (line) -> arg + line ).mutate();
         statusBar.show("Prepended " + arg.length() + " character(s) to " + result.size() + " lines in current clipboard");
     }
     public void onBtnListAppend(ActionEvent e) {
-        String arg = txtListArg1.getText();
+        String arg = txtArg1.getText();
         List<String> result = new ClipboardAsListMutatorByLine( (line) -> line + arg ).mutate();
         statusBar.show("Appended " + arg.length() + " character(s) to " + result.size() + " lines in current clipboard");
     }
     public void onBtnListCenter(ActionEvent e) {
         try {
-            int width = Integer.valueOf(txtListArg1.getText());
+            int width = Integer.valueOf(txtArg1.getText());
             List<String> result = new ClipboardAsListMutatorByLine( (line) -> StringUtils.center(line, width) ).mutate();
             statusBar.show("Centered " + result.size() + " lines in current clipboard");
         } catch (NumberFormatException exc) {
@@ -396,7 +484,7 @@ public class Controller implements Initializable {
     }
     public void onBtnListSlice(ActionEvent e) {
         // parse slice argument syntax
-        String sliceExpr = txtListArg1.getText();
+        String sliceExpr = txtArg1.getText();
         Integer[] idxs;
         try {
             idxs = Functions.parseSliceSyntax(sliceExpr);
@@ -415,7 +503,7 @@ public class Controller implements Initializable {
     }
     public void onBtnListJoin(ActionEvent e) {
         String clipboard = SysClipboard.read();
-        String arg = txtListArg1.getText();
+        String arg = txtArg1.getText();
         statusBar.show("Joined " + StringUtils.splitByWholeSeparatorPreserveAllTokens(clipboard, System.lineSeparator()).length + " lines with '" + arg + "' in current clipboard");
         SysClipboard.write(clipboard.replace(System.lineSeparator(), arg));
     }
@@ -437,24 +525,24 @@ public class Controller implements Initializable {
         SysClipboard.write(String.join("\n", filtered));
     }
     public void onBtnListContains(ActionEvent e) {
-        String arg = txtListArg1.getText();
+        String arg = txtArg1.getText();
         Pair<List<String>, List<String>> result = new ClipboardAsListFilter( (line) -> line.contains(arg) ).filter();
         statusBar.show("Filtered " + result.getLeft().size() + " lines down to " + result.getRight().size() + " in current clipboard");
     }
     public void onBtnListRegex(ActionEvent e) {
-        String rawRegex = txtListArg1.getText();
+        String rawRegex = txtArg1.getText();
         String regex = "^.*" + rawRegex + ".*$";
         Pair<List<String>, List<String>> result = new ClipboardAsListFilter( (line) -> line.matches(regex) ).filter();
         statusBar.show("Regex filtered " + result.getLeft().size() + " lines down to " + result.getRight().size() + " in current clipboard");
     }
     public void onBtnListRegexFull(ActionEvent e) {
-        String regex = txtListArg1.getText();
+        String regex = txtArg1.getText();
         Pair<List<String>, List<String>> result = new ClipboardAsListFilter( (line) -> line.matches(regex) ).filter();
         statusBar.show("Regex (full) filtered " + result.getLeft().size() + " lines down to " + result.getRight().size() + " in current clipboard");
     }
     public void onBtnListRegexRepl(ActionEvent e) {
-        String regex = txtListArg1.getText();
-        String repl = txtListArg2.getText();
+        String regex = txtArg1.getText();
+        String repl = txtArg2.getText();
         List<String> result = new ClipboardAsListMutatorByLine( (line) -> line.replaceAll(regex, repl)).mutate();
         statusBar.show("Replaced regex '" + regex + "' with '" + repl + "' in lines in current clipboard");
     }
@@ -655,7 +743,7 @@ public class Controller implements Initializable {
         for (ClipBuffer buf : selectedBuffers) {
             clips.add(buf.clip);
         }
-        String clip = String.join("\n", clips);
+        String clip = String.join(System.lineSeparator(), clips);
         String msg = String.format("Joining the %d selected buffers and storing %d chars to the clipboard",
                 selectedBuffers.size(),
                 clip.length()

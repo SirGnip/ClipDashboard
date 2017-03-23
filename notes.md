@@ -1,15 +1,8 @@
 (personal working notes and brainstorms)
-
+    
 # next actions
 
-- probably don't worry about tooltips as I'm going to be creating a textfield/area that shows help on hover.
 - can I build code and jar from command line? (exercise to help me understand what is going on)
-- use drop down for clipboard operations instead of lots of buttons
-    - reduce clutter
-    - to save screen space
-    - be able to hide arg boxes that are not needed
-    - able to provide operation-specific help tooltips on the arg text boxes
-    - con: makes it require a bit more flipping around to get what you want if you are using different operations (maybe just wait)
 - skim docs/tutorials on streams?
     
 # roadmap

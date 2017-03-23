@@ -17,6 +17,9 @@
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="804.0" prefWidth="737.0" spacing="5.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.juxtaflux.Controller">
     <children>
@@ -46,21 +49,21 @@
         <HBox>
             <children>
                 <Label text="Buffers:" />
-                <Button mnemonicParsing="false" onAction="#onBtnStore" text="store" />
-                <Button mnemonicParsing="false" onAction="#onBtnReplace" text="replace" />
-                <Button mnemonicParsing="false" onAction="#onBtnPrepend" text="prepend" />
-            <Button layoutX="187.0" layoutY="15.0" mnemonicParsing="false" onAction="#onBtnAppend" text="append" />
-            <Button layoutX="263.0" layoutY="15.0" mnemonicParsing="false" onAction="#onBtnJoin" text="join" />
-            <Button layoutX="339.0" layoutY="15.0" mnemonicParsing="false" onAction="#onBtnDiff" text="diff" />
-            <Button layoutX="415.0" layoutY="15.0" mnemonicParsing="false" onAction="#onBtnUp" text="^" />
-            <Button layoutX="491.0" layoutY="15.0" mnemonicParsing="false" onAction="#onBtnDown" text="V" />
+                <Button fx:id="btnStore" mnemonicParsing="false" onAction="#onBtnStore" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="store" />
+                <Button fx:id="btnReplace" mnemonicParsing="false" onAction="#onBtnReplace" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="replace" />
+                <Button fx:id="btnPrepend" mnemonicParsing="false" onAction="#onBtnPrepend" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="prepend" />
+            <Button fx:id="btnAppend" layoutX="187.0" layoutY="15.0" mnemonicParsing="false" onAction="#onBtnAppend" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="append" />
+            <Button fx:id="btnJoin" layoutX="263.0" layoutY="15.0" mnemonicParsing="false" onAction="#onBtnJoin" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="join" />
+            <Button fx:id="btnDiff" layoutX="339.0" layoutY="15.0" mnemonicParsing="false" onAction="#onBtnDiff" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="diff" />
+            <Button fx:id="btnUp" layoutX="415.0" layoutY="15.0" mnemonicParsing="false" onAction="#onBtnUp" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="^" />
+            <Button fx:id="btnDown" layoutX="491.0" layoutY="15.0" mnemonicParsing="false" onAction="#onBtnDown" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="V" />
             </children>
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </padding>
         </HBox>
         <Label text="System Clipboard:" />
-        <TabPane minHeight="120.0" tabClosingPolicy="UNAVAILABLE">
+        <TabPane tabClosingPolicy="UNAVAILABLE">
             <tabs>
                 <Tab closable="false" text="String operations">
                     <content>
@@ -68,23 +71,21 @@
                             <children>
                                 <HBox>
                                     <children>
-                                        <Button mnemonicParsing="false" onAction="#onBtnStrLTrim" text="L" />
-                                        <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnStrTrim" text="trim" />
-                                        <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnStrRTrim" text="R" />
-                                        <Button layoutX="75.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnStrLower" text="lower" />
-                                        <Button layoutX="205.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnStrUpper" text="upper" />
+                                        <Button fx:id="btnStrLTrim" mnemonicParsing="false" onAction="#onBtnStrLTrim" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="L" />
+                                        <Button fx:id="btnStrTrim" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnStrTrim" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="trim" />
+                                        <Button fx:id="btnStrRTrim" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnStrRTrim" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="R" />
+                                        <Button fx:id="btnStrLower" layoutX="75.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnStrLower" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="lower" />
+                                        <Button fx:id="btnStrUpper" layoutX="205.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnStrUpper" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="upper" />
                                     </children>
                                 </HBox>
                                 <HBox>
                                     <children>
-                                        <Button mnemonicParsing="false" onAction="#onBtnStrPrepend" text="prepend" />
-                                        <Button mnemonicParsing="false" onAction="#onBtnStrAppend" text="append" />
-                                        <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnStrWordWrap" text="word wrap" />
-                                        <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnStrSplit" text="split" />
-                                        <Button layoutX="140.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnStrReplace" text="replace" />
-                                        <Button layoutX="140.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnStrRegexReplace" text="regex repl" />
-                                        <TextField fx:id="txtStrArg1" prefWidth="80.0" text="," />
-                                        <TextField fx:id="txtStrArg2" prefWidth="80.0" text="\\n" />
+                                        <Button fx:id="btnStrPrepend" mnemonicParsing="false" onAction="#onBtnStrPrepend" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="prepend" />
+                                        <Button fx:id="btnStrAppend" mnemonicParsing="false" onAction="#onBtnStrAppend" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="append" />
+                                        <Button fx:id="btnStrWordWrap" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnStrWordWrap" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="word wrap" />
+                                        <Button fx:id="btnStrSplit" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnStrSplit" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="split" />
+                                        <Button fx:id="btnStrReplace" layoutX="140.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnStrReplace" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="replace" />
+                                        <Button fx:id="btnStrRegexRepl" layoutX="140.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnStrRegexReplace" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="regex repl" />
                                     </children>
                                 </HBox>
                             </children>
@@ -97,30 +98,28 @@
                             <children>
                                 <HBox>
                                     <children>
-                                        <Button mnemonicParsing="false" onAction="#onBtnListLTrim" text="L" />
-                                        <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListTrim" text="trim" />
-                                        <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListRTrim" text="R" />
-                                        <Button layoutX="75.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListCollapse" text="collapse" />
-                                        <Button layoutX="205.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListUniq" text="uniq" />
-                              <Button layoutX="188.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListSort" text="sort" />
-                              <Button layoutX="238.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListReverse" text="reverse" />
-                              <Button layoutX="288.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListStats" text="stats" />
-                              <Button layoutX="338.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListStore" text="store" />
+                                        <Button fx:id="btnListLTrim" mnemonicParsing="false" onAction="#onBtnListLTrim" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="L" />
+                                        <Button fx:id="btnListTrim" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListTrim" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="trim" />
+                                        <Button fx:id="btnListRTrim" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListRTrim" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="R" />
+                                        <Button fx:id="btnListCollapse" layoutX="75.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListCollapse" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="collapse" />
+                                        <Button fx:id="btnListUniq" layoutX="205.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListUniq" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="uniq" />
+                              <Button fx:id="btnListSort" layoutX="188.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListSort" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="sort" />
+                              <Button fx:id="btnListReverse" layoutX="238.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListReverse" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="reverse" />
+                              <Button fx:id="btnListStats" layoutX="288.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListStats" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="stats" />
+                              <Button fx:id="btnListStore" layoutX="338.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListStore" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="store" />
                                     </children>
                                 </HBox>
                                 <HBox>
                                     <children>
-                                        <Button mnemonicParsing="false" onAction="#onBtnListPrepend" text="prepend" />
-                                        <Button mnemonicParsing="false" onAction="#onBtnListAppend" text="append" />
-                                        <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListCenter" text="center" />
-                                        <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListSlice" text="slice" />
-                                        <Button layoutX="140.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListJoin" text="join" />
-                              <Button layoutX="268.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListContains" text="contains" />
-                              <Button layoutX="560.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListRegex" text="regex" />
-                              <Button layoutX="605.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListRegexFull" text="regex full" />
-                                        <Button layoutX="140.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListRegexRepl" text="regex repl" />
-                                        <TextField fx:id="txtListArg1" prefWidth="80.0" text="," />
-                                        <TextField fx:id="txtListArg2" prefWidth="80.0" text="\\n" />
+                                        <Button fx:id="btnListPrepend" mnemonicParsing="false" onAction="#onBtnListPrepend" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="prepend" />
+                                        <Button fx:id="btnListAppend" mnemonicParsing="false" onAction="#onBtnListAppend" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="append" />
+                                        <Button fx:id="btnListCenter" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListCenter" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="center" />
+                                        <Button fx:id="btnListSlice" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListSlice" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="slice" />
+                                        <Button fx:id="btnListJoin" layoutX="140.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListJoin" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="join" />
+                              <Button fx:id="btnListContains" layoutX="268.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListContains" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="contains" />
+                              <Button fx:id="btnListRegex" layoutX="560.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListRegex" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="regex" />
+                              <Button fx:id="btnListRegexFull" layoutX="605.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListRegexFull" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="regex full" />
+                                        <Button fx:id="btnListRegexRepl" layoutX="140.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnListRegexRepl" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="regex repl" />
                                     </children>
                                 </HBox>
                             </children>
@@ -133,9 +132,9 @@
                             <children>
                                 <HBox>
                                     <children>
-                                        <Button mnemonicParsing="false" onAction="#onBtnNotepadAction" text="notepad" />
-                                        <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnOpenUrl" text="open URL's" />
-                                        <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnOpenFiles" text="open files/folders" />
+                                        <Button fx:id="btnActionNotepad" mnemonicParsing="false" onAction="#onBtnNotepadAction" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="notepad" />
+                                        <Button fx:id="btnActionOpenUrl" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnOpenUrl" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="open URL's" />
+                                        <Button fx:id="btnActionOpenFiles" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnOpenFiles" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="open files/folders" />
                                     </children>
                                 </HBox>
                             </children>
@@ -144,7 +143,29 @@
                 </Tab>
             </tabs>
         </TabPane>
-        <TextArea fx:id="log" maxHeight="1.7976931348623157E308" prefHeight="50.0" VBox.vgrow="ALWAYS" />
+      <HBox spacing="20.0">
+         <children>
+            <TextField fx:id="txtArg1" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+            <TextField fx:id="txtArg2" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+         </children>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+      </HBox>
+      <TextFlow>
+         <children>
+            <Text fx:id="txtHelpHeader" strokeType="OUTSIDE" strokeWidth="0.0" text="My title">
+               <font>
+                  <Font name="System Bold Italic" size="15.0" />
+               </font>
+            </Text>
+            <Text fx:id="txtHelpBody" strokeType="OUTSIDE" strokeWidth="0.0" text="My full text that goes on and on and on" />
+         </children>
+         <VBox.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </VBox.margin>
+      </TextFlow>
+        <TextArea fx:id="log" maxHeight="1.7976931348623157E308" prefHeight="30.0" VBox.vgrow="ALWAYS" />
         <StatusBar fx:id="statusBar" />
     </children>
 </VBox>

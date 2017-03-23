@@ -10,7 +10,7 @@ import java.util.List;
 class Config {
     static final boolean DEBUG = false; // toggle debugging (extra logging, etc.)
     static final int APP_WIDTH = 700;
-    static final int APP_HEIGHT = 700;
+    static final int APP_HEIGHT = 750;
     static final String APP_TITLE = "ClipDashboard";
     static final List<String> INITIAL_CLIPS = Arrays.asList("abc", "def", "ghijklmnop", "q", "rstuv", "wxyz");
     static final Paint STATUS_BAR_ERROR_COLOR = Color.RED;
