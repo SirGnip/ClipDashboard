@@ -11,7 +11,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("../../ClipDashboard.fxml"));
         Parent root = loader.load();
-        primaryStage.setTitle("NEW" + Config.APP_TITLE);
+        primaryStage.setTitle(Config.APP_TITLE);
         primaryStage.setScene(new Scene(root, Config.APP_WIDTH, Config.APP_HEIGHT));
         primaryStage.show();
         Controller controller = loader.getController();

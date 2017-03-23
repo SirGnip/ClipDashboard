@@ -3,9 +3,6 @@
 # next actions
 
 - probably don't worry about tooltips as I'm going to be creating a textfield/area that shows help on hover.
-- variable substitution where a variable refers to the contents of the clipboard
-    - ex: create a buffer that is "start ${clip} end". put some word in system clipboard. turn on variable substitution.  click retrieve and it will retrieve the buffer and substitute in the contents of the word into "${clip}"
-- use this snippet for reading file contents? `new String(Files.readAllBytes(Paths.get(loader.getResource("blah/file.txt").toURI())));`
 - can I build code and jar from command line? (exercise to help me understand what is going on)
 - use drop down for clipboard operations instead of lots of buttons
     - reduce clutter
@@ -14,8 +11,7 @@
     - able to provide operation-specific help tooltips on the arg text boxes
     - con: makes it require a bit more flipping around to get what you want if you are using different operations (maybe just wait)
 - skim docs/tutorials on streams?
-- do a pass on the visuals (better button layout and sizing, dynamic sizing)
-
+    
 # roadmap
 
 Iteration #1 - (DONE) minimal features so I use it instead of Python one

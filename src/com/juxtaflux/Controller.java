@@ -16,6 +16,7 @@ import javafx.scene.input.*;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.StrSubstitutor;
 import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -29,7 +30,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.MessageFormat;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -188,7 +188,7 @@ public class Controller implements Initializable {
             try {
                 String clip = chkVariableSubstitution.isSelected() ? retrieveVarSubstitutedClipFromBuffer() : retrieveClipFromBuffer();
                 statusBar.show("Retrieving " + (StringUtils.countMatches(clip, "\n") + 1) + " line(s) and " + clip.length() + " chars from buffer and storing to the clipboard");
-            } catch (IllegalArgumentException exc) {
+            } catch (Exception exc) {
                 System.out.println("problem");
                 statusBar.showErr("Problem substituting variables in buffer: " + exc.toString());
             }
@@ -574,7 +574,7 @@ public class Controller implements Initializable {
             } else {
                 statusBar.show("Retrieving " + (StringUtils.countMatches(clip, "\n") + 1) + " line(s) and " + clip.length() + " chars from buffer and storing to the clipboard");
             }
-        } catch (IllegalArgumentException exc) {
+        } catch (Exception exc) {
             System.out.println("problem");
             statusBar.showErr("Problem substituting variables in buffer: " + exc.toString());
         }
@@ -766,7 +766,13 @@ public class Controller implements Initializable {
 
     private String retrieveVarSubstitutedClipFromBuffer() {
         ClipBuffer buffer = buffers.getFocusModel().getFocusedItem();
-        String txt = MessageFormat.format(buffer.clip, clips.toArray()); // tolerant of variables in string that don't have a value for... Just doesn't substitute that variable.
+        HashMap<String, String> dat = new HashMap<>();
+        for (int i = 0; i < clips.size(); ++i) {
+            dat.put(Integer.toString(i), clips.get(i).clip);
+        }
+        dat.put("clip", SysClipboard.read());
+        StrSubstitutor sub = new StrSubstitutor(dat);
+        String txt = sub.replace(buffer);
         SysClipboard.write(txt);
         return txt;
     }
