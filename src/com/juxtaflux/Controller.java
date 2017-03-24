@@ -772,7 +772,7 @@ public class Controller implements Initializable {
         }
         dat.put("clip", SysClipboard.read());
         StrSubstitutor sub = new StrSubstitutor(dat);
-        String txt = sub.replace(buffer);
+        String txt = sub.replace(buffer.clip);
         SysClipboard.write(txt);
         return txt;
     }
