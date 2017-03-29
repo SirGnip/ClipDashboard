@@ -15,6 +15,7 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
@@ -23,7 +24,7 @@
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="804.0" prefWidth="737.0" spacing="5.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.juxtaflux.Controller">
     <children>
-        <MenuBar>
+        <MenuBar VBox.vgrow="NEVER">
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
@@ -41,12 +42,12 @@
                 </Menu>
             </menus>
         </MenuBar>
-        <ListView fx:id="buffers" maxHeight="250.0" minHeight="250.0" onDragDropped="#onBuffersDragDropped" onDragEntered="#onBuffersDragEntered" onDragExited="#onBuffersDragExited" onDragOver="#onBuffersDragOver" onKeyPressed="#onBuffersKeyPressed" onMouseClicked="#onBuffersMouseClicked" />
-        <Button fx:id="btnRetrieve" maxWidth="1.7976931348623157E308" minHeight="45.0" mnemonicParsing="false" onAction="#onBtnRetrieveClick" onDragDropped="#onBtnRetrieveDragDropped" onDragEntered="#onBtnRetrieveDragEntered" onDragExited="#onBtnRetrieveDragExited" onDragOver="#onBtnRetrieveDragOver" style="-fx-font-size: 1.5em;" text="Retrieve">
+        <ListView fx:id="buffers" onDragDropped="#onBuffersDragDropped" onDragEntered="#onBuffersDragEntered" onDragExited="#onBuffersDragExited" onDragOver="#onBuffersDragOver" onKeyPressed="#onBuffersKeyPressed" onMouseClicked="#onBuffersMouseClicked" VBox.vgrow="ALWAYS" />
+        <Button fx:id="btnRetrieve" maxWidth="1.7976931348623157E308" minHeight="45.0" mnemonicParsing="false" onAction="#onBtnRetrieveClick" onDragDropped="#onBtnRetrieveDragDropped" onDragEntered="#onBtnRetrieveDragEntered" onDragExited="#onBtnRetrieveDragExited" onDragOver="#onBtnRetrieveDragOver" style="-fx-font-size: 1.5em;" text="Retrieve" VBox.vgrow="NEVER">
          <tooltip>
             <Tooltip text="This is my tooltip" />
          </tooltip></Button>
-        <HBox>
+        <HBox VBox.vgrow="NEVER">
             <children>
                 <Label text="Buffers:" />
                 <Button fx:id="btnStore" mnemonicParsing="false" onAction="#onBtnStore" onMouseEntered="#onMouseEnter" onMouseExited="#onMouseExit" text="store" />
@@ -62,8 +63,8 @@
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </padding>
         </HBox>
-        <Label text="System Clipboard:" />
-        <TabPane tabClosingPolicy="UNAVAILABLE">
+        <Label text="System Clipboard:" VBox.vgrow="NEVER" />
+        <TabPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="115.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="NEVER">
             <tabs>
                 <Tab closable="false" text="String operations">
                     <content>
@@ -141,9 +142,18 @@
                         </VBox>
                     </content>
                 </Tab>
+            <Tab text="Log">
+              <content>
+                <AnchorPane>
+                     <children>
+                          <TextArea fx:id="log" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="0.0" />
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
             </tabs>
         </TabPane>
-      <HBox spacing="20.0">
+      <HBox spacing="20.0" VBox.vgrow="NEVER">
          <children>
             <TextField fx:id="txtArg1" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
             <TextField fx:id="txtArg2" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
@@ -152,7 +162,7 @@
             <Insets />
          </VBox.margin>
       </HBox>
-      <TextFlow>
+      <TextFlow maxHeight="-Infinity" minHeight="-Infinity" prefHeight="80.0" VBox.vgrow="NEVER">
          <children>
             <Text fx:id="txtHelpHeader" strokeType="OUTSIDE" strokeWidth="0.0" text="My title">
                <font>
@@ -165,7 +175,6 @@
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </VBox.margin>
       </TextFlow>
-        <TextArea fx:id="log" maxHeight="1.7976931348623157E308" prefHeight="30.0" VBox.vgrow="ALWAYS" />
-        <StatusBar fx:id="statusBar" />
+        <StatusBar fx:id="statusBar" text="MyStatusBar" VBox.vgrow="NEVER" />
     </children>
 </VBox>
