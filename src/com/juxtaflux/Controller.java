@@ -134,6 +134,8 @@ public class Controller implements Initializable {
     @FXML
     private CheckMenuItem chkStoreOnFocus;
     @FXML
+    private CheckMenuItem chkRetrieveOnFocus;
+    @FXML
     private CheckMenuItem chkVariableSubstitution;
 
     @FXML
@@ -239,8 +241,12 @@ public class Controller implements Initializable {
             public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) {
                 if (ov.getValue()) {
                     if (chkStoreOnFocus.isSelected()) {
-                        log.insertText(0, "got focus\n");
+                        log.insertText(0, "Storing clip to buffer when app gets focus\n");
                         appendToClipBuffersAndShowStatus(SysClipboard.read());
+                    }
+                    if (chkRetrieveOnFocus.isSelected()) {
+                        log.insertText(0, "Retrieve buffer to clipboard when app gets focus\n");
+                        retrieveClip();
                     }
                 }
             }
@@ -617,6 +623,12 @@ public class Controller implements Initializable {
     }
 
     public void onBtnRetrieveClick(ActionEvent e) {
+        retrieveClip();
+    }
+
+    public void retrieveClip() {
+        // Generic function that handles the "retrieve" action and all of its different functionality
+
         // Cycle through selected buffers
 
         // Give list control focus so we can see current focus, but focus makes no visual difference to items that are selected.

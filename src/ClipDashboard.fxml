@@ -37,6 +37,7 @@
                 <Menu mnemonicParsing="false" text="Buffer">
                     <items>
                         <CheckMenuItem fx:id="chkStoreOnFocus" mnemonicParsing="false" text="Store clipboard to buffer when app gets focus" />
+                  <CheckMenuItem fx:id="chkRetrieveOnFocus" mnemonicParsing="false" text="Retrieve selected clip when app gets focus" />
                         <CheckMenuItem fx:id="chkVariableSubstitution" mnemonicParsing="false" text="Substitute variables (ex: ${0}, ${1}, ${clip}) when retrieving a buffer into the clipboard" />
                     </items>
                 </Menu>
@@ -45,7 +46,7 @@
         <ListView fx:id="buffers" onDragDropped="#onBuffersDragDropped" onDragEntered="#onBuffersDragEntered" onDragExited="#onBuffersDragExited" onDragOver="#onBuffersDragOver" onKeyPressed="#onBuffersKeyPressed" onMouseClicked="#onBuffersMouseClicked" VBox.vgrow="ALWAYS" />
         <Button fx:id="btnRetrieve" maxWidth="1.7976931348623157E308" minHeight="45.0" mnemonicParsing="false" onAction="#onBtnRetrieveClick" onDragDropped="#onBtnRetrieveDragDropped" onDragEntered="#onBtnRetrieveDragEntered" onDragExited="#onBtnRetrieveDragExited" onDragOver="#onBtnRetrieveDragOver" style="-fx-font-size: 1.5em;" text="Retrieve" VBox.vgrow="NEVER">
          <tooltip>
-            <Tooltip text="This is my tooltip" />
+            <Tooltip text="Retrieve selected clip to clipboard (cycle through clips if more than one is selected)" />
          </tooltip></Button>
         <HBox VBox.vgrow="NEVER">
             <children>
