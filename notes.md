@@ -145,7 +145,24 @@ Visualizing focus ideas as when the ListView control as a whole looses focus, th
 - x in addition to filtering, have something that counts how many times a given regex matches? Or, maybe just use the "filter" and then the "stats" to count the lines in the clipboard after the filtre.
 - x center, x wordwrap
 - use case test: can i use the features I have to wrap html tags around a list of text?
-
+- Thinking about visual flow and how to present the argument fields for each action (which have a lot of variety)
+    - problem:
+        - too confusing where you have some buttons that use arg fields
+            - don't know what args do
+            - don't know what args go with what buttons.
+            - extra arg boxes are confusing
+            - don't have good instructions on what each button does.
+    - problems
+        - moving the mouse from buttons down to args means you cross other buttons, which changes what args are visible.
+    - brainstorm
+        - visual flow... decision tree that flows from top to bottom.  that is how your eye moves.
+        - have all buttons in one horizontal row, so as you move vertically down, you won't cross other buttons. Organize each set of buttons in a tab
+    - bits
+        - hover over/out events
+        - have data that, per button, maps what widgets need to be disabled and what its help text is
+            - maybe eventually animate arguments on and off
+            - maybe remember the history of entries for that widget and apply that history
+            
 # Bugs
 
 - lots of silent failures in drag-n-drop files/directories on read failures (file being an executable, for instance). It silently skips the file if it fails.
